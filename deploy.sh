@@ -1,4 +1,6 @@
 #!/bin/bash
+set -Eeuo pipefail
+
 cd /home/momin879/e-commerce || exit
 
 git pull origin main
