@@ -34,12 +34,19 @@ jobs:
             host="${host%:*}"
           fi
 
+          if [[ -z "$host" ]]; then
+            echo "AZURE_HOST is empty after parsing. Set it to the Azure VM public IP or DNS name only."
+            exit 1
+          fi
+
           echo "AZURE_DEPLOY_HOST=$host" >> "$GITHUB_ENV"
           echo "AZURE_DEPLOY_PORT=$port" >> "$GITHUB_ENV"
-          ssh-keyscan -p "$port" -H "$host" >> ~/.ssh/known_hosts
 
       - name: Run deployment script
         run: |
-          ssh -i ~/.ssh/azure_vm_key -p "$AZURE_DEPLOY_PORT" \
+          ssh -i ~/.ssh/azure_vm_key \
+            -p "$AZURE_DEPLOY_PORT" \
+            -o StrictHostKeyChecking=accept-new \
+            -o ConnectTimeout=30 \
             "${{ secrets.AZURE_USER }}@$AZURE_DEPLOY_HOST" \
             'bash -lc "/home/momin879/e-commerce/deploy.sh"'
