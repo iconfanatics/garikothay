@@ -15,15 +15,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure SSH
+        env:
+          RAW_AZURE_HOST: ${{ secrets.AZURE_HOST }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           printf '%s\n' "${{ secrets.AZURE_SSH_KEY }}" > ~/.ssh/azure_vm_key
           chmod 600 ~/.ssh/azure_vm_key
-          ssh-keyscan -H "${{ secrets.AZURE_HOST }}" >> ~/.ssh/known_hosts
+
+          host="${RAW_AZURE_HOST#http://}"
+          host="${host#https://}"
+          host="${host#*@}"
+          host="${host%%/*}"
+          port="22"
+
+          if [[ "$host" == *:* && "$host" != \[* ]]; then
+            port="${host##*:}"
+            host="${host%:*}"
+          fi
+
+          echo "AZURE_DEPLOY_HOST=$host" >> "$GITHUB_ENV"
+          echo "AZURE_DEPLOY_PORT=$port" >> "$GITHUB_ENV"
+          ssh-keyscan -p "$port" -H "$host" >> ~/.ssh/known_hosts
 
       - name: Run deployment script
         run: |
-          ssh -i ~/.ssh/azure_vm_key \
-            "${{ secrets.AZURE_USER }}@${{ secrets.AZURE_HOST }}" \
+          ssh -i ~/.ssh/azure_vm_key -p "$AZURE_DEPLOY_PORT" \
+            "${{ secrets.AZURE_USER }}@$AZURE_DEPLOY_HOST" \
             'bash -lc "/home/momin879/e-commerce/deploy.sh"'
