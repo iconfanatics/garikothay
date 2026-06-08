@@ -8,7 +8,7 @@
                     <img src="{{ asset('storage/' . $logo) }}" alt="{{ config('app.name') }}"
                         class="h-8 w-auto object-contain brightness-0 invert">
                 @else
-                    💻 Dinajpur IT Park
+                    {{ \App\Models\Setting::get('site_name', config('app.name')) }}
                 @endif
             </h3>
             <p class="text-sm leading-relaxed text-gray-400">
@@ -50,8 +50,8 @@
             </h4>
             <ul class="space-y-2 text-sm text-gray-400">
                 <li>📞 {{ \App\Models\Setting::get('phone', '+880 1700-000000') }}</li>
-                <li>✉ {{ \App\Models\Setting::get('email', 'support@dinajpuritpark.com') }}</li>
-                <li>📍 {{ \App\Models\Setting::get('address', 'Dhaka, Bangladesh') }}</li>
+                <li>✉ {{ \App\Models\Setting::get('email', 'support@garikothay.com') }}</li>
+                <li>📍 {{ \App\Models\Setting::get('address', 'House 24, Road 7, Banani, Dhaka 1213, Bangladesh') }}</li>
             </ul>
             <div x-data="{ email: '', msg: '' }">
                 <div
@@ -75,6 +75,6 @@
     </div>
     <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
-        © {{ date('Y') }} Dinajpur IT Park. {{ __('general.all_rights_reserved') }} {{ __('general.made_with_love') }}
+        © {{ date('Y') }} {{ \App\Models\Setting::get('site_name', config('app.name')) }}. {{ __('general.all_rights_reserved') }} {{ __('general.made_with_love') }}
     </div>
 </footer>

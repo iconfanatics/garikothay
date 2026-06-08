@@ -33,6 +33,7 @@ class Settings extends Page
             'phone' => $settings->get('phone')?->value ?? '',
             'email' => $settings->get('email')?->value ?? '',
             'address' => $settings->get('address')?->value ?? '',
+            'guest_checkout_enabled' => (bool) ($settings->get('guest_checkout_enabled')?->getCastedValue() ?? true),
         ]);
     }
 
@@ -50,6 +51,12 @@ class Settings extends Page
                     Forms\Components\TextInput::make('email')->label('Email')->email(),
                     Forms\Components\Textarea::make('address')->label('Address')->columnSpanFull(),
                 ])->columns(2),
+                Forms\Components\Section::make('Checkout')->schema([
+                    Forms\Components\Toggle::make('guest_checkout_enabled')
+                        ->label('Guest checkout')
+                        ->helperText('Allow customers to place orders without logging in.')
+                        ->default(true),
+                ]),
             ])
             ->statePath('data');
     }
@@ -58,8 +65,27 @@ class Settings extends Page
     {
         $data = $this->form->getState();
 
+        $settingsMeta = [
+            'site_name' => ['group' => 'general', 'type' => SettingType::Text],
+            'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
+            'free_shipping_threshold' => ['group' => 'general', 'type' => SettingType::Number],
+            'phone' => ['group' => 'contact', 'type' => SettingType::Text],
+            'email' => ['group' => 'contact', 'type' => SettingType::Text],
+            'address' => ['group' => 'contact', 'type' => SettingType::Textarea],
+            'guest_checkout_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
+        ];
+
         foreach ($data as $key => $value) {
-            Setting::set($key, $value);
+            $meta = $settingsMeta[$key] ?? ['group' => 'general', 'type' => SettingType::Text];
+
+            Setting::updateOrCreate(
+                ['key' => $key],
+                [
+                    'group' => $meta['group'],
+                    'value' => is_bool($value) ? (string) (int) $value : $value,
+                    'type' => $meta['type'],
+                ]
+            );
         }
 
         Notification::make()

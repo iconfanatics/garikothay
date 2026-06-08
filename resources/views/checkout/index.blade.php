@@ -6,14 +6,15 @@
     addresses: {{ $addresses->toJson() }},
     selectedAddressId: null,
     formData: {
-        full_name: '{{ old('full_name', auth()->user()->name) }}',
-        phone: '{{ old('phone', auth()->user()->phone) }}',
-        address_line_1: '{{ old('address_line_1') }}',
-        address_line_2: '{{ old('address_line_2') }}',
-        city: '{{ old('city') }}',
-        district: '{{ old('district') }}',
-        division: '{{ old('division', count($divisions) ? $divisions[0] : '') }}',
-        postal_code: '{{ old('postal_code') }}'
+        full_name: @js(old('full_name', auth()->user()?->name ?? '')),
+        email: @js(old('email', auth()->user()?->email ?? '')),
+        phone: @js(old('phone', auth()->user()?->phone ?? '')),
+        address_line_1: @js(old('address_line_1')),
+        address_line_2: @js(old('address_line_2')),
+        city: @js(old('city')),
+        district: @js(old('district')),
+        division: @js(old('division', count($divisions) ? $divisions[0] : '')),
+        postal_code: @js(old('postal_code'))
     },
     init() {
         const defaultAddr = this.addresses.find(a => a.is_default);
@@ -86,6 +87,14 @@
                             class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F] @error('full_name') border-red-400 @enderror">
                         @error('full_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+                    @guest
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.email') }} *</label>
+                        <input type="email" name="email" x-model="formData.email" required
+                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F] @error('email') border-red-400 @enderror">
+                        @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    @endguest
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.phone') }} *</label>
                         <input type="text" name="phone" x-model="formData.phone" required
@@ -126,10 +135,12 @@
                             class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
                     </div>
                 </div>
+                @auth
                 <label class="flex items-center gap-2 mt-4 text-sm text-gray-600 cursor-pointer">
                     <input type="checkbox" name="save_address" value="1" class="text-[#2D6A4F]">
                     {{ __('general.save_address') }}
                 </label>
+                @endauth
             </div>
 
             <!-- Payment Method -->
@@ -165,7 +176,7 @@
                 <div class="space-y-3 mb-5">
                     @foreach($cart->items as $item)
                     <div class="flex items-center gap-3">
-                        <img src="{{ $item->product->primaryImage?->url ?? asset('images/placeholder.jpg') }}" alt="{{ $item->product->name }}" class="w-14 h-14 object-cover rounded-lg">
+                        <img src="{{ $item->product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}" alt="{{ $item->product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';" class="w-14 h-14 object-cover rounded-lg">
                         <div class="flex-1 text-sm">
                             <div class="font-medium">{{ $item->product->name }}</div>
                             @if($item->variant) <div class="text-gray-400">{{ $item->variant->name }}</div> @endif

@@ -16,7 +16,7 @@
     ]" />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16" x-data="{
-        activeImage: '{{ $product->primaryImage?->url ?? asset('images/placeholder.jpg') }}',
+        activeImage: '{{ $product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}',
         quantity: 1,
         selectedVariant: null,
         adding: false,
@@ -37,13 +37,13 @@
         <!-- Image Gallery -->
         <div>
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm mb-3">
-                <img :src="activeImage" alt="{{ $product->name }}" class="w-full h-96 object-contain p-4">
+                <img :src="activeImage" alt="{{ $product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';" class="w-full h-96 object-contain p-4">
             </div>
             @if($product->images->count() > 1)
             <div class="flex gap-2 overflow-x-auto pb-2">
                 @foreach($product->images as $image)
                 <button @click="activeImage = '{{ $image->url }}'" class="shrink-0">
-                    <img src="{{ $image->url }}" alt="{{ $image->alt_text }}" class="w-16 h-16 object-cover rounded-lg border-2 hover:border-[#2D6A4F] transition">
+                    <img src="{{ $image->url }}" alt="{{ $image->alt_text }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';" class="w-16 h-16 object-cover rounded-lg border-2 hover:border-[#2D6A4F] transition">
                 </button>
                 @endforeach
             </div>

@@ -17,23 +17,25 @@ class SettingsSeeder extends Seeder
 
         $settings = [
             // General
-            ['group' => 'general', 'key' => 'site_name', 'value' => 'Dinajpur IT Park', 'type' => SettingType::Text],
-            ['group' => 'general', 'key' => 'site_tagline', 'value' => 'Your Ultimate Destination for Premium Computer Accessories', 'type' => SettingType::Text],
-            ['group' => 'general', 'key' => 'site_logo', 'value' => 'settings/dinajpur_it_logo.png', 'type' => SettingType::Image],
+            ['group' => 'general', 'key' => 'site_name', 'value' => 'Garikothay', 'type' => SettingType::Text],
+            ['group' => 'general', 'key' => 'site_tagline', 'value' => 'Find trusted cars, bikes, and auto deals across Bangladesh.', 'type' => SettingType::Text],
+            ['group' => 'general', 'key' => 'site_logo', 'value' => 'settings/garikothay_logo.png', 'type' => SettingType::Image],
             ['group' => 'general', 'key' => 'site_favicon', 'value' => null, 'type' => SettingType::Image],
             ['group' => 'general', 'key' => 'free_shipping_threshold', 'value' => '1500', 'type' => SettingType::Number],
+            // Checkout
+            ['group' => 'checkout', 'key' => 'guest_checkout_enabled', 'value' => '1', 'type' => SettingType::Boolean],
             // Contact
-            ['group' => 'contact', 'key' => 'phone', 'value' => '+880 1712-345678', 'type' => SettingType::Text],
-            ['group' => 'contact', 'key' => 'email', 'value' => 'support@dinajpuritpark.com', 'type' => SettingType::Text],
-            ['group' => 'contact', 'key' => 'address', 'value' => 'IT Park Complex, Dinajpur - 5200, Bangladesh', 'type' => SettingType::Textarea],
-            ['group' => 'contact', 'key' => 'whatsapp', 'value' => '8801712345678', 'type' => SettingType::Text],
+            ['group' => 'contact', 'key' => 'phone', 'value' => '+880 1911-223344', 'type' => SettingType::Text],
+            ['group' => 'contact', 'key' => 'email', 'value' => 'support@garikothay.com', 'type' => SettingType::Text],
+            ['group' => 'contact', 'key' => 'address', 'value' => 'House 24, Road 7, Banani, Dhaka 1213, Bangladesh', 'type' => SettingType::Textarea],
+            ['group' => 'contact', 'key' => 'whatsapp', 'value' => '8801911223344', 'type' => SettingType::Text],
             // Social
-            ['group' => 'social', 'key' => 'facebook', 'value' => 'https://facebook.com/dinajpuritpark', 'type' => SettingType::Text],
-            ['group' => 'social', 'key' => 'instagram', 'value' => 'https://instagram.com/dinajpuritpark', 'type' => SettingType::Text],
-            ['group' => 'social', 'key' => 'youtube', 'value' => 'https://youtube.com/dinajpuritpark', 'type' => SettingType::Text],
+            ['group' => 'social', 'key' => 'facebook', 'value' => 'https://facebook.com/garikothay', 'type' => SettingType::Text],
+            ['group' => 'social', 'key' => 'instagram', 'value' => 'https://instagram.com/garikothay', 'type' => SettingType::Text],
+            ['group' => 'social', 'key' => 'youtube', 'value' => 'https://youtube.com/@garikothay', 'type' => SettingType::Text],
             // SEO
-            ['group' => 'seo', 'key' => 'meta_title', 'value' => 'Dinajpur IT Park - Best Computer & Laptop Accessories Shop in Dinajpur', 'type' => SettingType::Text],
-            ['group' => 'seo', 'key' => 'meta_description', 'value' => 'Explore mechanical keyboards, gaming mice, high-speed SSDs, networking routers, and premium computer accessories at Dinajpur IT Park. Quality guaranteed.', 'type' => SettingType::Textarea],
+            ['group' => 'seo', 'key' => 'meta_title', 'value' => 'Garikothay - Trusted Cars, Bikes & Auto Deals in Bangladesh', 'type' => SettingType::Text],
+            ['group' => 'seo', 'key' => 'meta_description', 'value' => 'Browse verified cars, bikes, spare parts, and auto deals from trusted sellers across Bangladesh with Garikothay.', 'type' => SettingType::Textarea],
             ['group' => 'seo', 'key' => 'google_analytics_id', 'value' => '', 'type' => SettingType::Text],
             ['group' => 'seo', 'key' => 'facebook_pixel_id', 'value' => '', 'type' => SettingType::Text],
             // Payment

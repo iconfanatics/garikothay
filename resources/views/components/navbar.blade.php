@@ -1,5 +1,21 @@
 @props(['siteName'])
 
+@php
+    $topMenuItems = [
+        ['label' => 'Shop', 'href' => route('shop.index')],
+        ['label' => 'Rental', 'href' => '#'],
+        ['label' => 'Ticket', 'href' => '#'],
+        ['label' => 'GPSTracker', 'href' => '#'],
+        ['label' => 'Service', 'href' => '#'],
+        ['label' => 'Driver Koyhay', 'href' => '#'],
+        ['label' => 'Fuel Kothay', 'href' => '#'],
+        ['label' => 'Garage Kothay', 'href' => '#'],
+        ['label' => 'CarWash Kothay', 'href' => '#'],
+        ['label' => 'Driving School Kothay', 'href' => '#'],
+        ['label' => 'Calculator', 'href' => '#'],
+    ];
+@endphp
+
 <nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
 
@@ -158,6 +174,20 @@
         </div>
     </div>
 
+    <!-- Top menu -->
+    <div class="hidden md:block border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-1 overflow-x-auto py-2">
+                @foreach($topMenuItems as $item)
+                    <a href="{{ $item['href'] }}"
+                        class="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition">
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile menu -->
     <div x-show="mobileOpen" x-cloak x-collapse class="md:hidden border-t border-gray-100 bg-white">
         <div class="px-4 py-3 space-y-1">
@@ -175,6 +205,15 @@
                     </button>
                 </div>
             </form>
+
+            <div class="mb-3 grid grid-cols-2 gap-2">
+                @foreach($topMenuItems as $item)
+                    <a href="{{ $item['href'] }}"
+                        class="rounded-md border border-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 transition">
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
+            </div>
 
             <a href="{{ route('home') }}"
                 class="flex items-center gap-2 px-2 py-2.5 text-gray-700 hover:text-primary-600 text-sm font-medium">{{ __('general.home') }}</a>

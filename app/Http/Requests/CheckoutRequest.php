@@ -20,6 +20,7 @@ class CheckoutRequest extends FormRequest
     {
         return [
             'full_name' => ['required', 'string', 'max:255'],
+            'email' => [Rule::requiredIf(fn () => ! auth()->check()), 'nullable', 'email', 'max:255'],
             'phone' => ['required', 'string', new BdPhone()],
             'address_line_1' => ['required', 'string', 'max:255'],
             'address_line_2' => ['nullable', 'string', 'max:255'],

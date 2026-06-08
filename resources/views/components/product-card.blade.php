@@ -6,8 +6,9 @@
     <!-- Image -->
     <div class="relative overflow-hidden">
         <a href="{{ route('shop.show', $product->slug) }}">
-            <img src="{{ $product->primaryImage?->url ?? asset('images/placeholder.jpg') }}"
+            <img src="{{ $product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}"
                 alt="{{ $product->primaryImage?->alt_text ?? $product->name }}"
+                onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
                 class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500 lazy">
         </a>
 

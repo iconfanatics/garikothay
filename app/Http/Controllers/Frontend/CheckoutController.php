@@ -7,11 +7,16 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
 use App\Models\Address;
+use App\Models\Order;
+use App\Models\Setting;
+use App\Models\User;
 use App\Payments\PaymentManager;
 use App\Services\CartService;
 use App\Services\CheckoutService;
 use App\Services\ShippingService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -23,25 +28,35 @@ class CheckoutController extends Controller
         private readonly PaymentManager $paymentManager,
     ) {}
 
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
+        if (! auth()->check() && ! $this->guestCheckoutEnabled()) {
+            return redirect()->guest(route('login'));
+        }
+
         $cart = $this->cartService->getCart()->load('items.product.images', 'coupon');
 
         return view('checkout.index', [
             'cart' => $cart,
-            'addresses' => auth()->user()->addresses,
+            'addresses' => auth()->user()?->addresses ?? collect(),
             'divisions' => $this->shippingService->getDivisions(),
+            'guestCheckoutEnabled' => $this->guestCheckoutEnabled(),
         ]);
     }
 
     public function store(CheckoutRequest $request): RedirectResponse
     {
+        if (! auth()->check() && ! $this->guestCheckoutEnabled()) {
+            return redirect()->guest(route('login'));
+        }
+
         try {
             $cart = $this->cartService->getCart()->load('items.product');
             $data = $request->validated();
+            $user = auth()->user() ?? $this->resolveGuestUser($data);
 
-            if ($request->boolean('save_address')) {
-                auth()->user()->addresses()->create([
+            if (auth()->check() && $request->boolean('save_address')) {
+                $user->addresses()->create([
                     'label' => 'home',
                     'full_name' => $data['full_name'],
                     'phone' => $data['phone'],
@@ -55,7 +70,7 @@ class CheckoutController extends Controller
             }
 
             $order = $this->checkoutService->placeOrder(
-                auth()->user(),
+                $user,
                 $cart,
                 $data,
                 $data['payment_method'],
@@ -78,11 +93,35 @@ class CheckoutController extends Controller
 
     public function success(string $orderNumber): View
     {
-        $order = auth()->user()->orders()
-            ->with(['items.product', 'payment'])
-            ->where('order_number', $orderNumber)
-            ->firstOrFail();
+        $orderQuery = Order::with(['items.product', 'payment'])
+            ->where('order_number', $orderNumber);
+
+        if (auth()->check()) {
+            $orderQuery->where('user_id', auth()->id());
+        }
+
+        $order = $orderQuery->firstOrFail();
 
         return view('checkout.success', compact('order'));
+    }
+
+    private function guestCheckoutEnabled(): bool
+    {
+        return (bool) Setting::get('guest_checkout_enabled', true);
+    }
+
+    private function resolveGuestUser(array $data): User
+    {
+        return User::firstOrCreate(
+            ['email' => $data['email']],
+            [
+                'name' => $data['full_name'],
+                'phone' => User::where('phone', $data['phone'])->doesntExist() ? $data['phone'] : null,
+                'password' => Hash::make(Str::random(32)),
+                'email_verified_at' => now(),
+                'phone_verified_at' => now(),
+                'is_active' => true,
+            ]
+        );
     }
 }

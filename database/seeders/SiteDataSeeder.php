@@ -15,7 +15,7 @@ class SiteDataSeeder extends Seeder
             ['key' => 'site_logo'],
             [
                 'group' => 'general',
-                'value' => 'settings/dinajpur_it_logo.png',
+                'value' => 'settings/garikothay_logo.png',
                 'type' => 'image',
             ]
         );
@@ -50,22 +50,22 @@ class SiteDataSeeder extends Seeder
                 'slug' => 'about',
                 'en' => [
                     'title' => 'About Us',
-                    'content' => '<h2>Welcome to Dinajpur IT Park</h2><p>Your premium destination for authentic computer accessories, mechanical keyboards, gaming mice, and premium networking gear.</p>',
+                    'content' => '<h2>Welcome to Garikothay</h2><p>Your trusted place to discover cars, bikes, parts, and auto services from reliable sellers across Bangladesh.</p>',
                 ],
                 'bn' => [
                     'title' => 'আমাদের সম্পর্কে',
-                    'content' => '<h2>দিনাজপুর আইটি পার্ক-এ স্বাগতম</h2><p>খাঁটি কম্পিউটার অ্যাক্সেসরিজ, মেকানিক্যাল কিবোর্ড, গেমিং মাউস এবং নেটওয়ার্কিং পণ্যের অন্যতম বিশ্বস্ত ও নির্ভরযোগ্য আউটলেট।</p>',
+                    'content' => '<h2>গাড়িকোথায়-এ স্বাগতম</h2><p>বাংলাদেশজুড়ে বিশ্বস্ত বিক্রেতাদের গাড়ি, বাইক, পার্টস এবং অটো সার্ভিস খুঁজে পাওয়ার নির্ভরযোগ্য জায়গা।</p>',
                 ]
             ],
             [
                 'slug' => 'terms',
                 'en' => [
                     'title' => 'Terms & Conditions',
-                    'content' => '<h2>Terms of Service</h2><p>By purchasing from Dinajpur IT Park, you agree to our brand warranty terms and secure computing transaction rules.</p>',
+                    'content' => '<h2>Terms of Service</h2><p>By using Garikothay, you agree to our listing, seller communication, and secure transaction guidelines.</p>',
                 ],
                 'bn' => [
                     'title' => 'শর্তাবলী',
-                    'content' => '<h2>সেবার শর্তাবলী</h2><p>দিনাজপুর আইটি পার্ক থেকে কেনাকাটার ক্ষেত্রে আমাদের অফিশিয়াল ব্র্যান্ড ওয়ারেন্টি শর্তাবলী প্রযোজ্য হবে।</p>',
+                    'content' => '<h2>সেবার শর্তাবলী</h2><p>গাড়িকোথায় ব্যবহার করলে আমাদের লিস্টিং, বিক্রেতার সাথে যোগাযোগ এবং নিরাপদ লেনদেনের নির্দেশনা প্রযোজ্য হবে।</p>',
                 ]
             ],
             [

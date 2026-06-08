@@ -28,7 +28,7 @@
         <div class="lg:col-span-2 space-y-4">
             @foreach($cart->items as $item)
             <div class="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm" x-data="{ qty: {{ $item->quantity }} }">
-                <img src="{{ $item->product->primaryImage?->url ?? asset('images/placeholder.jpg') }}" alt="{{ $item->product->name }}" class="w-20 h-20 object-cover rounded-xl">
+                <img src="{{ $item->product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}" alt="{{ $item->product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';" class="w-20 h-20 object-cover rounded-xl">
                 <div class="flex-1">
                     <a href="{{ route('shop.show', $item->product->slug) }}" class="font-semibold text-gray-800 hover:text-[#2D6A4F] transition">{{ $item->product->name }}</a>
                     @if($item->variant)

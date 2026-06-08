@@ -40,14 +40,13 @@ Route::prefix('cart')->name('cart.')->group(function () {
 });
 
 // Checkout
-Route::prefix('checkout')->name('checkout.')->middleware(['auth', 'verified', 'checkout.guard'])->group(function () {
+Route::prefix('checkout')->name('checkout.')->middleware(['checkout.guard'])->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/', [CheckoutController::class, 'store'])->name('store');
 });
 // Checkout success — outside checkout.guard so it works after cart is cleared
 Route::get('/checkout/success/{orderNumber}', [CheckoutController::class, 'success'])
-    ->name('checkout.success')
-    ->middleware('auth');
+    ->name('checkout.success');
 
 // Wishlist
 Route::prefix('wishlist')->name('wishlist.')->middleware('auth')->group(function () {
@@ -106,4 +105,3 @@ Route::withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken
 });
 
 require __DIR__.'/auth.php';
-
