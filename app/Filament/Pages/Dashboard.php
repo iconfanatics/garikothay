@@ -19,7 +19,7 @@ class Dashboard extends BaseDashboard
 
     public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
     {
-        return \App\Models\Setting::get('site_name', 'Dinajpur IT Park') . ' Dashboard';
+        return \App\Models\Setting::get('site_name', 'Garikothay') . ' Dashboard';
     }
 
     public function getWidgets(): array

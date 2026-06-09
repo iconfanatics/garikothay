@@ -165,8 +165,8 @@ class ProductSeeder extends Seeder
                     'short_description' => $data['desc_en'],
                     'description' => "<p>{$data['desc_en']}</p><h4>Specifications</h4><ul><li>Brand Official Product</li><li>Quality Guaranteed</li><li>Excellent Ergonomics & Durability</li></ul>",
                     'care_instructions' => "Keep clean and dry. Avoid spills. Plug carefully.",
-                    'meta_title' => "Buy {$data['name_en']} Online | Dinajpur IT Park",
-                    'meta_description' => "Get your hands on {$data['name_en']} at the best rates in Bangladesh. Order now from Dinajpur IT Park.",
+                    'meta_title' => "Buy {$data['name_en']} Online | Garikothay",
+                    'meta_description' => "Get your hands on {$data['name_en']} at the best rates in Bangladesh. Order now from Garikothay.",
                 ],
                 [
                     'locale' => 'bn',

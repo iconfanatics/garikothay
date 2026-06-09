@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', __('general.privacy_policy') . ' - ' . config('app.name'))
-@section('meta_description', \App\Models\Setting::get('site_name', 'Dinajpur IT Park') . ' Privacy Policy — how we collect, use, and protect your personal information.')
+@section('meta_description', \App\Models\Setting::get('site_name', 'Garikothay') . ' Privacy Policy — how we collect, use, and protect your personal information.')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">

@@ -51,7 +51,7 @@ class SeoService
         return [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'name' => \App\Models\Setting::get('site_name', 'Dinajpur IT Park'),
+            'name' => \App\Models\Setting::get('site_name', 'Garikothay'),
             'url' => config('app.url'),
             'description' => \App\Models\Setting::get('meta_description', 'Premium computer accessories shop'),
         ];
@@ -59,7 +59,7 @@ class SeoService
 
     public function getMetaData(): array
     {
-        $siteName = \App\Models\Setting::get('site_name', 'Dinajpur IT Park');
+        $siteName = \App\Models\Setting::get('site_name', 'Garikothay');
         $siteTagline = \App\Models\Setting::get('site_tagline', 'Your Ultimate Destination for Premium Computer Accessories');
         $defaultMetaTitle = \App\Models\Setting::get('meta_title', $siteName . ' - ' . $siteTagline);
         $defaultMetaDescription = \App\Models\Setting::get('meta_description', __('general.meta_description_default'));

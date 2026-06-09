@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('Order Confirmed') . ' | ' . \App\Models\Setting::get('site_name', 'Dinajpur IT Park'))
+@section('title', __('Order Confirmed') . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
 
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-16 text-center" x-data="{ showPopup: false }" x-init="setTimeout(() => showPopup = true, 300)">

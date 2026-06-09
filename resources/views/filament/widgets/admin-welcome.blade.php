@@ -8,7 +8,7 @@
                 <div>
                     <div class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-50 ring-1 ring-white/20">
                         <x-heroicon-o-sparkles class="h-4 w-4" />
-                        {{ \App\Models\Setting::get('site_name', 'Dinajpur IT Park') }} Admin
+                        {{ \App\Models\Setting::get('site_name', 'Garikothay') }} Admin
                     </div>
 
                     <h1 class="mt-5 text-3xl font-bold tracking-tight md:text-4xl">

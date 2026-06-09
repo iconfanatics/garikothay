@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($currentCategory ? $currentCategory->name . ' - ' : '') . __('general.shop') . ' | ' . \App\Models\Setting::get('site_name', 'Dinajpur IT Park'))
+@section('title', ($currentCategory ? $currentCategory->name . ' - ' : '') . __('general.shop') . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
 @section('meta_description', $currentCategory?->description ?: __('general.meta_description_default'))
 @section('og_title', ($currentCategory ? $currentCategory->name . ' - ' : '') . __('general.shop'))
 @section('og_description', $currentCategory?->description ?: __('general.meta_description_default'))

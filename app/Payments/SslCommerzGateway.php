@@ -65,7 +65,7 @@ class SslCommerzGateway implements PaymentGateway
             'ship_state' => $order->shipping_address['division'] ?? 'Dhaka',
             'ship_postcode' => $order->shipping_address['postal_code'] ?? '1000',
             'ship_country' => 'Bangladesh',
-            'product_name' => Setting::get('site_name', 'Dinajpur IT Park').' Products',
+            'product_name' => Setting::get('site_name', 'Garikothay').' Products',
             'product_category' => 'IT Accessories',
             'product_profile' => 'general',
         ];

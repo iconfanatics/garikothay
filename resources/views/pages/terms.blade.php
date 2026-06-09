@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', __('general.terms') . ' - ' . config('app.name'))
-@section('meta_description', 'Terms and Conditions for using Dinajpur IT Park — online computer accessories store in Bangladesh.')
+@section('meta_description', 'Terms and Conditions for using Garikothay — online computer accessories store in Bangladesh.')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">

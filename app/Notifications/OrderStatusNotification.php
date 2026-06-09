@@ -39,6 +39,6 @@ class OrderStatusNotification extends Notification implements ShouldQueue
                 $mail->line("Your order has been delivered. Enjoy your premium computer accessories! 💻")
             )
             ->action('View Order', route('customer.order.show', $this->order->order_number))
-            ->salutation(\App\Models\Setting::get('site_name', 'Dinajpur IT Park') . ' Team 💻');
+            ->salutation(\App\Models\Setting::get('site_name', 'Garikothay') . ' Team 💻');
     }
 }

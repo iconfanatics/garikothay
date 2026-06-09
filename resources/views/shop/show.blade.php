@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->getTranslation('meta_title') ?: ($product->name . ' | ' . \App\Models\Setting::get('site_name', 'Dinajpur IT Park')))
+@section('title', $product->getTranslation('meta_title') ?: ($product->name . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay')))
 @section('meta_description', $product->getTranslation('meta_description') ?: $product->short_description)
 @section('og_title', $product->name)
 @section('og_description', $product->short_description)

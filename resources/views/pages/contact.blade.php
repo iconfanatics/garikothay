@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', __('general.contact_us') . ' - ' . config('app.name'))
-@section('meta_description', 'Get in touch with Dinajpur IT Park. We\'re here to help with your tech accessory questions, orders, and hardware feedback.')
+@section('meta_description', 'Get in touch with Garikothay. We\'re here to help with your tech accessory questions, orders, and hardware feedback.')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">

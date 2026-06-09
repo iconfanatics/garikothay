@@ -25,7 +25,7 @@ class PageController extends Controller
     {
         return view('pages.contact', [
             'phone' => Setting::get('phone', '+880 1700-000000'),
-            'email' => Setting::get('email', 'support@dinajpuritpark.com'),
+            'email' => Setting::get('email', 'support@garikothay.com'),
             'address' => Setting::get('address', 'Dhaka, Bangladesh'),
         ]);
     }
@@ -43,7 +43,7 @@ class PageController extends Controller
         try {
             Mail::raw(
                 "Name: {$data['name']}\nEmail: {$data['email']}\n\n{$data['message']}",
-                fn ($m) => $m->to(Setting::get('email', 'support@dinajpuritpark.com'))
+                fn ($m) => $m->to(Setting::get('email', 'support@garikothay.com'))
                              ->subject('Contact: ' . $data['subject'])
             );
         } catch (\Throwable) {

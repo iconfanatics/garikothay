@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', __('general.return_policy') . ' - ' . config('app.name'))
-@section('meta_description', 'Dinajpur IT Park Return Policy — 7-day replacement guarantee, official brand warranties, and simple return process.')
+@section('meta_description', 'Garikothay Return Policy — 7-day replacement guarantee, official brand warranties, and simple return process.')
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">

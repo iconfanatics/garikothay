@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('general.cart') . ' | ' . \App\Models\Setting::get('site_name', 'Dinajpur IT Park'))
+@section('title', __('general.cart') . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">

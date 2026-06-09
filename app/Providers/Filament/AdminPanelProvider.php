@@ -45,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->path("admin")
             ->login()
             ->colors(["primary" => Color::hex("#2D6A4F")])
-            ->brandName(\App\Models\Setting::get('site_name', 'Dinajpur IT Park') . ' Admin')
+            ->brandName(\App\Models\Setting::get('site_name', 'Garikothay') . ' Admin')
             ->authGuard("admin")
             ->userMenuItems([
                 MenuItem::make()
