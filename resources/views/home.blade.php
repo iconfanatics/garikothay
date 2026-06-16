@@ -24,6 +24,7 @@
         background: #ffffff !important;
         color: var(--gk-ink) !important;
         font-family: 'Inter', system-ui, sans-serif !important;
+        overflow-x: hidden;
     }
 
     h1, h2, h3, h4 {
@@ -34,6 +35,15 @@
     .gk-page {
         background: #ffffff;
         color: var(--gk-ink);
+        overflow-x: hidden;
+    }
+
+    nav .overflow-x-auto {
+        scrollbar-width: none;
+    }
+
+    nav .overflow-x-auto::-webkit-scrollbar {
+        display: none;
     }
 
     .gk-container {
@@ -758,6 +768,21 @@
 
         .gk-trust-grid {
             grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .gk-product-grid,
+        .gk-service-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .gk-newsletter-form {
+            flex-direction: column;
+        }
+
+        .gk-newsletter-form button {
+            padding: 0.85rem 1rem;
         }
     }
 </style>
