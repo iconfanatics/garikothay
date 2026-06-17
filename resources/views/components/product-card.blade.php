@@ -1,26 +1,25 @@
 @props(['product'])
 
-<div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 group overflow-hidden"
+<div class="group relative flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all duration-300 hover:border-rose-500/40 hover:shadow-lg"
     x-data="{ inWishlist: false, adding: false }">
 
     <!-- Image -->
-    <div class="relative overflow-hidden">
-        <a href="{{ route('shop.show', $product->slug) }}">
+    <a href="{{ route('shop.show', $product->slug) }}" class="relative block aspect-square overflow-hidden bg-gray-100">
             <img src="{{ $product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}"
                 alt="{{ $product->primaryImage?->alt_text ?? $product->name }}"
                 onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
-                class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500 lazy">
-        </a>
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 lazy">
 
         <!-- Badges -->
         <div class="absolute top-2 left-2 flex flex-col gap-1">
             @if($product->is_new_arrival)
-                <span class="bg-[#2D6A4F] text-white text-xs px-2 py-1 rounded-full">{{ __('general.new') }}</span>
+                <span class="rounded bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase text-white">{{ __('general.new') }}</span>
             @endif
             @if($product->discount_percentage > 0)
-                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">-{{ $product->discount_percentage }}%</span>
+                <span class="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-bold uppercase text-white">-{{ $product->discount_percentage }}%</span>
             @endif
         </div>
+    </a>
 
         <!-- Wishlist Button -->
         @auth
@@ -35,22 +34,21 @@
                 adding = false;
             });
         "
-        class="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-red-50 transition">
+        class="absolute bottom-2 right-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-gray-500 opacity-0 shadow transition hover:bg-rose-600 hover:text-white group-hover:opacity-100">
             <svg class="w-4 h-4" :class="inWishlist ? 'fill-red-500 stroke-red-500' : 'fill-none stroke-gray-400'" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
         </button>
         @endauth
-    </div>
 
     <!-- Content -->
-    <div class="p-4">
+    <div class="flex flex-1 flex-col p-3">
         @if($product->category)
-            <span class="text-xs text-[#52B788] font-medium">{{ $product->category->name }}</span>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-gray-500">{{ $product->category->name }}</span>
         @endif
 
         <a href="{{ route('shop.show', $product->slug) }}">
-            <h3 class="font-semibold text-gray-800 mt-1 hover:text-[#2D6A4F] transition line-clamp-2">{{ $product->name }}</h3>
+            <h3 class="mt-1 min-h-[2.5rem] text-sm font-medium leading-5 text-gray-900 transition line-clamp-2 hover:text-rose-600">{{ $product->name }}</h3>
         </a>
 
         <!-- Rating -->
@@ -63,14 +61,22 @@
         </div>
 
         <!-- Price -->
-        <div class="flex items-center justify-between mt-3">
-            <div>
-                <span class="text-[#2D6A4F] font-bold text-lg">৳{{ number_format($product->price, 0) }}</span>
+        <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-lg font-bold text-rose-600">৳{{ number_format($product->price, 0) }}</span>
                 @if($product->compare_price)
-                    <span class="text-gray-400 text-sm line-through ml-1">৳{{ number_format($product->compare_price, 0) }}</span>
+                <span class="text-xs text-gray-400 line-through">৳{{ number_format($product->compare_price, 0) }}</span>
                 @endif
-            </div>
+        </div>
 
+        <div class="mt-3 flex items-stretch gap-2">
+            <a href="{{ route('shop.show', $product->slug) }}"
+                class="flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-gray-950 px-2 py-2 text-xs font-semibold text-white transition hover:bg-rose-600">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z" />
+                    <circle cx="12" cy="12" r="3" stroke-width="2" />
+                </svg>
+                View Details
+            </a>
             <!-- Add to Cart -->
             @if($product->isInStock())
             <button @click="
@@ -86,11 +92,14 @@
                 });
             "
             :disabled="adding"
-            class="bg-[#2D6A4F] text-white p-2 rounded-lg hover:bg-[#52B788] transition disabled:opacity-50">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            aria-label="Add to cart"
+            class="grid h-9 w-9 place-items-center rounded-md border border-rose-600 text-rose-600 transition hover:bg-rose-600 hover:text-white disabled:opacity-50">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13 5.4 5M7 13l-2.3 2.3c-.6.6-.2 1.7.7 1.7H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+                </svg>
             </button>
             @else
-            <span class="text-xs text-red-500 font-medium">{{ __('general.out_of_stock') }}</span>
+            <span class="flex h-9 items-center text-xs font-medium text-red-500">{{ __('general.out_of_stock') }}</span>
             @endif
         </div>
     </div>

@@ -3,16 +3,17 @@
 @php
     $topMenuItems = [
         ['label' => 'Shop', 'href' => route('shop.index')],
-        ['label' => 'Rental', 'href' => '#'],
-        ['label' => 'Ticket', 'href' => '#'],
-        ['label' => 'GPSTracker', 'href' => '#'],
-        ['label' => 'Service', 'href' => '#'],
-        ['label' => 'Driver Koyhay', 'href' => '#'],
-        ['label' => 'Fuel Kothay', 'href' => '#'],
-        ['label' => 'Garage Kothay', 'href' => '#'],
-        ['label' => 'CarWash Kothay', 'href' => '#'],
-        ['label' => 'Driving School Kothay', 'href' => '#'],
-        ['label' => 'Calculator', 'href' => '#'],
+        ['label' => 'Categories', 'href' => route('shop.index')],
+        ['label' => 'Services', 'href' => '#vehicle-services'],
+        ['label' => 'Garage', 'href' => '#'],
+        ['label' => 'CarWash', 'href' => '#'],
+        ['label' => 'Fuel', 'href' => '#'],
+        ['label' => 'Driver', 'href' => '#'],
+        ['label' => 'GPS', 'href' => '#'],
+        ['label' => 'Tickets', 'href' => '#'],
+        ['label' => 'Fare Calc', 'href' => '#'],
+        ['label' => 'About', 'href' => '#'],
+        ['label' => 'Contact', 'href' => '#'],
     ];
 @endphp
 
@@ -59,6 +60,13 @@
         grid-template-columns: auto minmax(260px, 1fr) auto;
         align-items: center;
         gap: 1.5rem;
+    }
+
+    .gk-nav-container {
+        max-width: 1504px;
+        margin: 0 auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .gk-site-nav .gk-brand-mark {
@@ -167,7 +175,7 @@
 </div>
 
 <nav class="gk-site-nav bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
-    <div class="gk-header-row max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
+    <div class="gk-header-row gk-nav-container py-3 md:py-4">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
@@ -332,7 +340,7 @@
 
     <!-- Top menu -->
     <div class="gk-main-menu hidden lg:block">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="gk-nav-container">
             <div class="flex items-center gap-1 overflow-x-auto py-2">
                 <a href="{{ route('shop.index') }}" class="gk-menu-head shrink-0 rounded-none px-4 py-2 text-sm font-semibold transition">
                     ☰ All Categories

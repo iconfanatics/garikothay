@@ -47,13 +47,13 @@
     }
 
     .gk-container {
-        max-width: 1280px;
+        max-width: 1504px;
         margin: 0 auto;
         padding: 0 1rem;
     }
 
     .gk-section {
-        padding: 2.75rem 0;
+        padding: 2.5rem 0;
     }
 
     .gk-section-muted {
@@ -81,6 +81,10 @@
         margin-top: 0.35rem;
         color: var(--gk-muted);
         font-size: 0.92rem;
+    }
+
+    .gk-section-head .gk-section-subtitle {
+        display: none;
     }
 
     .gk-view-link {
@@ -133,7 +137,10 @@
     .gk-sidebar-title {
         background: var(--gk-ink);
         color: #ffffff;
-        padding: 0.85rem 1rem;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
         font-size: 0.82rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -143,8 +150,9 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        height: 41px;
         border-bottom: 1px solid var(--gk-line);
-        padding: 0.72rem 1rem;
+        padding: 0 1rem;
         font-size: 0.86rem;
         color: var(--gk-ink);
         text-decoration: none;
@@ -170,12 +178,6 @@
         border-radius: 8px;
         background: #000000;
         color: #ffffff;
-    }
-
-    @media (min-width: 768px) {
-        .gk-hero {
-            min-height: 430px;
-        }
     }
 
     .gk-hero-slide {
@@ -215,7 +217,6 @@
 
     @media (min-width: 768px) {
         .gk-hero-content {
-            min-height: 430px;
             padding: 3rem;
         }
     }
@@ -231,9 +232,9 @@
     }
 
     .gk-hero-title {
-        max-width: 560px;
+        max-width: 720px;
         margin-top: 1rem;
-        font-size: clamp(2rem, 5vw, 4.2rem);
+        font-size: clamp(2rem, 4.2vw, 3.6rem);
         line-height: 1.02;
         font-weight: 900;
         text-transform: uppercase;
@@ -352,7 +353,7 @@
     }
 
     .gk-mini-promo {
-        min-height: 90px;
+        min-height: 78px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -387,7 +388,7 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
-        padding: 1.25rem 1rem;
+        padding: 1.5rem 1rem;
     }
 
     @media (min-width: 768px) {
@@ -576,12 +577,12 @@
 
     .gk-service-card {
         position: relative;
-        min-height: 180px;
+        min-height: 190px;
         overflow: hidden;
         border: 1px solid var(--gk-line);
         border-radius: 8px;
         background: #ffffff;
-        padding: 1.35rem;
+        padding: 1.5rem;
         color: var(--gk-ink);
         text-decoration: none;
     }
@@ -717,7 +718,7 @@
     .gk-app-promo {
         display: grid;
         gap: 2rem;
-        border-radius: 8px;
+        border-radius: 16px;
         background: linear-gradient(135deg, #111827, #374151, #be123c);
         color: #ffffff;
         padding: 2rem;
@@ -889,21 +890,12 @@
     }
 
     @media (max-width: 640px) {
-        .gk-section-head {
-            align-items: start;
-            flex-direction: column;
-        }
-
         .gk-hero-content {
             padding: 1.35rem;
         }
 
         .gk-hero-nav {
             display: none;
-        }
-
-        .gk-trust-grid {
-            grid-template-columns: 1fr;
         }
     }
 
@@ -930,55 +922,46 @@
         [
             'tag' => 'Mega Sale',
             'title' => 'Car Parts Mega Sale',
-            'subtitle' => 'Up to 50% off on genuine engine, brake and suspension parts.',
+            'subtitle' => 'Up to 50% off on genuine engine, brake & suspension parts.',
             'button' => 'Shop Sale',
             'link' => route('shop.index'),
-            'image' => asset('images/hero-banner.png'),
+            'image' => 'https://loremflickr.com/1200/600/car%2Cparts%2Cgarage?lock=1567',
         ],
         [
             'tag' => 'Genuine Only',
-            'title' => '100% Genuine Parts',
-            'subtitle' => 'Original parts, accessories, GPS tracker and car care items in one marketplace.',
-            'button' => 'Explore Products',
+            'title' => '100% Genuine Parts Collection',
+            'subtitle' => 'Original parts from Brembo, Bosch, NGK, Mobil 1 & more.',
+            'button' => 'Explore Brands',
             'link' => route('shop.index'),
-            'image' => asset('images/products-banner.png'),
+            'image' => 'https://loremflickr.com/1200/600/car%2Cengine%2Cparts?lock=1582',
         ],
         [
             'tag' => 'Service',
             'title' => 'Garage Services Near You',
-            'subtitle' => 'Find trusted garages, drivers, car wash and fuel support across Bangladesh.',
-            'button' => 'See Services',
+            'subtitle' => 'Book trusted garages with verified ratings & live availability.',
+            'button' => 'Find Garages',
             'link' => '#vehicle-services',
-            'image' => asset('images/services-banner.png'),
+            'image' => 'https://loremflickr.com/1200/600/car%2Cmechanic%2Cgarage?lock=1837',
         ],
         [
             'tag' => 'Track Live',
             'title' => 'GPS Tracking Solutions',
-            'subtitle' => 'Devices, installation and monitoring plans for personal and fleet vehicles.',
+            'subtitle' => 'Devices + installation + 24/7 monitoring plans.',
             'button' => 'See Plans',
             'link' => '#vehicle-services',
-            'image' => asset('images/products-banner.png'),
+            'image' => 'https://loremflickr.com/1200/600/car%2Cdashboard%2Ctracker?lock=2082',
         ],
         [
             'tag' => 'Detailing',
             'title' => 'Car Wash & Detailing',
-            'subtitle' => 'Book a wash, get a clean ride, and keep your vehicle ready for the road.',
+            'subtitle' => 'Book a wash, get a sparkle. Packages from ৳299.',
             'button' => 'Book Wash',
             'link' => '#vehicle-services',
-            'image' => asset('images/services-banner.png'),
+            'image' => 'https://loremflickr.com/1200/600/car%2Cwash%2Cdetailing?lock=1778',
         ],
     ]);
 
-    $slides = $banners->isNotEmpty()
-        ? $banners->map(fn ($banner) => [
-            'tag' => 'Gari Kothay',
-            'title' => $banner->translate()?->title ?? 'Gari Kothay Auto Marketplace',
-            'subtitle' => $banner->translate()?->subtitle ?? 'Car parts, services and vehicle solutions in one place.',
-            'button' => $banner->translate()?->button_text ?? 'Shop Now',
-            'link' => $banner->link ?? route('shop.index'),
-            'image' => Storage::url($banner->image),
-        ])
-        : $fallbackSlides;
+    $slides = $fallbackSlides;
 
     $saleProducts = $featured->filter(fn ($product) => (float) ($product->compare_price ?? 0) > (float) ($product->price ?? 0))->take(5);
     if ($saleProducts->isEmpty()) {
@@ -1001,6 +984,23 @@
         ['icon' => '🛒', 'name' => 'Auto Shop', 'desc' => 'Shop parts, accessories, oils, lights and tools.', 'href' => route('shop.index'), 'bg' => 'linear-gradient(135deg,#ec4899,#be123c)'],
     ];
 
+    $fallbackCategories = collect([
+        (object) ['name' => 'Engine Parts', 'slug' => 'engine-parts', 'icon' => '⚙', 'image' => null, 'products_count' => 248],
+        (object) ['name' => 'Brake Parts', 'slug' => 'brake-parts', 'icon' => '◎', 'image' => null, 'products_count' => 132],
+        (object) ['name' => 'Suspension', 'slug' => 'suspension', 'icon' => '〽', 'image' => null, 'products_count' => 64],
+        (object) ['name' => 'Electrical', 'slug' => 'electrical', 'icon' => '⚡', 'image' => null, 'products_count' => 174],
+        (object) ['name' => 'Tires & Wheels', 'slug' => 'tires-wheels', 'icon' => '◉', 'image' => null, 'products_count' => 96],
+        (object) ['name' => 'Oils & Lubricants', 'slug' => 'oils-lubricants', 'icon' => '💧', 'image' => null, 'products_count' => 64],
+        (object) ['name' => 'Accessories', 'slug' => 'accessories', 'icon' => '✦', 'image' => null, 'products_count' => 312],
+        (object) ['name' => 'GPS Tracker', 'slug' => 'gps-tracker', 'icon' => '⌖', 'image' => null, 'products_count' => 28],
+        (object) ['name' => 'Car Care', 'slug' => 'car-care', 'icon' => '▧', 'image' => null, 'products_count' => 78],
+        (object) ['name' => 'Tools', 'slug' => 'tools', 'icon' => '🔧', 'image' => null, 'products_count' => 154],
+        (object) ['name' => 'Batteries', 'slug' => 'batteries', 'icon' => '▣', 'image' => null, 'products_count' => 42],
+        (object) ['name' => 'Lights', 'slug' => 'lights', 'icon' => '◌', 'image' => null, 'products_count' => 121],
+    ]);
+
+    $displayCategories = $fallbackCategories->concat($categories)->unique('slug')->take(12);
+
     $stats = [
         ['value' => '500+', 'label' => 'Total Products'],
         ['value' => '10+', 'label' => 'Service Types'],
@@ -1018,7 +1018,7 @@
         <div class="gk-container gk-hero-grid">
             <aside class="gk-sidebar">
                 <div class="gk-sidebar-title">Categories</div>
-                @foreach($categories->take(10) as $category)
+                @foreach($displayCategories as $category)
                     <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="gk-sidebar-link">
                         <span class="gk-sidebar-icon">{{ $category->icon ?? '⚙' }}</span>
                         <span style="flex:1;">{{ $category->name }}</span>
@@ -1150,7 +1150,7 @@
                 <a href="{{ route('shop.index') }}" class="gk-view-link">View All <span aria-hidden="true">→</span></a>
             </div>
             <div class="gk-category-grid">
-                @foreach($categories->take(12) as $category)
+                @foreach($displayCategories as $category)
                     <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="gk-category-card">
                         <span class="gk-category-icon">
                             @if($category->image)
