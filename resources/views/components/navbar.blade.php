@@ -179,16 +179,11 @@
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
-            @php $logo = \App\Models\Setting::get('site_logo'); @endphp
-            @if($logo)
-                <img src="{{ asset('storage/' . $logo) }}" alt="{{ config('app.name') }}"
-            class="h-16 w-auto object-contain"> @else
-                    <span class="gk-brand-mark">G</span>
-                    <span class="hidden sm:block">
-                        <span class="gk-brand-title">Gari Kothay</span>
-                        <span class="gk-brand-subtitle">Auto Marketplace</span>
-                    </span>
-                @endif
+            <span class="gk-brand-mark">G</span>
+            <span class="hidden sm:block leading-tight">
+                <span class="gk-brand-title">Gari Kothay</span>
+                <span class="gk-brand-subtitle">Auto Marketplace</span>
+            </span>
         </a>
         <!-- Search (desktop) -->
         <form action="{{ route('search.index') }}" method="GET" class="hidden md:flex w-full max-w-2xl mx-auto">
@@ -341,13 +336,14 @@
     <!-- Top menu -->
     <div class="gk-main-menu hidden lg:block">
         <div class="gk-nav-container">
-            <div class="flex items-center gap-1 overflow-x-auto py-2">
-                <a href="{{ route('shop.index') }}" class="gk-menu-head shrink-0 rounded-none px-4 py-2 text-sm font-semibold transition">
+            <div class="flex items-center gap-1 overflow-x-auto">
+                <a href="{{ route('shop.index') }}" class="gk-menu-head shrink-0 rounded-none px-4 py-3 text-sm font-semibold transition">
                     ☰ All Categories
+                    <span aria-hidden="true">⌄</span>
                 </a>
                 @foreach($topMenuItems as $item)
                     <a href="{{ $item['href'] }}"
-                        class="shrink-0 rounded-md px-3 py-2 text-sm font-medium transition">
+                        class="shrink-0 rounded-md px-3 py-3 text-sm font-medium transition">
                         {{ $item['label'] }}
                     </a>
                 @endforeach
