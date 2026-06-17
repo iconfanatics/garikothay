@@ -86,6 +86,11 @@ Route::prefix('account')->name('customer.')->middleware($accountMiddleware)->gro
     Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
     Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderNumber}', [CustomerController::class, 'orderShow'])->name('order.show');
+    Route::post('/services', [CustomerController::class, 'storeServiceBooking'])->name('services.store');
+    Route::put('/services/{serviceBooking}/cancel', [CustomerController::class, 'cancelServiceBooking'])->name('services.cancel');
+    Route::post('/listings', [CustomerController::class, 'storeListing'])->name('listings.store');
+    Route::put('/listings/{listing}', [CustomerController::class, 'updateListing'])->name('listings.update');
+    Route::delete('/listings/{listing}', [CustomerController::class, 'destroyListing'])->name('listings.destroy');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::get('/addresses', [CustomerController::class, 'addresses'])->name('addresses');
     Route::post('/addresses', [CustomerController::class, 'storeAddress'])->name('addresses.store');

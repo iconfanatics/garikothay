@@ -8,10 +8,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Address;
+use App\Models\ServiceBooking;
+use App\Models\UserListing;
 use App\Repositories\Contracts\OrderRepositoryInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use App\Rules\BdPhone;
 
@@ -26,7 +29,79 @@ class CustomerController extends Controller
         $user = auth()->user();
         return view('customer.dashboard', [
             'recentOrders' => $this->orderRepository->getByUser($user->id, 5),
+            'serviceBookings' => $user->serviceBookings()->latest()->get(),
+            'userListings' => $user->listings()->latest()->get(),
         ]);
+    }
+
+    public function storeServiceBooking(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'service_type' => ['required', 'string', 'max:80'],
+            'provider' => ['nullable', 'string', 'max:120'],
+            'booking_date' => ['nullable', 'date'],
+            'location' => ['nullable', 'string', 'max:180'],
+            'amount' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        auth()->user()->serviceBookings()->create([
+            ...$validated,
+            'reference' => $this->nextReference(ServiceBooking::class, 'SVC'),
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', 'Service booking request submitted.');
+    }
+
+    public function cancelServiceBooking(ServiceBooking $serviceBooking): RedirectResponse
+    {
+        abort_if($serviceBooking->user_id !== auth()->id(), 403);
+
+        $serviceBooking->update(['status' => 'cancelled']);
+
+        return back()->with('success', 'Service booking cancelled.');
+    }
+
+    public function storeListing(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:160'],
+            'type' => ['required', 'in:product,garage,driver,carwash,rental'],
+            'price' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
+            'location' => ['nullable', 'string', 'max:180'],
+            'description' => ['nullable', 'string', 'max:1200'],
+        ]);
+
+        auth()->user()->listings()->create([
+            ...$validated,
+            'reference' => $this->nextReference(UserListing::class, 'LST'),
+            'status' => 'active',
+        ]);
+
+        return back()->with('success', 'Listing published.');
+    }
+
+    public function updateListing(Request $request, UserListing $listing): RedirectResponse
+    {
+        abort_if($listing->user_id !== auth()->id(), 403);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:active,paused,sold'],
+        ]);
+
+        $listing->update($validated);
+
+        return back()->with('success', 'Listing status updated.');
+    }
+
+    public function destroyListing(UserListing $listing): RedirectResponse
+    {
+        abort_if($listing->user_id !== auth()->id(), 403);
+
+        $listing->delete();
+
+        return back()->with('success', 'Listing removed.');
     }
 
     public function orders(): View
@@ -131,5 +206,14 @@ class CustomerController extends Controller
         abort_if($address->user_id !== auth()->id(), 403);
         $address->delete();
         return back()->with('success', 'Address removed successfully.');
+    }
+
+    private function nextReference(string $modelClass, string $prefix): string
+    {
+        do {
+            $reference = $prefix . '-' . now()->format('ymd') . '-' . Str::upper(Str::random(4));
+        } while ($modelClass::query()->where('reference', $reference)->exists());
+
+        return $reference;
     }
 }

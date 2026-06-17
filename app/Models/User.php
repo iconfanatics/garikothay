@@ -57,6 +57,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Cart::class);
     }
 
+    public function serviceBookings(): HasMany
+    {
+        return $this->hasMany(ServiceBooking::class);
+    }
+
+    public function listings(): HasMany
+    {
+        return $this->hasMany(UserListing::class);
+    }
+
     public function scopeActive($query): void
     {
         $query->where('is_active', true);
