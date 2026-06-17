@@ -310,6 +310,35 @@
         background: #ffffff;
     }
 
+    .gk-hero-nav {
+        position: absolute;
+        top: 50%;
+        z-index: 6;
+        display: grid;
+        place-items: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.12);
+        color: #ffffff;
+        cursor: pointer;
+        transform: translateY(-50%);
+        backdrop-filter: blur(10px);
+    }
+
+    .gk-hero-nav:hover {
+        background: rgba(255,255,255,0.22);
+    }
+
+    .gk-hero-nav-prev {
+        left: 0.75rem;
+    }
+
+    .gk-hero-nav-next {
+        right: 0.75rem;
+    }
+
     .gk-promo-stack {
         display: none;
         flex-direction: column;
@@ -490,11 +519,47 @@
         border: 1px solid var(--gk-line);
         border-radius: 8px !important;
         box-shadow: none !important;
+        overflow: hidden;
     }
 
     .gk-product-grid > div:hover {
         border-color: var(--gk-primary);
         box-shadow: 0 14px 30px rgba(17,24,39,0.1) !important;
+    }
+
+    .gk-product-grid > div img {
+        aspect-ratio: 1 / 1;
+        height: auto !important;
+        min-height: 0;
+        background: var(--gk-soft);
+    }
+
+    .gk-product-grid > div span[class*="text-[#52B788]"] {
+        color: var(--gk-muted) !important;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .gk-product-grid > div h3 {
+        min-height: 2.6rem;
+        font-family: 'Inter', system-ui, sans-serif !important;
+        font-size: 0.9rem;
+        font-weight: 700;
+        line-height: 1.45;
+    }
+
+    .gk-product-grid > div span[class*="text-[#2D6A4F]"] {
+        color: var(--gk-primary) !important;
+    }
+
+    .gk-product-grid > div button[class*="bg-[#2D6A4F]"] {
+        background: var(--gk-ink) !important;
+        border-radius: 6px !important;
+    }
+
+    .gk-product-grid > div button[class*="bg-[#2D6A4F]"]:hover {
+        background: var(--gk-primary) !important;
     }
 
     .gk-service-grid {
@@ -568,6 +633,12 @@
     @media (min-width: 768px) {
         .gk-review-grid, .gk-blog-grid {
             grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .gk-review-grid {
+            grid-template-columns: repeat(4, 1fr);
         }
     }
 
@@ -677,6 +748,67 @@
         text-decoration: none;
     }
 
+    .gk-partners {
+        overflow: hidden;
+        border-top: 1px solid var(--gk-line);
+        border-bottom: 1px solid var(--gk-line);
+        background: #f9fafb;
+        padding: 2rem 0;
+    }
+
+    .gk-partners-head {
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .gk-partners-kicker {
+        color: var(--gk-primary);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .gk-partners-title {
+        margin-top: 0.25rem;
+        font-size: clamp(1.35rem, 3vw, 1.7rem);
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .gk-partner-track {
+        display: flex;
+        width: max-content;
+        gap: 3rem;
+        animation: gk-marquee 30s linear infinite;
+    }
+
+    .gk-partner-track:hover {
+        animation-play-state: paused;
+    }
+
+    .gk-partner {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        flex: 0 0 auto;
+        color: var(--gk-muted);
+        font-family: 'Oswald', 'Inter', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .gk-partner:hover {
+        color: var(--gk-primary);
+    }
+
+    @keyframes gk-marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
     .gk-newsletter {
         border-top: 1px solid var(--gk-line);
         border-bottom: 1px solid var(--gk-line);
@@ -766,6 +898,10 @@
             padding: 1.35rem;
         }
 
+        .gk-hero-nav {
+            display: none;
+        }
+
         .gk-trust-grid {
             grid-template-columns: 1fr;
         }
@@ -815,6 +951,22 @@
             'link' => '#vehicle-services',
             'image' => asset('images/services-banner.png'),
         ],
+        [
+            'tag' => 'Track Live',
+            'title' => 'GPS Tracking Solutions',
+            'subtitle' => 'Devices, installation and monitoring plans for personal and fleet vehicles.',
+            'button' => 'See Plans',
+            'link' => '#vehicle-services',
+            'image' => asset('images/products-banner.png'),
+        ],
+        [
+            'tag' => 'Detailing',
+            'title' => 'Car Wash & Detailing',
+            'subtitle' => 'Book a wash, get a clean ride, and keep your vehicle ready for the road.',
+            'button' => 'Book Wash',
+            'link' => '#vehicle-services',
+            'image' => asset('images/services-banner.png'),
+        ],
     ]);
 
     $slides = $banners->isNotEmpty()
@@ -831,6 +983,10 @@
     $saleProducts = $featured->filter(fn ($product) => (float) ($product->compare_price ?? 0) > (float) ($product->price ?? 0))->take(5);
     if ($saleProducts->isEmpty()) {
         $saleProducts = $featured->take(5);
+    }
+    $bestSellers = $featured->sortByDesc(fn ($product) => (float) ($product->reviews_count ?? $product->average_rating ?? 0))->take(5);
+    if ($bestSellers->isEmpty()) {
+        $bestSellers = $newArrivals->take(5);
     }
 
     $serviceCards = [
@@ -852,6 +1008,9 @@
         ['value' => '24/7', 'label' => 'Support'],
         ['value' => '10K+', 'label' => 'Happy Customers'],
     ];
+
+    $deliveryPartners = ['🚲 Pathao', '✈ Paperfly', '🚚 RedX', '▣ Sundarban', '📦 SA Paribahan', '🚀 Steadfast', '➤ eCourier', '⛴ Janani'];
+    $partnerLoop = array_merge($deliveryPartners, $deliveryPartners);
 @endphp
 
 <div class="gk-page">
@@ -900,6 +1059,8 @@
                 @endforeach
 
                 @if($slides->count() > 1)
+                    <button type="button" class="gk-hero-nav gk-hero-nav-prev" @click="current = (current - 1 + total) % total" aria-label="Previous slide">‹</button>
+                    <button type="button" class="gk-hero-nav gk-hero-nav-next" @click="current = (current + 1) % total" aria-label="Next slide">›</button>
                     <div class="gk-hero-dots">
                         @foreach($slides as $index => $slide)
                             <button type="button" class="gk-hero-dot" :class="{ 'is-active': current === {{ $index }} }" @click="current = {{ $index }}" aria-label="Show slide {{ $index + 1 }}"></button>
@@ -1042,6 +1203,23 @@
         </div>
     </section>
 
+    <section class="gk-section">
+        <div class="gk-container">
+            <div class="gk-section-head">
+                <div>
+                    <h2 class="gk-section-title">Best Sellers</h2>
+                    <p class="gk-section-subtitle">Popular picks from Gari Kothay customers.</p>
+                </div>
+                <a href="{{ route('shop.index') }}" class="gk-view-link">View All <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="gk-product-grid">
+                @foreach($bestSellers as $product)
+                    <x-product-card :product="$product" />
+                @endforeach
+            </div>
+        </div>
+    </section>
+
     <section class="gk-section" id="vehicle-services">
         <div class="gk-container">
             <div style="max-width: 720px; margin: 0 auto 2rem; text-align: center;">
@@ -1072,7 +1250,7 @@
                     </div>
                 </div>
                 <div class="gk-review-grid">
-                    @foreach($reviews->take(3) as $review)
+                    @foreach($reviews->take(4) as $review)
                         <article class="gk-review-card">
                             <div class="gk-stars">
                                 @for($i = 1; $i <= 5; $i++)
@@ -1183,6 +1361,20 @@
                     ">Subscribe</button>
                 </div>
                 <p x-show="msg" x-text="msg" style="margin-top:0.65rem; color:var(--gk-green); font-size:0.9rem;"></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gk-partners">
+        <div class="gk-partners-head">
+            <span class="gk-partners-kicker">Trusted by</span>
+            <h2 class="gk-partners-title">Our Delivery Partners</h2>
+        </div>
+        <div style="position:relative;">
+            <div class="gk-partner-track">
+                @foreach($partnerLoop as $partner)
+                    <span class="gk-partner">{{ $partner }}</span>
+                @endforeach
             </div>
         </div>
     </section>

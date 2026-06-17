@@ -16,8 +16,158 @@
     ];
 @endphp
 
-<nav class="bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+<style>
+    .gk-topbar {
+        overflow: hidden;
+        background: #111827;
+        color: #d1d5db;
+        font-size: 0.78rem;
+    }
+
+    .gk-topbar-track {
+        display: flex;
+        width: max-content;
+        height: 2.25rem;
+        align-items: center;
+        white-space: nowrap;
+        animation: gk-topbar-marquee 45s linear infinite;
+    }
+
+    .gk-topbar-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 2rem;
+    }
+
+    .gk-topbar-dot {
+        width: 0.25rem;
+        height: 0.25rem;
+        border-radius: 999px;
+        background: #e11d48;
+    }
+
+    .gk-site-nav {
+        --gk-red: #e11d48;
+        --gk-red-dark: #be123c;
+        --gk-ink: #111827;
+        --gk-nav: #1f2937;
+    }
+
+    .gk-site-nav .gk-header-row {
+        display: grid;
+        grid-template-columns: auto minmax(260px, 1fr) auto;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .gk-site-nav .gk-brand-mark {
+        display: grid;
+        width: 2.5rem;
+        height: 2.5rem;
+        place-items: center;
+        border-radius: 6px;
+        background: var(--gk-red);
+        color: #ffffff;
+        font-family: 'Oswald', 'Inter', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 900;
+    }
+
+    .gk-site-nav .gk-brand-title {
+        font-family: 'Oswald', 'Inter', sans-serif;
+        color: var(--gk-ink);
+        font-size: 1.25rem;
+        font-weight: 900;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .gk-site-nav .gk-brand-subtitle {
+        color: #6b7280;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .gk-site-nav .gk-search-box {
+        border: 2px solid var(--gk-red);
+        border-radius: 6px;
+    }
+
+    .gk-site-nav .gk-search-button,
+    .gk-site-nav .gk-action-button,
+    .gk-site-nav .cart-count {
+        background: var(--gk-red) !important;
+    }
+
+    .gk-site-nav .gk-search-button:hover,
+    .gk-site-nav .gk-action-button:hover {
+        background: var(--gk-red-dark) !important;
+    }
+
+    .gk-site-nav .gk-link:hover,
+    .gk-site-nav .gk-icon-link:hover {
+        color: var(--gk-red) !important;
+    }
+
+    .gk-main-menu {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+
+    .gk-main-menu a {
+        color: #f9fafb !important;
+    }
+
+    .gk-main-menu a:hover {
+        color: #fb7185 !important;
+        background: transparent !important;
+    }
+
+    .gk-main-menu .gk-menu-head {
+        background: #e11d48;
+        color: #ffffff !important;
+    }
+
+    @keyframes gk-topbar-marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 767px) {
+        .gk-site-nav .gk-header-row {
+            grid-template-columns: auto auto;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+    }
+</style>
+
+@php
+    $marqueeItems = [
+        'Hard to find reliable garages? Now find trusted services instantly.',
+        'Find Car Wash, Garage, Fuel Stations, Driving Schools Near You.',
+        'List Your Business on Garikothay.com.',
+        'Promote your business through Garikothay.com.',
+        'Trusted Vehicle Platform in Bangladesh.',
+        'Get More Customers, Grow Faster.',
+        'Limited Featured Slots Available.',
+        'Discover trusted services today. Start your business journey now.',
+    ];
+@endphp
+
+<div class="gk-topbar">
+    <div class="gk-topbar-track">
+        @foreach(array_merge($marqueeItems, $marqueeItems) as $item)
+            <span class="gk-topbar-item"><span class="gk-topbar-dot"></span>{{ $item }}</span>
+        @endforeach
+    </div>
+</div>
+
+<nav class="gk-site-nav bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
+    <div class="gk-header-row max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
@@ -25,19 +175,25 @@
             @if($logo)
                 <img src="{{ asset('storage/' . $logo) }}" alt="{{ config('app.name') }}"
             class="h-16 w-auto object-contain"> @else
-                    <span class="text-2xl font-bold text-primary-700" style="font-family:'Playfair Display',serif">
-                        {{ $siteName }}
+                    <span class="gk-brand-mark">G</span>
+                    <span class="hidden sm:block">
+                        <span class="gk-brand-title">Gari Kothay</span>
+                        <span class="gk-brand-subtitle">Auto Marketplace</span>
                     </span>
                 @endif
         </a>
         <!-- Search (desktop) -->
-        <form action="{{ route('search.index') }}" method="GET" class="hidden md:flex flex-1 max-w-md">
+        <form action="{{ route('search.index') }}" method="GET" class="hidden md:flex w-full max-w-2xl mx-auto">
             <div
-                class="flex w-full border border-gray-200 rounded-xl overflow-hidden focus-within:border-primary-400 focus-within:ring-1 focus-within:ring-primary-400 transition">
+                class="gk-search-box flex w-full overflow-hidden transition">
+                <button type="button" class="hidden md:flex items-center gap-1 bg-gray-100 px-3 text-sm font-medium border-r text-gray-700">
+                    All Categories
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+                </button>
                 <input type="text" name="q" value="{{ request('q') }}"
-                    placeholder="{{ __('general.search_placeholder') }}"
+                    placeholder="Search for car parts, brands, services..."
                     class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
-                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 transition">
+                <button type="submit" class="gk-search-button text-white px-4 py-2 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -47,18 +203,18 @@
         </form>
 
         <!-- Desktop right section -->
-        <div class="hidden md:flex items-center gap-5">
+        <div class="hidden md:flex items-center gap-4">
             <!-- Nav links -->
             <a href="{{ route('home') }}"
-                class="text-sm font-medium text-gray-700 hover:text-primary-600 transition">
+                class="hidden gk-link text-sm font-medium text-gray-700 transition">
                 {{ __('general.home') }}
             </a>
             <a href="{{ route('shop.index') }}"
-                class="text-sm font-medium text-gray-700 hover:text-primary-600 transition">
+                class="hidden gk-link text-sm font-medium text-gray-700 transition">
                 {{ __('general.shop') }}
             </a>
             <a href="{{ route('blog.index') }}"
-                class="text-sm font-medium text-gray-700 hover:text-primary-600 transition">
+                class="hidden gk-link text-sm font-medium text-gray-700 transition">
                 {{ __('general.blog') }}
             </a>
 
@@ -70,7 +226,7 @@
 
             <!-- Wishlist -->
             <a href="{{ auth()->check() ? route('wishlist.index') : route('login') }}"
-                class="relative text-gray-600 hover:text-primary-600 transition">
+                class="gk-icon-link relative text-gray-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -149,7 +305,7 @@
                 </div>
             @else
                 <a href="{{ route('login') }}"
-                    class="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition">
+                    class="gk-action-button text-white text-sm font-medium px-4 py-2 rounded-md transition">
                     {{ __('general.login') }}
                 </a>
             @endauth
@@ -175,12 +331,15 @@
     </div>
 
     <!-- Top menu -->
-    <div class="hidden md:block border-t border-gray-100">
+    <div class="gk-main-menu hidden lg:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center gap-1 overflow-x-auto py-2">
+                <a href="{{ route('shop.index') }}" class="gk-menu-head shrink-0 rounded-none px-4 py-2 text-sm font-semibold transition">
+                    ☰ All Categories
+                </a>
                 @foreach($topMenuItems as $item)
                     <a href="{{ $item['href'] }}"
-                        class="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition">
+                        class="shrink-0 rounded-md px-3 py-2 text-sm font-medium transition">
                         {{ $item['label'] }}
                     </a>
                 @endforeach
