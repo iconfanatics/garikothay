@@ -79,7 +79,10 @@ Route::get('/privacy', [PageController::class, 'privacy'])->name('page.privacy')
 Route::get('/return-policy', [PageController::class, 'returnPolicy'])->name('page.return-policy');
 
 // Customer Dashboard
-Route::prefix('account')->name('customer.')->middleware(['auth', 'verified'])->group(function () {
+$accountMiddleware = app()->environment('local') ? ['auth'] : ['auth', 'verified'];
+
+Route::prefix('account')->name('customer.')->middleware($accountMiddleware)->group(function () {
+    Route::get('/', fn () => redirect()->route('customer.dashboard'))->name('index');
     Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
     Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderNumber}', [CustomerController::class, 'orderShow'])->name('order.show');

@@ -1,100 +1,596 @@
 @extends('layouts.app')
-@section('title', __('general.dashboard') . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
+
+@section('title', 'My Account | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
+
+@push('styles')
+<style>
+    .gk-account {
+        background: #f8fafc;
+        min-height: calc(100vh - 190px);
+    }
+
+    .gk-account-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .gk-account-hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #e11d48, #be123c);
+        color: #ffffff;
+        padding: 1.5rem;
+        box-shadow: 0 18px 38px rgba(190, 18, 60, 0.2);
+    }
+
+    .gk-account-avatar {
+        display: grid;
+        place-items: center;
+        width: 4rem;
+        height: 4rem;
+        flex: 0 0 auto;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.18);
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 900;
+        box-shadow: 0 0 0 4px rgba(255,255,255,0.28);
+    }
+
+    .gk-account-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gk-account-kicker {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.78;
+    }
+
+    .gk-account-title {
+        margin-top: 0.15rem;
+        font-family: 'Oswald', 'Inter', sans-serif;
+        font-size: clamp(1.45rem, 3vw, 2rem);
+        font-weight: 900;
+        line-height: 1.1;
+        text-transform: uppercase;
+    }
+
+    .gk-account-email {
+        margin-top: 0.25rem;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .gk-account-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+        .gk-account-grid {
+            grid-template-columns: 260px minmax(0, 1fr);
+        }
+    }
+
+    .gk-account-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+    }
+
+    .gk-account-tabs {
+        padding: 0.5rem;
+    }
+
+    .gk-account-tab {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 0.75rem;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: #374151;
+        padding: 0.72rem 0.8rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .gk-account-tab:hover {
+        background: #f3f4f6;
+        color: #e11d48;
+    }
+
+    .gk-account-tab.is-active {
+        background: #e11d48;
+        color: #ffffff;
+        box-shadow: 0 10px 22px rgba(225, 29, 72, 0.18);
+    }
+
+    .gk-help-card {
+        margin-top: 1rem;
+        padding: 1rem;
+    }
+
+    .gk-help-card p {
+        margin-top: 0.35rem;
+        color: #6b7280;
+        font-size: 0.78rem;
+        line-height: 1.55;
+    }
+
+    .gk-stat-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .gk-stat-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 1280px) {
+        .gk-stat-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
+    .gk-stat-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #ffffff;
+        padding: 1rem;
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+    }
+
+    .gk-stat-label {
+        color: #6b7280;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .gk-stat-value {
+        margin-top: 0.2rem;
+        color: #111827;
+        font-family: 'Oswald', 'Inter', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 900;
+    }
+
+    .gk-stat-icon {
+        display: grid;
+        place-items: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 999px;
+        background: #fee2e2;
+        color: #e11d48;
+        font-size: 1.25rem;
+    }
+
+    .gk-panel {
+        display: none;
+    }
+
+    .gk-panel.is-active {
+        display: block;
+    }
+
+    .gk-section-card {
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.04);
+    }
+
+    .gk-section-card + .gk-section-card {
+        margin-top: 1.5rem;
+    }
+
+    .gk-section-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0.85rem 1.15rem;
+    }
+
+    .gk-section-card-title {
+        font-family: 'Oswald', 'Inter', sans-serif;
+        font-size: 1.12rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .gk-section-card-body {
+        padding: 1rem;
+        overflow-x: auto;
+    }
+
+    .gk-account-table {
+        width: 100%;
+        min-width: 680px;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .gk-account-table th {
+        color: #6b7280;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        padding: 0.65rem 0.75rem;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .gk-account-table td {
+        border-top: 1px solid #f1f5f9;
+        padding: 0.85rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .gk-account-table tr:hover td {
+        background: #f8fafc;
+    }
+
+    .gk-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+    }
+
+    .gk-badge-success { background: #dcfce7; color: #15803d; }
+    .gk-badge-warning { background: #fef3c7; color: #b45309; }
+    .gk-badge-danger { background: #ffe4e6; color: #be123c; }
+    .gk-badge-info { background: #dbeafe; color: #1d4ed8; }
+    .gk-badge-muted { background: #f3f4f6; color: #4b5563; }
+
+    .gk-empty {
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+
+    .gk-empty-icon {
+        display: grid;
+        place-items: center;
+        width: 3.4rem;
+        height: 3.4rem;
+        margin: 0 auto 0.8rem;
+        border-radius: 999px;
+        background: #fee2e2;
+        color: #e11d48;
+        font-size: 1.5rem;
+    }
+
+    .gk-empty-title {
+        color: #111827;
+        font-weight: 900;
+    }
+
+    .gk-empty-text {
+        max-width: 420px;
+        margin: 0.35rem auto 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.65;
+    }
+
+    .gk-account-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        color: #111827;
+        padding: 0.58rem 0.9rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .gk-account-btn:hover {
+        border-color: #e11d48;
+        color: #e11d48;
+    }
+
+    .gk-account-btn-primary {
+        border-color: #e11d48;
+        background: #e11d48;
+        color: #ffffff;
+    }
+
+    .gk-account-btn-primary:hover {
+        background: #be123c;
+        color: #ffffff;
+    }
+
+    .gk-profile-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .gk-profile-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    .gk-profile-field {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 0.9rem;
+    }
+
+    .gk-profile-field span {
+        display: block;
+        color: #6b7280;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .gk-profile-field strong {
+        display: block;
+        margin-top: 0.25rem;
+        color: #111827;
+        font-weight: 800;
+    }
+
+    @media (max-width: 640px) {
+        .gk-account-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .gk-account-hero > .gk-account-btn {
+            width: 100%;
+        }
+    }
+</style>
+@endpush
 
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ __('general.welcome_back') }}, {{ auth()->user()->name }}! 💻</h1>
-    <p class="text-gray-500 mb-8">{{ __('general.account_overview') }}</p>
+@php
+    $user = auth()->user();
+    $ordersCount = $user->orders()->count();
+    $wishlistCount = $user->wishlists()->count();
+    $reviewsCount = $user->reviews()->count();
+    $spent = $user->total_spent;
+    $defaultAddress = $user->addresses()->where('is_default', true)->first() ?? $user->addresses()->first();
 
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-2xl p-5 shadow-sm text-center">
-            <div class="text-3xl font-bold text-[#2D6A4F]">{{ auth()->user()->orders()->count() }}</div>
-            <div class="text-sm text-gray-500 mt-1">{{ __('general.total_orders') }}</div>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm text-center">
-            <div class="text-3xl font-bold text-[#52B788]">৳{{ number_format(auth()->user()->total_spent, 0) }}</div>
-            <div class="text-sm text-gray-500 mt-1">{{ __('general.total_spent') }}</div>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm text-center">
-            <div class="text-3xl font-bold text-orange-500">{{ auth()->user()->wishlists()->count() }}</div>
-            <div class="text-sm text-gray-500 mt-1">{{ __('general.wishlist_items') }}</div>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-sm text-center">
-            <div class="text-3xl font-bold text-blue-500">{{ auth()->user()->reviews()->count() }}</div>
-            <div class="text-sm text-gray-500 mt-1">{{ __('general.reviews') }}</div>
-        </div>
-    </div>
+    $statusClass = function ($order) {
+        $color = $order->status->color();
+        return match ($color) {
+            'success' => 'gk-badge-success',
+            'warning' => 'gk-badge-warning',
+            'danger' => 'gk-badge-danger',
+            'info', 'primary' => 'gk-badge-info',
+            default => 'gk-badge-muted',
+        };
+    };
+@endphp
 
-    <!-- Quick Links -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        @foreach([
-            ['route' => 'customer.orders', 'icon' => '📦', 'label' => __('general.my_orders')],
-            ['route' => 'wishlist.index', 'icon' => '❤️', 'label' => __('general.wishlist')],
-            ['route' => 'customer.addresses', 'icon' => '📍', 'label' => __('general.addresses')],
-            ['route' => 'customer.profile', 'icon' => '👤', 'label' => __('general.profile')],
-        ] as $link)
-        <a href="{{ route($link['route']) }}" class="bg-white rounded-2xl p-5 shadow-sm text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-            <div class="text-3xl mb-2">{{ $link['icon'] }}</div>
-            <div class="text-sm font-medium text-gray-700">{{ $link['label'] }}</div>
-        </a>
-        @endforeach
-    </div>
+<div class="gk-account" x-data="{ tab: 'dashboard' }">
+    <div class="gk-account-container">
+        <div class="gk-account-hero">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div class="gk-account-avatar">
+                    @if($user->avatar)
+                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}">
+                    @else
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    @endif
+                </div>
+                <div>
+                    <div class="gk-account-kicker">Welcome back</div>
+                    <h1 class="gk-account-title">{{ $user->name }}</h1>
+                    <div class="gk-account-email">{{ $user->email }}</div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="gk-account-btn">↪ Logout</button>
+            </form>
+        </div>
 
-    <!-- Recent Orders -->
-    <div class="bg-white rounded-2xl shadow-sm p-6">
-        <div class="flex justify-between items-center mb-5">
-            <h2 class="font-bold text-gray-800 text-lg">{{ __('general.recent_orders') }}</h2>
-            <a href="{{ route('customer.orders') }}" class="text-[#2D6A4F] text-sm hover:text-[#52B788]">{{ __('general.view_all') }} →</a>
-        </div>
-        @if($recentOrders->isEmpty())
-        <div class="text-center py-10 text-gray-500">
-            <div class="text-4xl mb-3">📦</div>
-            <p>{{ __('general.no_orders_yet') }} <a href="{{ route('shop.index') }}" class="text-[#2D6A4F]">{{ __('general.start_shopping_exclamation') }}</a></p>
-        </div>
-        @else
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left text-gray-500 border-b">
-                        <th class="pb-3">{{ __('general.order_num') }}</th>
-                        <th class="pb-3">{{ __('general.date') }}</th>
-                        <th class="pb-3">{{ __('general.status') }}</th>
-                        <th class="pb-3">{{ __('general.total') }}</th>
-                        <th class="pb-3"></th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                    @foreach($recentOrders as $order)
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-3 font-semibold text-[#2D6A4F]">{{ $order->order_number }}</td>
-                        <td class="py-3 text-gray-500">{{ $order->created_at->format('d M Y') }}</td>
-                        <td class="py-3">
-                            @php
-                                $statusColor = $order->status->color();
-                                $badgeClasses = match($statusColor) {
-                                    'success' => 'bg-green-100 text-green-700',
-                                    'warning' => 'bg-yellow-100 text-yellow-700',
-                                    'danger'  => 'bg-red-100 text-red-700',
-                                    'info'    => 'bg-blue-100 text-blue-700',
-                                    'primary' => 'bg-indigo-100 text-indigo-700',
-                                    default   => 'bg-gray-100 text-gray-600',
-                                };
-                            @endphp
-                            <span class="inline-block px-3 py-1 rounded-full text-xs font-medium {{ $badgeClasses }}">
-                                {{ $order->status->label() }}
-                            </span>
-                        </td>
-                        <td class="py-3 font-bold">৳{{ number_format($order->total, 0) }}</td>
-                        <td class="py-3 text-right">
-                            <a href="{{ route('customer.order.show', $order->order_number) }}" class="text-[#2D6A4F] hover:text-[#52B788]">{{ __('general.view') }}</a>
-                        </td>
-                    </tr>
+        <div class="gk-account-grid">
+            <aside>
+                <div class="gk-account-card gk-account-tabs">
+                    @foreach([
+                        ['id' => 'dashboard', 'icon' => '👤', 'label' => 'Dashboard'],
+                        ['id' => 'orders', 'icon' => '📦', 'label' => 'My Orders'],
+                        ['id' => 'services', 'icon' => '🔧', 'label' => 'My Services'],
+                        ['id' => 'listings', 'icon' => '🏪', 'label' => 'My Listings'],
+                        ['id' => 'profile', 'icon' => '⚙', 'label' => 'Profile & Settings'],
+                    ] as $item)
+                        <button type="button" class="gk-account-tab" :class="{ 'is-active': tab === '{{ $item['id'] }}' }" @click="tab = '{{ $item['id'] }}'">
+                            <span>{{ $item['icon'] }}</span>
+                            <span>{{ $item['label'] }}</span>
+                        </button>
                     @endforeach
-                </tbody>
-            </table>
+                </div>
+
+                <div class="gk-account-card gk-help-card">
+                    <strong>Need help?</strong>
+                    <p>Contact our support team for any account, order, or service issue.</p>
+                    <a href="{{ route('page.contact') }}" class="gk-account-btn" style="width:100%; margin-top:0.85rem;">Contact Support</a>
+                </div>
+            </aside>
+
+            <main>
+                <section class="gk-panel" :class="{ 'is-active': tab === 'dashboard' }">
+                    <div class="gk-stat-grid">
+                        <div class="gk-stat-card">
+                            <div>
+                                <div class="gk-stat-label">Orders</div>
+                                <div class="gk-stat-value">{{ $ordersCount }}</div>
+                            </div>
+                            <div class="gk-stat-icon">📦</div>
+                        </div>
+                        <div class="gk-stat-card">
+                            <div>
+                                <div class="gk-stat-label">Wishlist</div>
+                                <div class="gk-stat-value">{{ $wishlistCount }}</div>
+                            </div>
+                            <div class="gk-stat-icon">❤️</div>
+                        </div>
+                        <div class="gk-stat-card">
+                            <div>
+                                <div class="gk-stat-label">Reviews</div>
+                                <div class="gk-stat-value">{{ $reviewsCount }}</div>
+                            </div>
+                            <div class="gk-stat-icon">⭐</div>
+                        </div>
+                        <div class="gk-stat-card">
+                            <div>
+                                <div class="gk-stat-label">Total Spent</div>
+                                <div class="gk-stat-value">৳{{ number_format($spent, 0) }}</div>
+                            </div>
+                            <div class="gk-stat-icon">৳</div>
+                        </div>
+                    </div>
+
+                    <div class="gk-section-card" style="margin-top:1.5rem;">
+                        <div class="gk-section-card-head">
+                            <h2 class="gk-section-card-title">Recent Orders</h2>
+                            <button type="button" class="gk-account-btn" @click="tab = 'orders'">View all</button>
+                        </div>
+                        <div class="gk-section-card-body">
+                            @include('customer.partials.account-orders-table', ['orders' => $recentOrders, 'statusClass' => $statusClass])
+                        </div>
+                    </div>
+
+                    <div class="gk-section-card">
+                        <div class="gk-section-card-head">
+                            <h2 class="gk-section-card-title">Recent Service Bookings</h2>
+                            <button type="button" class="gk-account-btn" @click="tab = 'services'">View all</button>
+                        </div>
+                        <div class="gk-section-card-body">
+                            <div class="gk-empty">
+                                <div class="gk-empty-icon">🔧</div>
+                                <div class="gk-empty-title">No service bookings yet.</div>
+                                <p class="gk-empty-text">Garage, car wash, driver, and GPS booking history will appear here after those services are enabled.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="gk-panel" :class="{ 'is-active': tab === 'orders' }">
+                    <div class="gk-section-card">
+                        <div class="gk-section-card-head">
+                            <h2 class="gk-section-card-title">My Orders</h2>
+                            <a href="{{ route('shop.index') }}" class="gk-account-btn gk-account-btn-primary">Shop Now</a>
+                        </div>
+                        <div class="gk-section-card-body">
+                            @include('customer.partials.account-orders-table', ['orders' => $user->orders()->latest()->take(12)->get(), 'statusClass' => $statusClass])
+                        </div>
+                    </div>
+                </section>
+
+                <section class="gk-panel" :class="{ 'is-active': tab === 'services' }">
+                    <div class="gk-section-card">
+                        <div class="gk-section-card-head">
+                            <h2 class="gk-section-card-title">My Service Bookings</h2>
+                            <a href="{{ route('page.contact') }}" class="gk-account-btn gk-account-btn-primary">Book Service</a>
+                        </div>
+                        <div class="gk-section-card-body">
+                            <div class="gk-empty">
+                                <div class="gk-empty-icon">🔧</div>
+                                <div class="gk-empty-title">No service bookings yet.</div>
+                                <p class="gk-empty-text">When you book garage, car wash, driver, fuel, or GPS services, they will show up in this dashboard.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="gk-panel" :class="{ 'is-active': tab === 'listings' }">
+                    <div class="gk-section-card">
+                        <div class="gk-section-card-head">
+                            <h2 class="gk-section-card-title">My Listings</h2>
+                            <a href="{{ route('page.contact') }}" class="gk-account-btn gk-account-btn-primary">Add Listing</a>
+                        </div>
+                        <div class="gk-section-card-body">
+                            <div class="gk-empty">
+                                <div class="gk-empty-icon">🏪</div>
+                                <div class="gk-empty-title">You have not listed anything yet.</div>
+                                <p class="gk-empty-text">Your product, garage, driver, rental, or car wash listings will appear here after listing tools are connected.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="gk-panel" :class="{ 'is-active': tab === 'profile' }">
+                    <div class="gk-section-card">
+                        <div class="gk-section-card-head">
+                            <h2 class="gk-section-card-title">Profile & Settings</h2>
+                            <a href="{{ route('customer.profile') }}" class="gk-account-btn gk-account-btn-primary">Edit Profile</a>
+                        </div>
+                        <div class="gk-section-card-body">
+                            <div class="gk-profile-grid">
+                                <div class="gk-profile-field">
+                                    <span>Full Name</span>
+                                    <strong>{{ $user->name }}</strong>
+                                </div>
+                                <div class="gk-profile-field">
+                                    <span>Email</span>
+                                    <strong>{{ $user->email }}</strong>
+                                </div>
+                                <div class="gk-profile-field">
+                                    <span>Phone</span>
+                                    <strong>{{ $user->phone ?: 'Not added yet' }}</strong>
+                                </div>
+                                <div class="gk-profile-field">
+                                    <span>Default Address</span>
+                                    <strong>
+                                        @if($defaultAddress)
+                                            {{ $defaultAddress->address_line_1 }}, {{ $defaultAddress->city }}
+                                        @else
+                                            Not added yet
+                                        @endif
+                                    </strong>
+                                </div>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:1rem;">
+                                <a href="{{ route('customer.addresses') }}" class="gk-account-btn">Manage Addresses</a>
+                                <a href="{{ route('wishlist.index') }}" class="gk-account-btn">Open Wishlist</a>
+                                <a href="{{ route('customer.profile') }}" class="gk-account-btn">Change Password</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-        @endif
     </div>
 </div>
 @endsection
