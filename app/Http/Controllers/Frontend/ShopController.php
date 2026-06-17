@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use Illuminate\Http\Request;
@@ -57,6 +58,16 @@ class ShopController extends Controller
         return view('shop.show', [
             'product' => $product,
             'related' => $this->productRepository->getRelated($product),
+            'categories' => $this->categoryRepository->getTree(),
+            'topBrands' => Product::query()
+                ->with('category.translations')
+                ->active()
+                ->get()
+                ->pluck('category.name')
+                ->filter()
+                ->unique()
+                ->take(8)
+                ->values(),
         ]);
     }
 }
