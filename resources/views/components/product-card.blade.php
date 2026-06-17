@@ -34,7 +34,7 @@
                 adding = false;
             });
         "
-        class="absolute bottom-2 right-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-gray-500 opacity-0 shadow transition hover:bg-rose-600 hover:text-white group-hover:opacity-100">
+        class="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-gray-500 opacity-0 shadow transition hover:bg-rose-600 hover:text-white group-hover:opacity-100">
             <svg class="w-4 h-4" :class="inWishlist ? 'fill-red-500 stroke-red-500' : 'fill-none stroke-gray-400'" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
