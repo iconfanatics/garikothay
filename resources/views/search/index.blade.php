@@ -9,6 +9,9 @@
     <p class="text-gray-500 mb-6">
         @if($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
             {{ $results->total() }} {{ __('general.products_found') }} "<span class="font-medium text-gray-700">{{ $query }}</span>"
+            @if($selectedCategory)
+                in <span class="font-medium text-gray-700">{{ $selectedCategory->name }}</span>
+            @endif
         @else
             {{ __('general.no_results_for') }} "<span class="font-medium text-gray-700">{{ $query }}</span>"
         @endif
@@ -20,7 +23,7 @@
         <x-product-card :product="$product" />
         @endforeach
     </div>
-    <div class="mt-8">{{ $results->appends(['q' => $query])->links() }}</div>
+    <div class="mt-8">{{ $results->appends(['q' => $query, 'category' => $categorySlug])->links() }}</div>
     @else
     <div class="text-center py-20 text-gray-400">
         <p>{{ __('general.no_products_found') }}</p>

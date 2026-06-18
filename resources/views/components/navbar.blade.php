@@ -27,6 +27,18 @@
             ->orderBy('sort_order')
             ->get()
         : collect();
+
+    $requestedSearchCategory = request()->query('category');
+    $selectedSearchCategorySlug = is_string($requestedSearchCategory) ? trim($requestedSearchCategory) : '';
+    $selectedSearchCategory = $searchCategories->firstWhere('slug', $selectedSearchCategorySlug);
+
+    if (! $selectedSearchCategory) {
+        $selectedSearchCategory = $searchCategories
+            ->flatMap(fn ($category) => $category->children)
+            ->firstWhere('slug', $selectedSearchCategorySlug);
+    }
+
+    $selectedSearchCategoryLabel = $selectedSearchCategory?->name ?? 'All Categories';
 @endphp
 
 <style>
@@ -133,15 +145,20 @@
 
     .gk-search-category-link {
         display: flex;
+        width: 100%;
         min-height: 38px;
         align-items: center;
         gap: 0.55rem;
+        border: 0;
         border-radius: 5px;
+        background: transparent;
         color: #374151;
         padding: 0.45rem 0.6rem;
         font-size: 0.8rem;
         font-weight: 700;
+        text-align: left;
         text-decoration: none;
+        cursor: pointer;
     }
 
     .gk-search-category-link:hover {
@@ -165,11 +182,16 @@
     }
 
     .gk-search-subcategory-link {
+        width: 100%;
+        border: 0;
         border-radius: 4px;
+        background: transparent;
         color: #6b7280;
         padding: 0.32rem 0.5rem;
         font-size: 0.74rem;
+        text-align: left;
         text-decoration: none;
+        cursor: pointer;
     }
 
     .gk-search-subcategory-link:hover {
@@ -262,14 +284,18 @@
         <!-- Search (desktop) -->
         <form action="{{ route('search.index') }}" method="GET"
             class="relative hidden md:flex w-full max-w-2xl mx-auto"
-            x-data="{ categoryOpen: false }">
+            x-data="{
+                categoryOpen: false,
+                selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
+                selectedCategoryLabel: {{ \Illuminate\Support\Js::from($selectedSearchCategoryLabel) }}
+            }">
             <div class="gk-search-box flex w-full transition">
                 <div class="relative hidden md:block">
                     <button type="button"
                         @click="categoryOpen = !categoryOpen"
                         :aria-expanded="categoryOpen.toString()"
                         class="flex h-full min-w-[138px] items-center justify-between gap-2 bg-gray-100 px-3 text-sm font-medium border-r text-gray-700">
-                        <span>All Categories</span>
+                        <span x-text="selectedCategoryLabel"></span>
                         <svg class="w-3.5 h-3.5 transition" :class="{ 'rotate-180': categoryOpen }"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
@@ -278,27 +304,30 @@
 
                     <div x-show="categoryOpen" x-cloak x-transition @click.away="categoryOpen = false"
                         class="gk-search-category-dropdown">
-                        <a href="{{ route('shop.index') }}"
+                        <button type="button"
+                            @click="selectedCategory = ''; selectedCategoryLabel = 'All Categories'; categoryOpen = false"
                             class="gk-search-category-link gk-search-category-link-all">
                             <span>▦</span>
                             <span>All Products</span>
-                        </a>
+                        </button>
 
                         @forelse($searchCategories as $category)
-                            <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                            <button type="button"
+                                @click="selectedCategory = {{ \Illuminate\Support\Js::from($category->slug) }}; selectedCategoryLabel = {{ \Illuminate\Support\Js::from($category->name) }}; categoryOpen = false"
                                 class="gk-search-category-link">
                                 <span style="color:var(--gk-red);">{{ $category->icon ?? '⚙' }}</span>
                                 <span style="flex:1;">{{ $category->name }}</span>
                                 <span style="color:#9ca3af;">›</span>
-                            </a>
+                            </button>
 
                             @if($category->children->isNotEmpty())
                                 <div class="gk-search-subcategories">
                                     @foreach($category->children as $child)
-                                        <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
+                                        <button type="button"
+                                            @click="selectedCategory = {{ \Illuminate\Support\Js::from($child->slug) }}; selectedCategoryLabel = {{ \Illuminate\Support\Js::from($child->name) }}; categoryOpen = false"
                                             class="gk-search-subcategory-link">
                                             {{ $child->name }}
-                                        </a>
+                                        </button>
                                     @endforeach
                                 </div>
                             @endif
@@ -307,6 +336,7 @@
                         @endforelse
                     </div>
                 </div>
+                <input type="hidden" name="category" x-model="selectedCategory">
                 <input type="text" name="q" value="{{ request('q') }}"
                     placeholder="Search for car parts, brands, services..."
                     required minlength="2"

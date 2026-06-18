@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,15 +16,31 @@ class SearchController extends Controller
     {
         $searchInput = $request->query('q');
         $query = is_string($searchInput) ? trim($searchInput) : '';
+        $categoryInput = $request->query('category');
+        $categorySlug = is_string($categoryInput) ? trim($categoryInput) : '';
+        $selectedCategory = $categorySlug !== ''
+            ? Category::query()->with('children:id,parent_id')->active()->where('slug', $categorySlug)->first()
+            : null;
         $results = collect();
 
         if (mb_strlen($query) >= 2) {
-            $results = Product::with(['translations', 'images'])
+            $productQuery = Product::with(['translations', 'images', 'category.translations'])
                 ->active()
-                ->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$query}%"))
-                ->paginate(16);
+                ->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$query}%"));
+
+            if ($selectedCategory) {
+                $categoryIds = $selectedCategory->children
+                    ->pluck('id')
+                    ->prepend($selectedCategory->id)
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+
+                $productQuery->whereIn('category_id', $categoryIds);
+            }
+
+            $results = $productQuery->paginate(16);
         }
 
-        return view('search.index', compact('query', 'results'));
+        return view('search.index', compact('query', 'results', 'categorySlug', 'selectedCategory'));
     }
 }
