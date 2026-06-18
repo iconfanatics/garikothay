@@ -46,4 +46,42 @@ class CartStaleItemTest extends TestCase
 
         $this->assertDatabaseMissing('cart_items', ['id' => $item->id]);
     }
+
+    public function test_cart_page_renders_an_available_product(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::create([
+            'slug' => 'brakes',
+            'is_active' => true,
+        ]);
+        $category->translations()->create([
+            'locale' => 'en',
+            'name' => 'Brake Parts',
+        ]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'slug' => 'brake-pad',
+            'sku' => 'GK-BRAKE1',
+            'price' => 2200,
+            'stock_quantity' => 5,
+            'is_active' => true,
+        ]);
+        $product->translations()->create([
+            'locale' => 'en',
+            'name' => 'Premium Brake Pad',
+        ]);
+        $cart = Cart::create(['user_id' => $user->id]);
+        $cart->items()->create([
+            'product_id' => $product->id,
+            'quantity' => 2,
+            'unit_price' => 2200,
+        ]);
+
+        $this->actingAs($user)
+            ->get('/cart')
+            ->assertOk()
+            ->assertSee('Premium Brake Pad')
+            ->assertSee('Brake Parts')
+            ->assertSee('4,400');
+    }
 }

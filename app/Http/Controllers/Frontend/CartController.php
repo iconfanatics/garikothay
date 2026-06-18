@@ -20,7 +20,14 @@ class CartController extends Controller
 
     public function index(): View
     {
-        return view('cart.index', ['cart' => $this->cartService->getCart()->load('items.product.images', 'coupon')]);
+        return view('cart.index', [
+            'cart' => $this->cartService->getCart()->load(
+                'items.product.images',
+                'items.product.category.translations',
+                'items.variant',
+                'coupon',
+            ),
+        ]);
     }
 
     public function addItem(Request $request): JsonResponse
