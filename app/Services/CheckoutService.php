@@ -70,7 +70,11 @@ class CheckoutService
                     'total_price' => $item->unit_price * $item->quantity,
                 ]);
 
-                $this->productRepository->updateStock($item->product_id, $item->quantity, true);
+                $this->productRepository->updateStock(
+                    (int) $item->product_id,
+                    (int) $item->quantity,
+                    true,
+                );
             }
 
             event(new OrderPlaced($order));
@@ -83,7 +87,11 @@ class CheckoutService
     {
         DB::transaction(function () use ($order) {
             foreach ($order->items as $item) {
-                $this->productRepository->updateStock($item->product_id, $item->quantity, false);
+                $this->productRepository->updateStock(
+                    (int) $item->product_id,
+                    (int) $item->quantity,
+                    false,
+                );
             }
             $order->delete();
         });
