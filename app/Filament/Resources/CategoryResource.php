@@ -93,8 +93,8 @@ class CategoryResource extends Resource
                     ->formatStateUsing(function ($state, $record): string {
                         return $record->parent_id ? '↳ ' . $state : $state;
                     })
-                    ->searchable(query: function ($query, string $value): void {
-                        $query->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$value}%"));
+                    ->searchable(query: function ($query, string $search): void {
+                        $query->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$search}%"));
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('parent.name')

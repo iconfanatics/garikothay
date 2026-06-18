@@ -128,13 +128,13 @@ class BlogResource extends Resource
                 Tables\Columns\TextColumn::make("title")
                     ->label("Title")
                     ->searchable(
-                        query: function ($query, string $value): void {
+                        query: function ($query, string $search): void {
                             $query->whereHas(
                                 "translations",
                                 fn($q) => $q->where(
                                     "title",
                                     "like",
-                                    "%{$value}%",
+                                    "%{$search}%",
                                 ),
                             );
                         },
