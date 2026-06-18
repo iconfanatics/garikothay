@@ -10,6 +10,9 @@
         <div class="flex gap-3 max-w-xl">
             <input type="text" name="q" value="{{ $query }}"
                    placeholder="{{ __('general.search_placeholder') }}"
+                   required minlength="2"
+                   oninvalid="this.setCustomValidity('Please type something to search.')"
+                   oninput="this.setCustomValidity('')"
                    class="flex-1 px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
             <button type="submit"
                     class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl transition font-medium">

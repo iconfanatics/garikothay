@@ -195,6 +195,9 @@
                 </button>
                 <input type="text" name="q" value="{{ request('q') }}"
                     placeholder="Search for car parts, brands, services..."
+                    required minlength="2"
+                    oninvalid="this.setCustomValidity('Please type something to search.')"
+                    oninput="this.setCustomValidity('')"
                     class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
                 <button type="submit" class="gk-search-button text-white px-4 py-2 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -359,6 +362,9 @@
                 <div class="flex border border-gray-200 rounded-xl overflow-hidden">
                     <input type="text" name="q" value="{{ request('q') }}"
                         placeholder="{{ __('general.search_placeholder') }}"
+                        required minlength="2"
+                        oninvalid="this.setCustomValidity('Please type something to search.')"
+                        oninput="this.setCustomValidity('')"
                         class="flex-1 px-4 py-2 text-sm outline-none">
                     <button type="submit" class="bg-primary-600 text-white px-4 py-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

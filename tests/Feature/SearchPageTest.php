@@ -21,4 +21,12 @@ class SearchPageTest extends TestCase
             ->assertOk()
             ->assertViewHas('query', '');
     }
+
+    public function test_search_inputs_require_at_least_two_characters(): void
+    {
+        $this->get('/search')
+            ->assertOk()
+            ->assertSeeHtml('required minlength="2"')
+            ->assertSee('Please type something to search.');
+    }
 }
