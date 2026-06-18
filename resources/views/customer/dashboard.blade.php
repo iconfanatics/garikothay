@@ -146,7 +146,7 @@
 
     @media (min-width: 1280px) {
         .gk-stat-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
 
@@ -449,9 +449,7 @@
     $user = auth()->user();
     $ordersCount = $user->orders()->count();
     $serviceBookings = $serviceBookings ?? collect();
-    $userListings = $userListings ?? collect();
     $servicesCount = $serviceBookings->count();
-    $activeListingsCount = $userListings->where('status', 'active')->count();
     $spent = $user->total_spent;
     $defaultAddress = $user->addresses()->where('is_default', true)->first() ?? $user->addresses()->first();
 
@@ -516,7 +514,6 @@
                         ['id' => 'dashboard', 'icon' => '👤', 'label' => 'Dashboard'],
                         ['id' => 'orders', 'icon' => '📦', 'label' => 'My Orders'],
                         ['id' => 'services', 'icon' => '🔧', 'label' => 'My Services'],
-                        ['id' => 'listings', 'icon' => '🏪', 'label' => 'My Listings'],
                         ['id' => 'profile', 'icon' => '⚙', 'label' => 'Profile & Settings'],
                     ] as $item)
                         <button type="button" class="gk-account-tab" :class="{ 'is-active': tab === '{{ $item['id'] }}' }" @click="tab = '{{ $item['id'] }}'">
@@ -549,13 +546,6 @@
                                 <div class="gk-stat-value">{{ $servicesCount }}</div>
                             </div>
                             <div class="gk-stat-icon">🔧</div>
-                        </div>
-                        <div class="gk-stat-card">
-                            <div>
-                                <div class="gk-stat-label">Active Listings</div>
-                                <div class="gk-stat-value">{{ $activeListingsCount }}</div>
-                            </div>
-                            <div class="gk-stat-icon">🏪</div>
                         </div>
                         <div class="gk-stat-card">
                             <div>
@@ -644,51 +634,6 @@
                                 </div>
                             </form>
                             @include('customer.partials.account-services-table', ['serviceBookings' => $serviceBookings, 'plainStatusClass' => $plainStatusClass])
-                        </div>
-                    </div>
-                </section>
-
-                <section class="gk-panel" :class="{ 'is-active': tab === 'listings' }">
-                    <div class="gk-section-card">
-                        <div class="gk-section-card-head">
-                            <h2 class="gk-section-card-title">My Listings</h2>
-                            <span class="gk-account-btn gk-account-btn-primary">Add Listing</span>
-                        </div>
-                        <div class="gk-section-card-body">
-                            <form method="POST" action="{{ route('customer.listings.store') }}" class="gk-form-grid" style="margin-bottom:1.2rem;">
-                                @csrf
-                                <div class="gk-field">
-                                    <label>Listing Title</label>
-                                    <input type="text" name="title" required placeholder="Toyota Premio Brake Pads">
-                                </div>
-                                <div class="gk-field">
-                                    <label>Type</label>
-                                    <select name="type" required>
-                                        <option value="">Select type</option>
-                                        <option value="product">Product</option>
-                                        <option value="garage">Garage</option>
-                                        <option value="driver">Driver</option>
-                                        <option value="carwash">Car Wash</option>
-                                        <option value="rental">Rental</option>
-                                    </select>
-                                </div>
-                                <div class="gk-field">
-                                    <label>Price</label>
-                                    <input type="number" name="price" min="0" step="1" placeholder="৳">
-                                </div>
-                                <div class="gk-field">
-                                    <label>Location</label>
-                                    <input type="text" name="location" placeholder="Area, city">
-                                </div>
-                                <div class="gk-field" style="grid-column:1 / -1;">
-                                    <label>Description</label>
-                                    <textarea name="description" placeholder="Describe your listing"></textarea>
-                                </div>
-                                <div style="grid-column:1 / -1;">
-                                    <button type="submit" class="gk-account-btn gk-account-btn-primary">Publish Listing</button>
-                                </div>
-                            </form>
-                            @include('customer.partials.account-listings-table', ['userListings' => $userListings, 'plainStatusClass' => $plainStatusClass])
                         </div>
                     </div>
                 </section>

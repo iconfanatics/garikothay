@@ -30,7 +30,6 @@ class CustomerController extends Controller
         return view('customer.dashboard', [
             'recentOrders' => $this->orderRepository->getByUser($user->id, 5),
             'serviceBookings' => $user->serviceBookings()->latest()->get(),
-            'userListings' => $user->listings()->latest()->get(),
         ]);
     }
 
