@@ -15,6 +15,18 @@
         ['label' => 'About', 'href' => '#'],
         ['label' => 'Contact', 'href' => route('page.contact')],
     ];
+
+    $searchCategories = \Illuminate\Support\Facades\Schema::hasTable('categories')
+        ? \App\Models\Category::query()
+            ->with(['translations', 'children' => fn ($query) => $query
+                ->with('translations')
+                ->active()
+                ->orderBy('sort_order')])
+            ->whereNull('parent_id')
+            ->active()
+            ->orderBy('sort_order')
+            ->get()
+        : collect();
 @endphp
 
 <style>
@@ -104,6 +116,67 @@
         border-radius: 6px;
     }
 
+    .gk-search-category-dropdown {
+        position: absolute;
+        z-index: 80;
+        top: calc(100% + 0.5rem);
+        left: 0;
+        width: 290px;
+        max-height: min(65vh, 480px);
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #ffffff;
+        box-shadow: 0 18px 38px rgba(17, 24, 39, 0.16);
+        padding: 0.45rem;
+    }
+
+    .gk-search-category-link {
+        display: flex;
+        min-height: 38px;
+        align-items: center;
+        gap: 0.55rem;
+        border-radius: 5px;
+        color: #374151;
+        padding: 0.45rem 0.6rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .gk-search-category-link:hover {
+        background: #fff1f2;
+        color: var(--gk-red);
+    }
+
+    .gk-search-category-link-all {
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 0.3rem;
+        color: var(--gk-red);
+        font-weight: 900;
+    }
+
+    .gk-search-subcategories {
+        display: grid;
+        gap: 0.1rem;
+        border-left: 2px solid #ffe4e6;
+        margin: 0 0 0.35rem 1.5rem;
+        padding-left: 0.45rem;
+    }
+
+    .gk-search-subcategory-link {
+        border-radius: 4px;
+        color: #6b7280;
+        padding: 0.32rem 0.5rem;
+        font-size: 0.74rem;
+        text-decoration: none;
+    }
+
+    .gk-search-subcategory-link:hover {
+        background: #fff1f2;
+        color: var(--gk-red);
+    }
+
     .gk-site-nav .gk-search-button,
     .gk-site-nav .gk-action-button,
     .gk-site-nav .cart-count {
@@ -187,20 +260,60 @@
             </span>
         </a>
         <!-- Search (desktop) -->
-        <form action="{{ route('search.index') }}" method="GET" class="hidden md:flex w-full max-w-2xl mx-auto">
-            <div
-                class="gk-search-box flex w-full overflow-hidden transition">
-                <button type="button" class="hidden md:flex items-center gap-1 bg-gray-100 px-3 text-sm font-medium border-r text-gray-700">
-                    All Categories
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
-                </button>
+        <form action="{{ route('search.index') }}" method="GET"
+            class="relative hidden md:flex w-full max-w-2xl mx-auto"
+            x-data="{ categoryOpen: false }">
+            <div class="gk-search-box flex w-full transition">
+                <div class="relative hidden md:block">
+                    <button type="button"
+                        @click="categoryOpen = !categoryOpen"
+                        :aria-expanded="categoryOpen.toString()"
+                        class="flex h-full min-w-[138px] items-center justify-between gap-2 bg-gray-100 px-3 text-sm font-medium border-r text-gray-700">
+                        <span>All Categories</span>
+                        <svg class="w-3.5 h-3.5 transition" :class="{ 'rotate-180': categoryOpen }"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div x-show="categoryOpen" x-cloak x-transition @click.away="categoryOpen = false"
+                        class="gk-search-category-dropdown">
+                        <a href="{{ route('shop.index') }}"
+                            class="gk-search-category-link gk-search-category-link-all">
+                            <span>▦</span>
+                            <span>All Products</span>
+                        </a>
+
+                        @forelse($searchCategories as $category)
+                            <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                                class="gk-search-category-link">
+                                <span style="color:var(--gk-red);">{{ $category->icon ?? '⚙' }}</span>
+                                <span style="flex:1;">{{ $category->name }}</span>
+                                <span style="color:#9ca3af;">›</span>
+                            </a>
+
+                            @if($category->children->isNotEmpty())
+                                <div class="gk-search-subcategories">
+                                    @foreach($category->children as $child)
+                                        <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
+                                            class="gk-search-subcategory-link">
+                                            {{ $child->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @empty
+                            <span class="block px-3 py-2 text-xs text-gray-500">No categories available</span>
+                        @endforelse
+                    </div>
+                </div>
                 <input type="text" name="q" value="{{ request('q') }}"
                     placeholder="Search for car parts, brands, services..."
                     required minlength="2"
                     oninvalid="this.setCustomValidity('Please type something to search.')"
                     oninput="this.setCustomValidity('')"
                     class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
-                <button type="submit" class="gk-search-button text-white px-4 py-2 transition">
+                <button type="submit" class="gk-search-button rounded-r-[4px] text-white px-4 py-2 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
