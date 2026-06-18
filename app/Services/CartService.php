@@ -20,10 +20,21 @@ class CartService
 
     public function getCart(): Cart
     {
-        return $this->cartRepository->getOrCreateForUser(
+        $cart = $this->cartRepository->getOrCreateForUser(
             Auth::id(),
             Session::getId()
         );
+
+        $staleItemIds = $cart->items
+            ->filter(fn (CartItem $item) => $item->product === null)
+            ->pluck('id');
+
+        if ($staleItemIds->isNotEmpty()) {
+            CartItem::query()->whereIn('id', $staleItemIds)->delete();
+            $cart->load('items.product');
+        }
+
+        return $cart;
     }
 
     public function addItem(int $productId, int $quantity = 1, ?int $variantId = null): CartItem
