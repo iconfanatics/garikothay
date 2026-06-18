@@ -166,15 +166,16 @@
     ];
 @endphp
 
-<div class="gk-topbar">
-    <div class="gk-topbar-track">
-        @foreach(array_merge($marqueeItems, $marqueeItems) as $item)
-            <span class="gk-topbar-item"><span class="gk-topbar-dot"></span>{{ $item }}</span>
-        @endforeach
+<div class="sticky top-0 z-50">
+    <div class="gk-topbar">
+        <div class="gk-topbar-track">
+            @foreach(array_merge($marqueeItems, $marqueeItems) as $item)
+                <span class="gk-topbar-item"><span class="gk-topbar-dot"></span>{{ $item }}</span>
+            @endforeach
+        </div>
     </div>
-</div>
 
-<nav class="gk-site-nav bg-white shadow-sm sticky top-0 z-50" x-data="{ mobileOpen: false }">
+<nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }">
     <div class="gk-header-row gk-nav-container py-3 md:py-4">
 
         <!-- Logo -->
@@ -419,3 +420,4 @@
         </div>
     </div>
 </nav>
+</div>
