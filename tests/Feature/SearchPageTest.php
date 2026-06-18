@@ -29,4 +29,11 @@ class SearchPageTest extends TestCase
             ->assertSeeHtml('required minlength="2"')
             ->assertSee('Please type something to search.');
     }
+
+    public function test_search_results_page_does_not_render_an_extra_search_form(): void
+    {
+        $response = $this->get('/search?q=k')->assertOk();
+
+        $this->assertSame(2, substr_count($response->getContent(), 'name="q"'));
+    }
 }

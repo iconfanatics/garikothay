@@ -5,22 +5,6 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Search bar -->
-    <form method="GET" action="{{ route('search.index') }}" class="mb-8">
-        <div class="flex gap-3 max-w-xl">
-            <input type="text" name="q" value="{{ $query }}"
-                   placeholder="{{ __('general.search_placeholder') }}"
-                   required minlength="2"
-                   oninvalid="this.setCustomValidity('Please type something to search.')"
-                   oninput="this.setCustomValidity('')"
-                   class="flex-1 px-5 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
-            <button type="submit"
-                    class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl transition font-medium">
-                {{ __('general.search') }}
-            </button>
-        </div>
-    </form>
-
     @if($query)
     <p class="text-gray-500 mb-6">
         @if($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
