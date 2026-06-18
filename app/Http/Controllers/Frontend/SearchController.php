@@ -13,10 +13,11 @@ class SearchController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = $request->get('q', '');
+        $searchInput = $request->query('q');
+        $query = is_string($searchInput) ? trim($searchInput) : '';
         $results = collect();
 
-        if (strlen($query) >= 2) {
+        if (mb_strlen($query) >= 2) {
             $results = Product::with(['translations', 'images'])
                 ->active()
                 ->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$query}%"))
