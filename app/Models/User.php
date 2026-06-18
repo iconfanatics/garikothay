@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -79,6 +80,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getTotalSpentAttribute(): float
     {
-        return (float) $this->orders()->where('payment_status', 'paid')->sum('total');
+        return (float) $this->orders()
+            ->whereNotIn('status', [
+                OrderStatus::Cancelled->value,
+                OrderStatus::Returned->value,
+                OrderStatus::Refunded->value,
+            ])
+            ->sum('total');
     }
 }
