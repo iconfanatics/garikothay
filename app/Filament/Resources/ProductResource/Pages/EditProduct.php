@@ -20,9 +20,15 @@ class EditProduct extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $record = $this->getRecord();
-        $record->load('translations');
+        $record->load(['translations', 'images']);
 
         $data['translations'] = [];
+        $data['image_paths'] = $record->images
+            ->sortBy('sort_order')
+            ->pluck('path')
+            ->values()
+            ->all();
+
         foreach (['en', 'bn'] as $locale) {
             $translation = $record->translations->firstWhere('locale', $locale);
             if ($translation) {
@@ -35,7 +41,7 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        unset($data['translations']);
+        unset($data['translations'], $data['image_paths']);
         return $data;
     }
 
@@ -47,5 +53,7 @@ class EditProduct extends EditRecord
         foreach ($translations as $locale => $translationData) {
             $record->setTranslation($locale, $translationData);
         }
+
+        $record->syncImages($this->data['image_paths'] ?? []);
     }
 }

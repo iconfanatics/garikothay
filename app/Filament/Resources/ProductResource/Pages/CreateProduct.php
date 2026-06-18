@@ -13,7 +13,7 @@ class CreateProduct extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        unset($data['translations']);
+        unset($data['translations'], $data['image_paths']);
         return $data;
     }
 
@@ -25,5 +25,7 @@ class CreateProduct extends CreateRecord
         foreach ($translations as $locale => $translationData) {
             $record->setTranslation($locale, $translationData);
         }
+
+        $record->syncImages($this->data['image_paths'] ?? []);
     }
 }

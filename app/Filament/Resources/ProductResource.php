@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Enums\DifficultyLevel;
-use App\Enums\PlantType;
-use App\Enums\SunlightRequirement;
-use App\Enums\WateringFrequency;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Category;
 use App\Models\Product;
@@ -85,6 +81,19 @@ class ProductResource extends Resource
                     Forms\Components\RichEditor::make('translations.bn.description')
                         ->label('Description (BN)')
                         ->columnSpanFull(),
+                    Forms\Components\FileUpload::make('image_paths')
+                        ->label('Product Images')
+                        ->helperText('Upload up to 8 images. The first image will be used as the primary product image.')
+                        ->image()
+                        ->imageEditor()
+                        ->multiple()
+                        ->reorderable()
+                        ->maxFiles(8)
+                        ->disk('public')
+                        ->directory('products')
+                        ->visibility('public')
+                        ->dehydrated(false)
+                        ->columnSpanFull(),
                     Forms\Components\Grid::make(3)->schema([
                         Forms\Components\Toggle::make('is_active')->label('Active')->default(true),
                         Forms\Components\Toggle::make('is_featured')->label('Featured'),
@@ -99,7 +108,12 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('cost_price')->label('Cost Price (৳)')->numeric()->prefix('৳'),
                     ]),
                     Forms\Components\Grid::make(3)->schema([
-                        Forms\Components\TextInput::make('sku')->label('SKU')->required(),
+                        Forms\Components\TextInput::make('sku')
+                            ->label('SKU')
+                            ->helperText('Leave blank to generate automatically, for example GK-BCDf34.')
+                            ->placeholder('Auto-generated if blank')
+                            ->nullable()
+                            ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('stock_quantity')->label('Stock Qty')->numeric()->required()->default(0),
                         Forms\Components\TextInput::make('low_stock_threshold')->label('Low Stock Alert')->numeric()->default(5),
                     ]),
@@ -107,18 +121,6 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('weight_grams')->label('Weight (grams)')->numeric(),
                         Forms\Components\TextInput::make('tax_rate')->label('Tax Rate (%)')->numeric()->default(0),
                     ]),
-                ]),
-
-                Forms\Components\Tabs\Tab::make('Plant Info')->schema([
-                    Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\Select::make('plant_type')->options(PlantType::options()),
-                        Forms\Components\Select::make('sunlight')->options(SunlightRequirement::options()),
-                        Forms\Components\Select::make('watering')->options(WateringFrequency::options()),
-                        Forms\Components\Select::make('difficulty')->options(DifficultyLevel::options()),
-                        Forms\Components\TextInput::make('mature_size')->label('Mature Size'),
-                    ]),
-                    Forms\Components\Textarea::make('translations.en.care_instructions')->label('Care Instructions (EN)')->rows(4),
-                    Forms\Components\Textarea::make('translations.bn.care_instructions')->label('Care Instructions (BN)')->rows(4),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('SEO')->schema([
@@ -151,7 +153,6 @@ class ProductResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category_id')->relationship('category', 'id'),
-                Tables\Filters\SelectFilter::make('plant_type')->options(PlantType::options()),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([

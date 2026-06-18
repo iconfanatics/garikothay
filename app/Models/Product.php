@@ -14,10 +14,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::creating(function (Product $product): void {
+            if (blank($product->sku)) {
+                $product->sku = static::generateUniqueSku();
+            }
+        });
+    }
 
     protected $fillable = [
         'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
@@ -150,5 +161,47 @@ class Product extends Model
     public function isInStock(): bool
     {
         return $this->stock_quantity > 0;
+    }
+
+    /** @param array<int, string> $paths */
+    public function syncImages(array $paths): void
+    {
+        $paths = collect($paths)
+            ->filter(fn ($path) => is_string($path) && $path !== '')
+            ->unique()
+            ->values();
+
+        $existingImages = $this->images()->get();
+        $removedPaths = $existingImages->pluck('path')->diff($paths);
+
+        if ($removedPaths->isNotEmpty()) {
+            Storage::disk('public')->delete($removedPaths->all());
+            $this->images()->whereIn('path', $removedPaths)->delete();
+        }
+
+        foreach ($paths as $sortOrder => $path) {
+            $this->images()->updateOrCreate(
+                ['path' => $path],
+                [
+                    'sort_order' => $sortOrder,
+                    'is_primary' => $sortOrder === 0,
+                ],
+            );
+        }
+
+        $this->images()
+            ->whereNotIn('path', $paths->all())
+            ->update(['is_primary' => false]);
+
+        $this->unsetRelation('images');
+    }
+
+    public static function generateUniqueSku(): string
+    {
+        do {
+            $sku = 'GK-' . Str::random(6);
+        } while (static::withTrashed()->where('sku', $sku)->exists());
+
+        return $sku;
     }
 }
