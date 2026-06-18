@@ -13,7 +13,7 @@
         ['label' => 'Tickets', 'href' => '#'],
         ['label' => 'Fare Calc', 'href' => '#'],
         ['label' => 'About', 'href' => '#'],
-        ['label' => 'Contact', 'href' => '#'],
+        ['label' => 'Contact', 'href' => route('page.contact')],
     ];
 @endphp
 
