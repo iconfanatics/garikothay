@@ -31,7 +31,7 @@ class ShopController extends Controller
 
         // Determine the parent category for breadcrumb and subcategory display
         $parentCategory = $category?->parent_id
-            ? $this->categoryRepository->findById($category->parent_id)
+            ? $this->categoryRepository->findById((int) $category->parent_id)
             : null;
 
         // If browsing a parent, its children are the subcategories to show as tabs

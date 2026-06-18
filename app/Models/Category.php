@@ -21,6 +21,7 @@ class Category extends Model
     protected function casts(): array
     {
         return [
+            'parent_id' => 'integer',
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
