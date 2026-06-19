@@ -179,7 +179,7 @@
     .gk-product-title {
         margin-top: 0.35rem;
         font-family: 'Oswald', 'Inter', sans-serif;
-        font-size: clamp(1.8rem, 4vw, 2.3rem);
+        font-size: clamp(1.5rem, 3vw, 1.9rem);
         font-weight: 900;
         line-height: 1.1;
         text-transform: uppercase;
@@ -213,7 +213,7 @@
 
     .gk-price {
         color: #e11d48;
-        font-size: 2rem;
+        font-size: 1.65rem;
         font-weight: 900;
     }
 
@@ -235,8 +235,8 @@
     .gk-short-copy {
         margin-top: 1rem;
         color: #6b7280;
-        font-size: 0.95rem;
-        line-height: 1.7;
+        font-size: 0.86rem;
+        line-height: 1.6;
     }
 
     .gk-variant-button {
@@ -384,7 +384,7 @@
         color: #6b7280;
         margin-bottom: -1px;
         padding: 0.85rem 1rem;
-        font-size: 0.9rem;
+        font-size: 0.82rem;
         font-weight: 900;
         cursor: pointer;
     }
@@ -397,8 +397,8 @@
     .gk-tab-panel {
         display: none;
         color: #4b5563;
-        font-size: 0.93rem;
-        line-height: 1.75;
+        font-size: 0.85rem;
+        line-height: 1.65;
         padding: 1.4rem 0;
     }
 
@@ -443,7 +443,7 @@
         border-bottom: 2px solid #e11d48;
         padding-bottom: 0.6rem;
         font-family: 'Oswald', 'Inter', sans-serif;
-        font-size: 1.7rem;
+        font-size: 1.4rem;
         font-weight: 900;
         text-transform: uppercase;
     }

@@ -25,7 +25,6 @@ class CheckoutRequest extends FormRequest
             'address_line_1' => ['required', 'string', 'max:255'],
             'address_line_2' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
-            'district' => ['required', 'string', 'max:100'],
             'division' => ['required', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:10'],
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],

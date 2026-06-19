@@ -63,6 +63,7 @@ class CheckoutController extends Controller
         try {
             $cart = $this->cartService->getCart()->load('items.product');
             $data = $request->validated();
+            $data['district'] = $data['city'];
             $user = auth()->user() ?? $this->resolveGuestUser($data);
 
             if (auth()->check() && $request->boolean('save_address')) {

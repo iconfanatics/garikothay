@@ -10,10 +10,12 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
+use App\Http\Requests\CheckoutRequest;
 use App\Services\CheckoutService;
 use App\Services\ShippingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class ShippingSettingsTest extends TestCase
@@ -86,6 +88,22 @@ class ShippingSettingsTest extends TestCase
         $this->assertSame(2480.0, (float) $order->total);
         $this->assertSame('2-4 business days', $order->delivery_time);
         $this->assertSame('Steadfast', $order->delivery_partner);
+    }
+
+    public function test_checkout_address_does_not_require_a_district(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $validator = Validator::make([
+            'full_name' => 'Test Customer',
+            'phone' => '01700000000',
+            'address_line_1' => 'Road 1',
+            'city' => 'Dhaka',
+            'division' => 'Dhaka',
+            'payment_method' => 'cod',
+        ], (new CheckoutRequest())->rules());
+
+        $this->assertTrue($validator->passes());
     }
 
     private function setSetting(string $key, string $value, SettingType $type): void

@@ -1,8 +1,253 @@
 @extends('layouts.app')
 @section('title', __('general.checkout') . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
 
+@push('styles')
+<style>
+    .gk-checkout {
+        min-height: 100vh;
+        background: #f8fafc;
+        color: #111827;
+    }
+
+    .gk-checkout-container {
+        width: 100%;
+        max-width: 1504px;
+        margin: 0 auto;
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .gk-checkout-breadcrumb {
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+    .gk-checkout-breadcrumb-inner {
+        display: flex;
+        min-height: 42px;
+        align-items: center;
+        gap: 0.45rem;
+        color: #6b7280;
+        font-size: 0.78rem;
+    }
+
+    .gk-checkout-breadcrumb a {
+        color: #6b7280;
+        text-decoration: none;
+    }
+
+    .gk-checkout-breadcrumb a:hover {
+        color: #2D6A4F;
+    }
+
+    .gk-checkout-head {
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+        padding: 1.55rem 0;
+    }
+
+    .gk-checkout-kicker {
+        color: #2D6A4F;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .gk-checkout-title {
+        margin-top: 0.15rem;
+        font-size: clamp(1.7rem, 3vw, 2.25rem);
+        font-weight: 800;
+        line-height: 1.1;
+    }
+
+    .gk-checkout-subtitle {
+        margin-top: 0.4rem;
+        color: #6b7280;
+        font-size: 0.84rem;
+    }
+
+    .gk-checkout-layout {
+        display: grid;
+        gap: 1.5rem;
+        align-items: start;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+    @media (min-width: 1024px) {
+        .gk-checkout-layout {
+            grid-template-columns: minmax(0, 1fr) 380px;
+        }
+    }
+
+    .gk-checkout-stack {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .gk-checkout-panel,
+    .gk-checkout-summary {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .gk-checkout-panel {
+        padding: 1.25rem;
+    }
+
+    .gk-checkout-section-head {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 0.8rem;
+    }
+
+    .gk-checkout-section-head h2 {
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .gk-checkout-section-head p {
+        margin-top: 0.2rem;
+        color: #6b7280;
+        font-size: 0.74rem;
+    }
+
+    .gk-checkout-field label {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: #374151;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .gk-checkout-field input,
+    .gk-checkout-field select,
+    .gk-checkout-field textarea {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #ffffff;
+        padding: 0.7rem 0.8rem;
+        color: #111827;
+        font-size: 0.82rem;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .gk-checkout-field input:focus,
+    .gk-checkout-field select:focus,
+    .gk-checkout-field textarea:focus {
+        border-color: #2D6A4F;
+        box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+    }
+
+    .gk-checkout-address,
+    .gk-checkout-payment {
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #ffffff;
+        transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .gk-checkout-address:hover,
+    .gk-checkout-payment:hover {
+        border-color: #74a88f;
+    }
+
+    .gk-checkout-address:has(input:checked),
+    .gk-checkout-payment:has(input:checked) {
+        border-color: #2D6A4F;
+        background: #f0f7f3;
+    }
+
+    .gk-checkout-summary {
+        padding: 1.25rem;
+    }
+
+    @media (min-width: 1024px) {
+        .gk-checkout-summary {
+            position: sticky;
+            top: 6rem;
+        }
+    }
+
+    .gk-checkout-item {
+        display: grid;
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .gk-checkout-item img {
+        width: 54px;
+        height: 54px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+
+    .gk-checkout-totals {
+        display: grid;
+        gap: 0.65rem;
+        margin-top: 1rem;
+        font-size: 0.8rem;
+    }
+
+    .gk-checkout-total-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        color: #4b5563;
+    }
+
+    .gk-checkout-total-row.is-final {
+        margin-top: 0.25rem;
+        border-top: 1px solid #d1d5db;
+        padding-top: 0.85rem;
+        color: #111827;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .gk-checkout-total-row.is-final span:last-child {
+        color: #2D6A4F;
+        font-size: 1.35rem;
+    }
+
+    .gk-checkout-logistics {
+        border: 1px solid #dcebe3;
+        border-radius: 6px;
+        background: #f0f7f3;
+        padding: 0.75rem;
+        color: #4b5563;
+        font-size: 0.72rem;
+    }
+
+    .gk-checkout-submit {
+        width: 100%;
+        min-height: 46px;
+        margin-top: 1rem;
+        border: 0;
+        border-radius: 6px;
+        background: #2D6A4F;
+        color: #ffffff;
+        font-size: 0.85rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .gk-checkout-submit:hover {
+        background: #1f513b;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="max-w-6xl mx-auto px-4 py-8" x-data="{
+<div class="gk-checkout" x-data="{
     addresses: {{ $addresses->toJson() }},
     selectedAddressId: null,
     orderValue: @js((float) $orderValue),
@@ -16,7 +261,6 @@
         address_line_1: @js(old('address_line_1')),
         address_line_2: @js(old('address_line_2')),
         city: @js(old('city')),
-        district: @js(old('district')),
         division: @js(old('division', count($divisions) ? $divisions[0] : '')),
         postal_code: @js(old('postal_code'))
     },
@@ -35,7 +279,6 @@
             this.formData.address_line_1 = addr.address_line_1;
             this.formData.address_line_2 = addr.address_line_2 || '';
             this.formData.city = addr.city;
-            this.formData.district = addr.district;
             this.formData.division = addr.division;
             this.formData.postal_code = addr.postal_code || '';
         }
@@ -64,17 +307,34 @@
         return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
     }
 }">
-    <h1 class="text-3xl font-bold text-gray-800 mb-8">{{ __('general.checkout_title') }}</h1>
+    <nav class="gk-checkout-breadcrumb">
+        <div class="gk-checkout-container gk-checkout-breadcrumb-inner">
+            <a href="{{ route('home') }}">{{ __('general.home') }}</a>
+            <span>/</span>
+            <a href="{{ route('cart.index') }}">{{ __('general.cart') }}</a>
+            <span>/</span>
+            <span>{{ __('general.checkout') }}</span>
+        </div>
+    </nav>
 
+    <header class="gk-checkout-head">
+        <div class="gk-checkout-container">
+            <div class="gk-checkout-kicker">Secure checkout</div>
+            <h1 class="gk-checkout-title">{{ __('general.checkout_title') }}</h1>
+            <p class="gk-checkout-subtitle">Confirm your delivery details and complete the order.</p>
+        </div>
+    </header>
+
+    <div class="gk-checkout-container">
     @if(session('error'))
-    <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm font-medium">
-        ⚠️ {{ session('error') }}
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mt-5 text-sm font-medium">
+        {{ session('error') }}
     </div>
     @endif
 
     @if($errors->any())
-    <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">
-        <div class="font-bold mb-1">⚠️ {{ __('general.please_correct_errors', 'Please correct the errors below:') }}</div>
+    <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mt-5 text-sm">
+        <div class="font-bold mb-1">{{ __('general.please_correct_errors', 'Please correct the errors below:') }}</div>
         <ul class="list-disc pl-5 space-y-1">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -83,19 +343,22 @@
     </div>
     @endif
 
-    <form method="POST" action="{{ route('checkout.store') }}" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <form method="POST" action="{{ route('checkout.store') }}" class="gk-checkout-layout">
         @csrf
 
         <!-- Shipping Info -->
-        <div class="space-y-5">
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 class="font-bold text-gray-800 text-xl mb-5">{{ __('general.shipping_information') }}</h2>
+        <div class="gk-checkout-stack">
+            <section class="gk-checkout-panel">
+                <div class="gk-checkout-section-head">
+                    <h2>{{ __('general.shipping_information') }}</h2>
+                    <p>Enter the address where you want to receive the order.</p>
+                </div>
 
                 @if($addresses->isNotEmpty())
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('general.use_saved_address') }}</label>
                     @foreach($addresses as $address)
-                    <label class="flex items-start gap-3 p-3 border rounded-lg mb-2 cursor-pointer hover:border-[#2D6A4F] transition has-[:checked]:border-[#2D6A4F] has-[:checked]:bg-green-50">
+                    <label class="gk-checkout-address flex items-start gap-3 p-3 mb-2 cursor-pointer">
                         <input type="radio" name="saved_address" value="{{ $address->id }}" x-model="selectedAddressId" @change="selectAddress($el.value)" class="mt-1 text-[#2D6A4F]">
                         <div class="text-sm">
                             <div class="font-semibold">{{ $address->full_name }} <span class="text-xs bg-gray-100 px-2 py-0.5 rounded-full">{{ $address->label->label() }}</span></div>
@@ -108,61 +371,56 @@
                 @endif
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.full_name') }} *</label>
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.full_name') }} *</label>
                         <input type="text" name="full_name" x-model="formData.full_name" required
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F] @error('full_name') border-red-400 @enderror">
+                            class="@error('full_name') border-red-400 @enderror">
                         @error('full_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     @guest
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.email') }} *</label>
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.email') }} *</label>
                         <input type="email" name="email" x-model="formData.email" required
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F] @error('email') border-red-400 @enderror">
+                            class="@error('email') border-red-400 @enderror">
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     @endguest
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.phone') }} *</label>
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.phone') }} *</label>
                         <input type="text" name="phone" x-model="formData.phone" required
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F] @error('phone') border-red-400 @enderror">
+                            class="@error('phone') border-red-400 @enderror">
                         @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.address_line_1') }} *</label>
+                    <div class="gk-checkout-field sm:col-span-2">
+                        <label>{{ __('general.address_line_1') }} *</label>
                         <input type="text" name="address_line_1" x-model="formData.address_line_1" required
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
+                            >
                     </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.address_line_2') }}</label>
+                    <div class="gk-checkout-field sm:col-span-2">
+                        <label>{{ __('general.address_line_2') }}</label>
                         <input type="text" name="address_line_2" x-model="formData.address_line_2"
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
+                            >
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.city') }} *</label>
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.city') }} *</label>
                         <input type="text" name="city" x-model.trim="formData.city" required placeholder="Dhaka"
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
+                            >
                         <p class="mt-1 text-xs text-gray-500" x-show="formData.city">
                             <span x-text="isDhakaCity ? 'Inside Dhaka city rate selected' : 'Outside Dhaka rate selected'"></span>
                         </p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.district') }} *</label>
-                        <input type="text" name="district" x-model="formData.district" required
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.division') }} *</label>
-                        <select name="division" x-model="formData.division" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.division') }} *</label>
+                        <select name="division" x-model="formData.division" required>
                             @foreach($divisions as $division)
                             <option value="{{ $division }}">{{ $division }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.postal_code') }}</label>
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.postal_code') }}</label>
                         <input type="text" name="postal_code" x-model="formData.postal_code"
-                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
+                            >
                     </div>
                 </div>
                 @auth
@@ -171,14 +429,17 @@
                     {{ __('general.save_address') }}
                 </label>
                 @endauth
-            </div>
+            </section>
 
             <!-- Payment Method -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 class="font-bold text-gray-800 text-xl mb-5">{{ __('general.payment_method') }}</h2>
+            <section class="gk-checkout-panel">
+                <div class="gk-checkout-section-head">
+                    <h2>{{ __('general.payment_method') }}</h2>
+                    <p>Select how you would like to pay.</p>
+                </div>
                 <div class="space-y-3">
                     @foreach(\App\Enums\PaymentMethod::cases() as $method)
-                    <label class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:border-[#2D6A4F] transition has-[:checked]:border-[#2D6A4F] has-[:checked]:bg-green-50">
+                    <label class="gk-checkout-payment flex items-center gap-3 p-4 cursor-pointer">
                         <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#2D6A4F]">
                         <div>
                             <div class="font-semibold text-sm">{{ $method->label() }}</div>
@@ -189,24 +450,29 @@
                     </label>
                     @endforeach
                 </div>
-            </div>
+            </section>
 
             <!-- Notes -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 class="font-bold text-gray-800 text-xl mb-3">{{ __('general.order_notes') }}</h2>
+            <section class="gk-checkout-panel gk-checkout-field">
+                <div class="gk-checkout-section-head">
+                    <h2>{{ __('general.order_notes') }}</h2>
+                    <p>Add any delivery instruction for this order.</p>
+                </div>
                 <textarea name="notes" rows="3" placeholder="{{ __('general.special_instructions') }}"
-                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]"></textarea>
-            </div>
+                    ></textarea>
+            </section>
         </div>
 
         <!-- Order Summary -->
-        <div>
-            <div class="bg-white rounded-2xl p-6 shadow-sm sticky top-24">
-                <h2 class="font-bold text-gray-800 text-xl mb-5">{{ __('general.your_order') }}</h2>
-                <div class="space-y-3 mb-5">
+        <aside class="gk-checkout-summary">
+                <div class="gk-checkout-section-head">
+                    <h2>{{ __('general.your_order') }}</h2>
+                    <p>{{ $cart->item_count }} item{{ $cart->item_count === 1 ? '' : 's' }} ready to order.</p>
+                </div>
+                <div>
                     @foreach($cart->items as $item)
-                    <div class="flex items-center gap-3">
-                        <img src="{{ $item->product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}" alt="{{ $item->product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';" class="w-14 h-14 object-cover rounded-lg">
+                    <div class="gk-checkout-item">
+                        <img src="{{ $item->product->primaryImage?->url ?? asset('images/product-placeholder.svg') }}" alt="{{ $item->product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';">
                         <div class="flex-1 text-sm">
                             <div class="font-medium">{{ $item->product->name }}</div>
                             @if($item->variant) <div class="text-gray-400">{{ $item->variant->name }}</div> @endif
@@ -216,31 +482,29 @@
                     </div>
                     @endforeach
                 </div>
-                <hr class="mb-4">
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between text-gray-600"><span>{{ __('general.subtotal') }}</span><span>৳{{ number_format($cart->subtotal, 0) }}</span></div>
+                <div class="gk-checkout-totals">
+                    <div class="gk-checkout-total-row"><span>{{ __('general.subtotal') }}</span><span>৳{{ number_format($cart->subtotal, 0) }}</span></div>
                     @if($cart->coupon)
-                    <div class="flex justify-between text-green-600"><span>{{ __('general.coupon') }} ({{ $cart->coupon->code }})</span><span>-৳{{ number_format($cart->coupon->calculateDiscount($cart->subtotal), 0) }}</span></div>
+                    <div class="gk-checkout-total-row text-green-600"><span>{{ __('general.coupon') }} ({{ $cart->coupon->code }})</span><span>-৳{{ number_format($cart->coupon->calculateDiscount($cart->subtotal), 0) }}</span></div>
                     @endif
-                    <div class="flex justify-between text-gray-600">
+                    <div class="gk-checkout-total-row">
                         <span>{{ __('general.shipping') }}</span>
                         <span x-text="shippingCharge > 0 ? '৳' + formatMoney(shippingCharge) : @js(__('general.free'))"></span>
                     </div>
-                    <div class="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
+                    <div class="gk-checkout-logistics">
                         <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-gray-800">{{ $deliveryTime }}</strong></div>
                         <div class="mt-1 flex justify-between gap-3"><span>Delivery Partner</span><strong class="text-gray-800">{{ $deliveryPartner }}</strong></div>
                     </div>
-                    <hr>
-                    <div class="flex justify-between font-bold text-gray-800 text-base">
+                    <div class="gk-checkout-total-row is-final">
                         <span>{{ __('general.total') }}</span>
                         <span x-text="'৳' + formatMoney(checkoutTotal)"></span>
                     </div>
                 </div>
-                <button type="submit" class="w-full mt-6 bg-[#2D6A4F] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#52B788] transition">
-                    🛒 {{ __('general.place_order') }}
+                <button type="submit" class="gk-checkout-submit">
+                    {{ __('general.place_order') }}
                 </button>
-            </div>
-        </div>
+        </aside>
     </form>
+    </div>
 </div>
 @endsection
