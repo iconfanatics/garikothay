@@ -5,8 +5,15 @@
 <style>
     .gk-checkout {
         min-height: 100vh;
-        background: #f8fafc;
+        background: #f3f4f6;
         color: #111827;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .gk-checkout h1,
+    .gk-checkout h2 {
+        font-family: 'Oswald', 'Inter', sans-serif;
+        letter-spacing: 0;
     }
 
     .gk-checkout-container {
@@ -37,52 +44,52 @@
     }
 
     .gk-checkout-breadcrumb a:hover {
-        color: #2D6A4F;
+        color: #e11d48;
     }
 
     .gk-checkout-head {
         border-bottom: 1px solid #e5e7eb;
         background: #ffffff;
-        padding: 1.55rem 0;
+        padding: 0.9rem 0;
     }
 
     .gk-checkout-kicker {
-        color: #2D6A4F;
-        font-size: 0.7rem;
+        color: #e11d48;
+        font-size: 0.64rem;
         font-weight: 800;
         text-transform: uppercase;
     }
 
     .gk-checkout-title {
-        margin-top: 0.15rem;
-        font-size: clamp(1.7rem, 3vw, 2.25rem);
+        margin-top: 0.1rem;
+        font-size: 1.55rem;
         font-weight: 800;
         line-height: 1.1;
     }
 
     .gk-checkout-subtitle {
-        margin-top: 0.4rem;
+        margin-top: 0.2rem;
         color: #6b7280;
-        font-size: 0.84rem;
+        font-size: 0.76rem;
     }
 
     .gk-checkout-layout {
         display: grid;
-        gap: 1.5rem;
+        gap: 1rem;
         align-items: start;
-        padding-top: 2rem;
-        padding-bottom: 3rem;
+        padding-top: 1rem;
+        padding-bottom: 2rem;
     }
 
     @media (min-width: 1024px) {
         .gk-checkout-layout {
-            grid-template-columns: minmax(0, 1fr) 380px;
+            grid-template-columns: minmax(0, 1fr) 350px;
         }
     }
 
     .gk-checkout-stack {
         display: grid;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .gk-checkout-panel,
@@ -93,31 +100,31 @@
     }
 
     .gk-checkout-panel {
-        padding: 1.25rem;
+        padding: 0.9rem;
     }
 
     .gk-checkout-section-head {
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #e5e7eb;
-        padding-bottom: 0.8rem;
+        margin-bottom: 0.75rem;
+        border-bottom: 2px solid #e11d48;
+        padding-bottom: 0.55rem;
     }
 
     .gk-checkout-section-head h2 {
-        font-size: 1rem;
+        font-size: 0.92rem;
         font-weight: 800;
     }
 
     .gk-checkout-section-head p {
-        margin-top: 0.2rem;
+        margin-top: 0.1rem;
         color: #6b7280;
-        font-size: 0.74rem;
+        font-size: 0.68rem;
     }
 
     .gk-checkout-field label {
         display: block;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.25rem;
         color: #374151;
-        font-size: 0.76rem;
+        font-size: 0.7rem;
         font-weight: 700;
     }
 
@@ -126,20 +133,25 @@
     .gk-checkout-field textarea {
         width: 100%;
         border: 1px solid #d1d5db;
-        border-radius: 6px;
+        border-radius: 4px;
         background: #ffffff;
-        padding: 0.7rem 0.8rem;
+        min-height: 36px;
+        padding: 0.45rem 0.65rem;
         color: #111827;
-        font-size: 0.82rem;
+        font-size: 0.76rem;
         outline: none;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .gk-checkout-field textarea {
+        min-height: 64px;
     }
 
     .gk-checkout-field input:focus,
     .gk-checkout-field select:focus,
     .gk-checkout-field textarea:focus {
-        border-color: #2D6A4F;
-        box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        border-color: #e11d48;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.09);
     }
 
     .gk-checkout-address,
@@ -152,17 +164,17 @@
 
     .gk-checkout-address:hover,
     .gk-checkout-payment:hover {
-        border-color: #74a88f;
+        border-color: #fda4af;
     }
 
     .gk-checkout-address:has(input:checked),
     .gk-checkout-payment:has(input:checked) {
-        border-color: #2D6A4F;
-        background: #f0f7f3;
+        border-color: #e11d48;
+        background: #fff1f2;
     }
 
     .gk-checkout-summary {
-        padding: 1.25rem;
+        padding: 0.9rem;
     }
 
     @media (min-width: 1024px) {
@@ -174,16 +186,16 @@
 
     .gk-checkout-item {
         display: grid;
-        grid-template-columns: 54px minmax(0, 1fr) auto;
+        grid-template-columns: 48px minmax(0, 1fr) auto;
         gap: 0.75rem;
         align-items: center;
-        padding: 0.7rem 0;
+        padding: 0.55rem 0;
         border-bottom: 1px solid #f1f5f9;
     }
 
     .gk-checkout-item img {
-        width: 54px;
-        height: 54px;
+        width: 48px;
+        height: 48px;
         border: 1px solid #e5e7eb;
         border-radius: 6px;
         object-fit: cover;
@@ -191,9 +203,9 @@
 
     .gk-checkout-totals {
         display: grid;
-        gap: 0.65rem;
-        margin-top: 1rem;
-        font-size: 0.8rem;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        font-size: 0.74rem;
     }
 
     .gk-checkout-total-row {
@@ -206,42 +218,42 @@
     .gk-checkout-total-row.is-final {
         margin-top: 0.25rem;
         border-top: 1px solid #d1d5db;
-        padding-top: 0.85rem;
+        padding-top: 0.65rem;
         color: #111827;
         font-size: 1rem;
         font-weight: 800;
     }
 
     .gk-checkout-total-row.is-final span:last-child {
-        color: #2D6A4F;
-        font-size: 1.35rem;
+        color: #e11d48;
+        font-size: 1.2rem;
     }
 
     .gk-checkout-logistics {
-        border: 1px solid #dcebe3;
-        border-radius: 6px;
-        background: #f0f7f3;
-        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        background: #f9fafb;
+        padding: 0.6rem;
         color: #4b5563;
         font-size: 0.72rem;
     }
 
     .gk-checkout-submit {
         width: 100%;
-        min-height: 46px;
-        margin-top: 1rem;
+        min-height: 40px;
+        margin-top: 0.75rem;
         border: 0;
-        border-radius: 6px;
-        background: #2D6A4F;
+        border-radius: 4px;
+        background: #111827;
         color: #ffffff;
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         font-weight: 800;
         cursor: pointer;
         transition: background 0.2s ease;
     }
 
     .gk-checkout-submit:hover {
-        background: #1f513b;
+        background: #e11d48;
     }
 </style>
 @endpush
@@ -359,18 +371,18 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('general.use_saved_address') }}</label>
                     @foreach($addresses as $address)
                     <label class="gk-checkout-address flex items-start gap-3 p-3 mb-2 cursor-pointer">
-                        <input type="radio" name="saved_address" value="{{ $address->id }}" x-model="selectedAddressId" @change="selectAddress($el.value)" class="mt-1 text-[#2D6A4F]">
+                        <input type="radio" name="saved_address" value="{{ $address->id }}" x-model="selectedAddressId" @change="selectAddress($el.value)" class="mt-1 text-[#e11d48]">
                         <div class="text-sm">
                             <div class="font-semibold">{{ $address->full_name }} <span class="text-xs bg-gray-100 px-2 py-0.5 rounded-full">{{ $address->label->label() }}</span></div>
                             <div class="text-gray-500">{{ $address->full_address }}</div>
                         </div>
                     </label>
                     @endforeach
-                    <div class="text-sm text-[#2D6A4F] font-medium mt-2">{{ __('general.new_address_below') }}</div>
+                    <div class="text-xs text-[#e11d48] font-medium mt-2">{{ __('general.new_address_below') }}</div>
                 </div>
                 @endif
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                     <div class="gk-checkout-field">
                         <label>{{ __('general.full_name') }} *</label>
                         <input type="text" name="full_name" x-model="formData.full_name" required
@@ -391,12 +403,12 @@
                             class="@error('phone') border-red-400 @enderror">
                         @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="gk-checkout-field sm:col-span-2">
+                    <div class="gk-checkout-field sm:col-span-2 xl:col-span-2">
                         <label>{{ __('general.address_line_1') }} *</label>
                         <input type="text" name="address_line_1" x-model="formData.address_line_1" required
                             >
                     </div>
-                    <div class="gk-checkout-field sm:col-span-2">
+                    <div class="gk-checkout-field">
                         <label>{{ __('general.address_line_2') }}</label>
                         <input type="text" name="address_line_2" x-model="formData.address_line_2"
                             >
@@ -424,8 +436,8 @@
                     </div>
                 </div>
                 @auth
-                <label class="flex items-center gap-2 mt-4 text-sm text-gray-600 cursor-pointer">
-                    <input type="checkbox" name="save_address" value="1" class="text-[#2D6A4F]">
+                <label class="flex items-center gap-2 mt-3 text-xs text-gray-600 cursor-pointer">
+                    <input type="checkbox" name="save_address" value="1" class="text-[#e11d48]">
                     {{ __('general.save_address') }}
                 </label>
                 @endauth
@@ -437,10 +449,10 @@
                     <h2>{{ __('general.payment_method') }}</h2>
                     <p>Select how you would like to pay.</p>
                 </div>
-                <div class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     @foreach(\App\Enums\PaymentMethod::cases() as $method)
-                    <label class="gk-checkout-payment flex items-center gap-3 p-4 cursor-pointer">
-                        <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#2D6A4F]">
+                    <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer">
+                        <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#e11d48]">
                         <div>
                             <div class="font-semibold text-sm">{{ $method->label() }}</div>
                             @if($method->value === 'cod')
@@ -458,7 +470,7 @@
                     <h2>{{ __('general.order_notes') }}</h2>
                     <p>Add any delivery instruction for this order.</p>
                 </div>
-                <textarea name="notes" rows="3" placeholder="{{ __('general.special_instructions') }}"
+                <textarea name="notes" rows="2" placeholder="{{ __('general.special_instructions') }}"
                     ></textarea>
             </section>
         </div>
