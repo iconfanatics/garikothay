@@ -26,6 +26,7 @@ class CreateProduct extends CreateRecord
             $record->setTranslation($locale, $translationData);
         }
 
-        $record->syncImages($this->data['image_paths'] ?? []);
+        $formState = $this->form->getRawState();
+        $record->syncImages($formState['image_paths'] ?? []);
     }
 }
