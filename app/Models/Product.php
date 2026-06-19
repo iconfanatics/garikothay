@@ -35,6 +35,12 @@ class Product extends Model
         'cost_price', 'stock_quantity', 'low_stock_threshold', 'weight_grams',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',
         'tax_rate', 'plant_type', 'sunlight', 'watering', 'difficulty', 'mature_size',
+        'supplier_name', 'supplier_contact_person', 'supplier_contact_number',
+        'supplier_address', 'minimum_selling_price', 'supplier_stock_status',
+        'supplier_stock_updated_at', 'product_source_url', 'supplier_product_code',
+        'has_return_support', 'is_authentic_product', 'supplier_shipping_charge',
+        'supplier_delivery_time', 'supplier_delivery_partner', 'warranty_type',
+        'warranty_duration', 'warranty_claim_process', 'internal_notes',
     ];
 
     protected function casts(): array
@@ -43,11 +49,16 @@ class Product extends Model
             'price' => 'decimal:2',
             'compare_price' => 'decimal:2',
             'cost_price' => 'decimal:2',
+            'minimum_selling_price' => 'decimal:2',
+            'supplier_shipping_charge' => 'decimal:2',
             'tax_rate' => 'decimal:2',
+            'supplier_stock_updated_at' => 'date',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'is_new_arrival' => 'boolean',
             'requires_shipping' => 'boolean',
+            'has_return_support' => 'boolean',
+            'is_authentic_product' => 'boolean',
             'plant_type' => PlantType::class,
             'sunlight' => SunlightRequirement::class,
             'watering' => WateringFrequency::class,
@@ -148,6 +159,24 @@ class Product extends Model
         }
 
         return (int) round((($this->compare_price - $this->price) / $this->compare_price) * 100);
+    }
+
+    public function getProfitMarginAttribute(): ?float
+    {
+        if ($this->cost_price === null) {
+            return null;
+        }
+
+        return round((float) $this->price - (float) $this->cost_price, 2);
+    }
+
+    public function getProfitMarginPercentageAttribute(): ?float
+    {
+        if ($this->cost_price === null || (float) $this->price <= 0) {
+            return null;
+        }
+
+        return round(($this->profit_margin / (float) $this->price) * 100, 2);
     }
 
     public function getAverageRatingAttribute(): float

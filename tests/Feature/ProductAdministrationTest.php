@@ -75,6 +75,54 @@ class ProductAdministrationTest extends TestCase
         Storage::disk('public')->assertMissing('products/old.jpg');
     }
 
+    public function test_supplier_and_operations_information_is_saved_and_stays_internal(): void
+    {
+        $product = Product::create([
+            'category_id' => $this->createCategory()->id,
+            'slug' => 'supplier-managed-headlight',
+            'price' => 5000,
+            'cost_price' => 3500,
+            'minimum_selling_price' => 4200,
+            'stock_quantity' => 5,
+            'supplier_name' => 'Internal Parts Supplier',
+            'supplier_contact_person' => 'Reference Person',
+            'supplier_contact_number' => '01700000000',
+            'supplier_address' => 'Internal supplier address',
+            'supplier_stock_status' => 'in_stock',
+            'supplier_stock_updated_at' => '2026-06-19',
+            'product_source_url' => 'https://supplier.example/product/123',
+            'supplier_product_code' => 'SUP-123',
+            'has_return_support' => true,
+            'is_authentic_product' => true,
+            'supplier_shipping_charge' => 100,
+            'supplier_delivery_time' => '2-3 business days',
+            'supplier_delivery_partner' => 'Steadfast',
+            'warranty_type' => 'supplier',
+            'warranty_duration' => '6 months',
+            'warranty_claim_process' => 'Contact the supplier with the invoice.',
+            'internal_notes' => 'Secret commission and payment terms.',
+            'is_active' => true,
+        ]);
+        $product->translations()->create([
+            'locale' => 'en',
+            'name' => 'Supplier Managed Headlight',
+        ]);
+
+        $this->assertSame(1500.0, $product->profit_margin);
+        $this->assertSame(30.0, $product->profit_margin_percentage);
+        $this->assertTrue($product->has_return_support);
+        $this->assertTrue($product->is_authentic_product);
+
+        $customerFacingViews = implode("\n", [
+            file_get_contents(resource_path('views/shop/show.blade.php')),
+            file_get_contents(resource_path('views/components/product-card.blade.php')),
+            file_get_contents(resource_path('views/home.blade.php')),
+        ]);
+
+        $this->assertStringNotContainsString('supplier_name', $customerFacingViews);
+        $this->assertStringNotContainsString('internal_notes', $customerFacingViews);
+    }
+
     private function createCategory(): Category
     {
         return Category::create([

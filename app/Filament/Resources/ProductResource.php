@@ -107,10 +107,42 @@ class ProductResource extends Resource
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Pricing & Stock')->schema([
-                    Forms\Components\Grid::make(3)->schema([
-                        Forms\Components\TextInput::make('price')->label('Price (৳)')->numeric()->required()->prefix('৳'),
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\TextInput::make('cost_price')
+                            ->label('Supplier Price (৳)')
+                            ->helperText('Internal purchase price. Customers cannot see this.')
+                            ->numeric()
+                            ->minValue(0)
+                            ->prefix('৳')
+                            ->live(onBlur: true),
+                        Forms\Components\TextInput::make('price')
+                            ->label('Selling Price (৳)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->required()
+                            ->prefix('৳')
+                            ->live(onBlur: true),
                         Forms\Components\TextInput::make('compare_price')->label('Compare Price (৳)')->numeric()->prefix('৳'),
-                        Forms\Components\TextInput::make('cost_price')->label('Cost Price (৳)')->numeric()->prefix('৳'),
+                        Forms\Components\TextInput::make('minimum_selling_price')
+                            ->label('Minimum Selling Price (৳)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->prefix('৳'),
+                        Forms\Components\Placeholder::make('profit_margin_preview')
+                            ->label('Profit Margin')
+                            ->content(function (Forms\Get $get): string {
+                                $supplierPrice = (float) ($get('cost_price') ?? 0);
+                                $sellingPrice = (float) ($get('price') ?? 0);
+
+                                if ($sellingPrice <= 0 || $get('cost_price') === null || $get('cost_price') === '') {
+                                    return 'Enter supplier and selling prices';
+                                }
+
+                                $profit = $sellingPrice - $supplierPrice;
+                                $percentage = ($profit / $sellingPrice) * 100;
+
+                                return '৳' . number_format($profit, 2) . ' (' . number_format($percentage, 2) . '%)';
+                            }),
                     ]),
                     Forms\Components\Grid::make(3)->schema([
                         Forms\Components\TextInput::make('sku')
@@ -125,6 +157,126 @@ class ProductResource extends Resource
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\TextInput::make('weight_grams')->label('Weight (grams)')->numeric(),
                         Forms\Components\TextInput::make('tax_rate')->label('Tax Rate (%)')->numeric()->default(0),
+                    ]),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Supplier & Operations')->schema([
+                    Forms\Components\Section::make('Supplier / Shop Information')
+                        ->description('Internal supplier details. These fields are only visible in the admin panel.')
+                        ->schema([
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\TextInput::make('supplier_name')
+                                    ->label('Shop / Supplier Name')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('supplier_contact_person')
+                                    ->label('Contact Person')
+                                    ->helperText('Reference person, if applicable.')
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('supplier_contact_number')
+                                    ->label('Contact Number')
+                                    ->tel()
+                                    ->maxLength(30),
+                                Forms\Components\Textarea::make('supplier_address')
+                                    ->label('Shop Address')
+                                    ->rows(3),
+                            ]),
+                        ]),
+
+                    Forms\Components\Section::make('Stock Information')->schema([
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Select::make('supplier_stock_status')
+                                ->label('Supplier Stock Status')
+                                ->options([
+                                    'in_stock' => 'In Stock',
+                                    'limited' => 'Limited Stock',
+                                    'out_of_stock' => 'Out of Stock',
+                                    'pre_order' => 'Pre-order',
+                                    'unknown' => 'Unknown',
+                                ])
+                                ->native(false),
+                            Forms\Components\DatePicker::make('supplier_stock_updated_at')
+                                ->label('Stock Update Date')
+                                ->maxDate(now()),
+                        ]),
+                    ]),
+
+                    Forms\Components\Section::make('Product Management')->schema([
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('product_source_url')
+                                ->label('Product Source')
+                                ->helperText('Supplier product page link.')
+                                ->url()
+                                ->maxLength(2048),
+                            Forms\Components\TextInput::make('supplier_product_code')
+                                ->label('Supplier Product Code')
+                                ->maxLength(255),
+                            Forms\Components\Toggle::make('has_return_support')
+                                ->label('Return / Replacement Support')
+                                ->default(false),
+                            Forms\Components\Toggle::make('is_authentic_product')
+                                ->label('Authentic Product')
+                                ->default(false),
+                        ]),
+                    ]),
+
+                    Forms\Components\Section::make('Logistics')->schema([
+                        Forms\Components\Grid::make(3)->schema([
+                            Forms\Components\TextInput::make('supplier_shipping_charge')
+                                ->label('Shipping Charge (৳)')
+                                ->helperText('Supplier-side shipping cost; not shown to customers.')
+                                ->numeric()
+                                ->minValue(0)
+                                ->prefix('৳'),
+                            Forms\Components\TextInput::make('supplier_delivery_time')
+                                ->label('Delivery Time')
+                                ->placeholder('e.g. 2-3 business days')
+                                ->maxLength(255),
+                            Forms\Components\Select::make('supplier_delivery_partner')
+                                ->label('Delivery Partner Preference')
+                                ->options([
+                                    'Steadfast' => 'Steadfast',
+                                    'Pathao Courier' => 'Pathao Courier',
+                                    'RedX' => 'RedX',
+                                    'eCourier' => 'eCourier',
+                                    'Paperfly' => 'Paperfly',
+                                    'Sundarban Courier' => 'Sundarban Courier',
+                                    'SA Paribahan' => 'SA Paribahan',
+                                    'Janani Express' => 'Janani Express',
+                                    'Own Delivery' => 'Own Delivery',
+                                ])
+                                ->searchable(),
+                        ]),
+                    ]),
+
+                    Forms\Components\Section::make('Warranty')->schema([
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Select::make('warranty_type')
+                                ->label('Warranty Type')
+                                ->options([
+                                    'none' => 'No Warranty',
+                                    'supplier' => 'Supplier Warranty',
+                                    'manufacturer' => 'Manufacturer Warranty',
+                                    'shop' => 'Shop Warranty',
+                                    'replacement' => 'Replacement Warranty',
+                                ])
+                                ->native(false),
+                            Forms\Components\TextInput::make('warranty_duration')
+                                ->label('Warranty Duration')
+                                ->placeholder('e.g. 7 days, 6 months, 1 year')
+                                ->maxLength(255),
+                        ]),
+                        Forms\Components\Textarea::make('warranty_claim_process')
+                            ->label('Warranty Claim Process')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ]),
+
+                    Forms\Components\Section::make('Notes')->schema([
+                        Forms\Components\Textarea::make('internal_notes')
+                            ->label('Internal Notes')
+                            ->helperText('Special agreement, commission rate, payment terms, or instructions.')
+                            ->rows(5)
+                            ->columnSpanFull(),
                     ]),
                 ]),
 
