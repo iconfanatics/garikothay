@@ -99,7 +99,6 @@ class ShippingSettingsTest extends TestCase
             'phone' => '01700000000',
             'address_line_1' => 'Road 1',
             'city' => 'Dhaka',
-            'division' => 'Dhaka',
             'payment_method' => 'cod',
         ], (new CheckoutRequest())->rules());
 

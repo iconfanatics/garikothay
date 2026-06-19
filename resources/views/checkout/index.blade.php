@@ -273,7 +273,6 @@
         address_line_1: @js(old('address_line_1')),
         address_line_2: @js(old('address_line_2')),
         city: @js(old('city')),
-        division: @js(old('division', count($divisions) ? $divisions[0] : '')),
         postal_code: @js(old('postal_code'))
     },
     init() {
@@ -291,7 +290,6 @@
             this.formData.address_line_1 = addr.address_line_1;
             this.formData.address_line_2 = addr.address_line_2 || '';
             this.formData.city = addr.city;
-            this.formData.division = addr.division;
             this.formData.postal_code = addr.postal_code || '';
         }
     },
@@ -299,11 +297,9 @@
         return this.freeShippingThreshold > 0 && this.orderValue >= this.freeShippingThreshold;
     },
     get isDhakaCity() {
-        const division = String(this.formData.division || '').trim().toLocaleLowerCase();
         const city = String(this.formData.city || '').trim().toLocaleLowerCase();
 
-        return ['dhaka', 'ঢাকা'].includes(division)
-            && ['dhaka', 'dhaka city', 'dacca', 'ঢাকা', 'ঢাকা সিটি'].includes(city);
+        return ['dhaka', 'dhaka city', 'dacca', 'ঢাকা', 'ঢাকা সিটি'].includes(city);
     },
     get shippingCharge() {
         if (this.qualifiesForFreeShipping) {
@@ -389,6 +385,12 @@
                             class="@error('full_name') border-red-400 @enderror">
                         @error('full_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+                    <div class="gk-checkout-field">
+                        <label>Mobile Number *</label>
+                        <input type="tel" name="phone" x-model="formData.phone" required placeholder="01XXXXXXXXX"
+                            class="@error('phone') border-red-400 @enderror">
+                        @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
                     @guest
                     <div class="gk-checkout-field">
                         <label>{{ __('general.email') }} *</label>
@@ -397,12 +399,6 @@
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     @endguest
-                    <div class="gk-checkout-field">
-                        <label>{{ __('general.phone') }} *</label>
-                        <input type="text" name="phone" x-model="formData.phone" required
-                            class="@error('phone') border-red-400 @enderror">
-                        @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
                     <div class="gk-checkout-field sm:col-span-2 xl:col-span-2">
                         <label>{{ __('general.address_line_1') }} *</label>
                         <input type="text" name="address_line_1" x-model="formData.address_line_1" required
@@ -420,14 +416,6 @@
                         <p class="mt-1 text-xs text-gray-500" x-show="formData.city">
                             <span x-text="isDhakaCity ? 'Inside Dhaka city rate selected' : 'Outside Dhaka rate selected'"></span>
                         </p>
-                    </div>
-                    <div class="gk-checkout-field">
-                        <label>{{ __('general.division') }} *</label>
-                        <select name="division" x-model="formData.division" required>
-                            @foreach($divisions as $division)
-                            <option value="{{ $division }}">{{ $division }}</option>
-                            @endforeach
-                        </select>
                     </div>
                     <div class="gk-checkout-field">
                         <label>{{ __('general.postal_code') }}</label>
