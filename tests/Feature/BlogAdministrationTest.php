@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Filament\Resources\BlogResource\Pages\CreateBlog;
+use App\Filament\Resources\BlogCategoryResource\Pages\CreateBlogCategory;
 use App\Models\Admin;
 use App\Models\Blog;
 use App\Models\BlogCategory;
@@ -17,6 +18,34 @@ use Tests\TestCase;
 class BlogAdministrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_admin_can_create_a_blog_category(): void
+    {
+        $admin = Admin::create([
+            'name' => 'Site Admin',
+            'email' => 'category-admin@example.com',
+            'password' => 'password',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin, 'admin');
+
+        Livewire::test(CreateBlogCategory::class)
+            ->fillForm([
+                'translations' => [
+                    'en' => ['name' => 'Maintenance Guides'],
+                    'bn' => ['name' => 'রক্ষণাবেক্ষণ গাইড'],
+                ],
+                'slug' => 'maintenance-guides',
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $category = BlogCategory::with('translations')->firstOrFail();
+
+        $this->assertSame('Maintenance Guides', $category->getTranslation('name', 'en'));
+        $this->assertSame('রক্ষণাবেক্ষণ গাইড', $category->getTranslation('name', 'bn'));
+    }
 
     public function test_admin_can_create_a_published_blog_with_a_featured_image(): void
     {

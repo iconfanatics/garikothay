@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\BannerResource;
+use App\Filament\Resources\BlogCategoryResource;
 use App\Filament\Resources\BlogResource;
 use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\CouponResource;
@@ -73,6 +74,7 @@ class AdminPanelProvider extends PanelProvider
                 CouponResource::class,
                 ReviewResource::class,
                 BlogResource::class,
+                BlogCategoryResource::class,
                 BannerResource::class,
             ])
             ->pages([Dashboard::class, \App\Filament\Pages\Settings::class])

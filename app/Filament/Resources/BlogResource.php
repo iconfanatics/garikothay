@@ -94,12 +94,42 @@ class BlogResource extends Resource
                         ->unique(Blog::class, "slug", ignoreRecord: true),
                     Forms\Components\Select::make("blog_category_id")
                         ->label("Category")
-                        ->options(
+                        ->options(fn (): array =>
                             BlogCategory::with("translations")
                                 ->get()
-                                ->pluck("name", "id"),
+                                ->pluck("name", "id")
+                                ->all()
                         )
                         ->searchable()
+                        ->preload()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make("name_en")
+                                ->label("Name (English)")
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make("name_bn")
+                                ->label("Name (বাংলা)")
+                                ->maxLength(255),
+                        ])
+                        ->createOptionUsing(function (array $data): int {
+                            $baseSlug = Str::slug($data["name_en"]);
+                            $slug = $baseSlug;
+                            $suffix = 2;
+
+                            while (BlogCategory::where("slug", $slug)->exists()) {
+                                $slug = "{$baseSlug}-{$suffix}";
+                                $suffix++;
+                            }
+
+                            $category = BlogCategory::create(["slug" => $slug]);
+                            $category->setTranslation("en", ["name" => $data["name_en"]]);
+
+                            if (filled($data["name_bn"] ?? null)) {
+                                $category->setTranslation("bn", ["name" => $data["name_bn"]]);
+                            }
+
+                            return $category->id;
+                        })
                         ->required(),
                 ]),
                 Forms\Components\FileUpload::make("featured_image")
