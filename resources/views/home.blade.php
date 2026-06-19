@@ -1328,7 +1328,7 @@
                         <a href="{{ route('blog.show', $blog->slug) }}" class="gk-blog-card">
                             <div class="gk-blog-image">
                                 @if($blog->featured_image)
-                                    <img src="{{ Storage::url($blog->featured_image) }}" alt="{{ $blog->title }}">
+                                    <img src="{{ $blog->featured_image_url }}" alt="{{ $blog->title }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';">
                                 @else
                                     <div style="display:grid; place-items:center; height:100%; font-size:3rem;">🚗</div>
                                 @endif

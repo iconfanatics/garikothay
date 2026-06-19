@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Blog extends Model
 {
@@ -55,5 +56,12 @@ class Blog extends Model
     public function getExcerptAttribute(): ?string
     {
         return $this->getTranslation('excerpt');
+    }
+
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        return $this->featured_image
+            ? Storage::disk('public')->url($this->featured_image)
+            : null;
     }
 }

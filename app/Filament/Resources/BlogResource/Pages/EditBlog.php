@@ -43,6 +43,11 @@ class EditBlog extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         unset($data['translations']);
+
+        if (($data['is_published'] ?? false) && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
         return $data;
     }
 
@@ -52,6 +57,11 @@ class EditBlog extends EditRecord
         $translations = $this->data['translations'] ?? [];
         
         foreach ($translations as $locale => $translationData) {
+            if (blank($translationData['title'] ?? null)) {
+                continue;
+            }
+
+            $translationData['content'] ??= '';
             $record->setTranslation($locale, $translationData);
         }
     }

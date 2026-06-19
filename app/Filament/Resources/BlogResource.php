@@ -20,6 +20,7 @@ class BlogResource extends Resource
     protected static ?string $model = Blog::class;
     protected static ?string $navigationIcon = "heroicon-o-document-text";
     protected static ?string $navigationGroup = "Content";
+    protected static ?string $navigationLabel = "Blogs";
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -54,6 +55,10 @@ class BlogResource extends Resource
                             "translations.en.content",
                         )
                             ->label("Content (English)")
+                            ->required()
+                            ->fileAttachmentsDisk("public")
+                            ->fileAttachmentsDirectory("blog/content")
+                            ->fileAttachmentsVisibility("public")
                             ->columnSpanFull(),
                     ]),
                     Forms\Components\Tabs\Tab::make("বাংলা")->schema([
@@ -72,6 +77,9 @@ class BlogResource extends Resource
                             "translations.bn.content",
                         )
                             ->label("বিষয়বস্তু (বাংলা)")
+                            ->fileAttachmentsDisk("public")
+                            ->fileAttachmentsDirectory("blog/content")
+                            ->fileAttachmentsVisibility("public")
                             ->columnSpanFull(),
                     ]),
                 ]),
@@ -92,13 +100,21 @@ class BlogResource extends Resource
                                 ->pluck("name", "id"),
                         )
                         ->searchable()
-                        ->nullable(),
+                        ->required(),
                 ]),
                 Forms\Components\FileUpload::make("featured_image")
                     ->label("Featured Image")
+                    ->helperText("Recommended: 1600 x 900 px. JPG, PNG or WebP, maximum 4 MB.")
+                    ->disk("public")
                     ->image()
+                    ->imageEditor()
+                    ->acceptedFileTypes(["image/jpeg", "image/png", "image/webp"])
                     ->directory("blog")
+                    ->visibility("public")
                     ->maxSize(4096)
+                    ->imageResizeMode("contain")
+                    ->imageResizeTargetWidth("1600")
+                    ->imageResizeTargetHeight("900")
                     ->imagePreviewHeight("150"),
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\Toggle::make("is_published")
@@ -124,6 +140,8 @@ class BlogResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make("featured_image")
                     ->label("Image")
+                    ->disk("public")
+                    ->height(56)
                     ->defaultImageUrl(asset("images/placeholder.png")),
                 Tables\Columns\TextColumn::make("title")
                     ->label("Title")

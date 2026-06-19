@@ -26,8 +26,9 @@
                         <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition group">
                             @if($blog->featured_image)
                             <div class="overflow-hidden h-48">
-                                <img src="{{ asset('storage/' . $blog->featured_image) }}"
+                                <img src="{{ $blog->featured_image_url }}"
                                      alt="{{ $blog->getTranslation('title') }}"
+                                     onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
                                      class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             </div>
                             @else

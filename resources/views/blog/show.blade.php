@@ -4,15 +4,16 @@
 @section('meta_description', $blog->getTranslation('meta_description') ?: $blog->getTranslation('excerpt'))
 @section('og_title', $blog->getTranslation('title'))
 @section('og_description', $blog->getTranslation('excerpt'))
-@section('og_image', $blog->featured_image ? asset('storage/' . $blog->featured_image) : null)
+@section('og_image', $blog->featured_image_url)
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">
     <!-- Hero image -->
     @if($blog->featured_image)
     <div class="w-full h-72 md:h-96 overflow-hidden">
-        <img src="{{ asset('storage/' . $blog->featured_image) }}"
+        <img src="{{ $blog->featured_image_url }}"
              alt="{{ $blog->getTranslation('title') }}"
+             onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';"
              class="w-full h-full object-cover">
     </div>
     @endif
