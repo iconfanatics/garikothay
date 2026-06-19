@@ -44,6 +44,8 @@ class CheckoutService
                 : $this->shippingService->calculate($shippingAddress['division'] ?? 'Dhaka');
 
             $total = max(0, $subtotal - $discount + $shipping);
+            $shippingAddress['delivery_time'] = $this->shippingService->getDeliveryTime();
+            $shippingAddress['delivery_partner'] = $this->shippingService->getDeliveryPartner();
 
             $order = Order::create([
                 'user_id' => $user->id,

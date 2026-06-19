@@ -402,6 +402,12 @@
         display: block;
         color: #111827;
         font-size: 0.68rem;
+        overflow-wrap: anywhere;
+    }
+
+    .gk-cart-trust span {
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
 
     .gk-cart-empty {
@@ -630,12 +636,12 @@
 
                         <div class="gk-cart-total-row">
                             <span>{{ __('general.shipping') }}</span>
-                            <span>{{ __('general.calculated_at_checkout') }}</span>
+                            <span>{{ $shippingCharge > 0 ? '৳' . number_format($shippingCharge, 0) : __('general.free') }}</span>
                         </div>
 
                         @php
                             $cartDiscount = $cart->coupon ? $cart->coupon->calculateDiscount($cart->subtotal) : 0;
-                            $cartTotal = max(0, $cart->subtotal - $cartDiscount);
+                            $cartTotal = max(0, $cart->subtotal - $cartDiscount + $shippingCharge);
                         @endphp
                         <div class="gk-cart-total-row is-final">
                             <span>{{ __('general.total') }}</span>
@@ -650,9 +656,9 @@
                     <a href="{{ route('shop.index') }}" class="gk-cart-continue">← {{ __('general.continue_shopping') }}</a>
 
                     <div class="gk-cart-trust">
-                        <span><strong>Genuine</strong>Products</span>
+                        <span><strong>{{ $deliveryPartner }}</strong>Partner</span>
+                        <span><strong>{{ $deliveryTime }}</strong>Delivery</span>
                         <span><strong>Secure</strong>Checkout</span>
-                        <span><strong>7-day</strong>Returns</span>
                     </div>
                 </aside>
             </div>

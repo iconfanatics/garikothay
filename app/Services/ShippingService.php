@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Setting;
+
 class ShippingService
 {
     private array $zones = [
@@ -19,25 +21,24 @@ class ShippingService
 
     public function calculate(string $division, int $weightGrams = 0): float
     {
-        $zone = $this->zones[$division] ?? ['base' => 150, 'per_kg' => 50];
-        $weightKg = $weightGrams / 1000;
-        $extraWeight = max(0, $weightKg - 1);
-
-        return $zone['base'] + ($extraWeight * $zone['per_kg']);
+        return max(0, (float) Setting::get('shipping_charge', 120));
     }
 
-    public function getEstimatedDays(string $division): int
+    public function getDeliveryTime(): string
     {
-        return match($division) {
-            'Dhaka' => 1,
-            'Chittagong', 'Mymensingh' => 2,
-            default => 3,
-        };
+        return (string) Setting::get('delivery_time', '2-5 business days');
+    }
+
+    public function getDeliveryPartner(): string
+    {
+        return (string) Setting::get('delivery_partner', 'Steadfast');
     }
 
     public function isFreeShipping(float $orderTotal): bool
     {
-        return $orderTotal >= (float) \App\Models\Setting::get('free_shipping_threshold', '1500');
+        $threshold = (float) Setting::get('free_shipping_threshold', 1500);
+
+        return $threshold > 0 && $orderTotal >= $threshold;
     }
 
     public function getDivisions(): array

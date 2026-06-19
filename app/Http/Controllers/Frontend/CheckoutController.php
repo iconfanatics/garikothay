@@ -35,12 +35,22 @@ class CheckoutController extends Controller
         }
 
         $cart = $this->cartService->getCart()->load('items.product.images', 'coupon');
+        $discount = $cart->coupon && $cart->coupon->isValid()
+            ? $cart->coupon->calculateDiscount($cart->subtotal)
+            : 0;
+        $orderValue = max(0, $cart->subtotal - $discount);
+        $shippingCharge = $this->shippingService->isFreeShipping($orderValue)
+            ? 0
+            : $this->shippingService->calculate('');
 
         return view('checkout.index', [
             'cart' => $cart,
             'addresses' => auth()->user()?->addresses ?? collect(),
             'divisions' => $this->shippingService->getDivisions(),
             'guestCheckoutEnabled' => $this->guestCheckoutEnabled(),
+            'shippingCharge' => $shippingCharge,
+            'deliveryTime' => $this->shippingService->getDeliveryTime(),
+            'deliveryPartner' => $this->shippingService->getDeliveryPartner(),
         ]);
     }
 

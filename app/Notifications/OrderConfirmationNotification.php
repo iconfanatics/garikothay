@@ -29,7 +29,7 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
             ->subject("Order Confirmed: {$this->order->order_number} | " . \App\Models\Setting::get('site_name', 'Garikothay'))
             ->greeting("Hello {$notifiable->name}! 💻")
             ->line("Your order **{$this->order->order_number}** has been confirmed.")
-            ->line("**Order Total:** ৳" . number_format($this->order->total, 2))
+            ->line("**Order Total:** ৳" . number_format((float) $this->order->total, 2))
             ->line("**Payment Method:** {$this->order->payment_method->label()}")
             ->action('Track Your Order', route('customer.order.show', $this->order->order_number))
             ->line('Thank you for shopping at ' . \App\Models\Setting::get('site_name', 'Garikothay') . '! Your items will be carefully packed and delivered.')

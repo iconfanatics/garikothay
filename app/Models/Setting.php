@@ -22,19 +22,13 @@ class Setting extends Model
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        static $memoryCache = [];
-
-        if (array_key_exists($key, $memoryCache)) {
-            return $memoryCache[$key];
-        }
-
         try {
-            return $memoryCache[$key] = Cache::remember("setting:{$key}", 3600, function () use ($key, $default) {
+            return Cache::remember("setting:{$key}", 3600, function () use ($key, $default) {
                 $setting = static::where('key', $key)->first();
                 return $setting ? $setting->getCastedValue() : $default;
             });
         } catch (QueryException) {
-            return $memoryCache[$key] = $default;
+            return $default;
         }
     }
 

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplyCouponRequest;
 use App\Services\CartService;
+use App\Services\ShippingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,17 +17,29 @@ class CartController extends Controller
 {
     public function __construct(
         private readonly CartService $cartService,
+        private readonly ShippingService $shippingService,
     ) {}
 
     public function index(): View
     {
+        $cart = $this->cartService->getCart()->load(
+            'items.product.images',
+            'items.product.category.translations',
+            'items.variant',
+            'coupon',
+        );
+        $discount = $cart->coupon && $cart->coupon->isValid()
+            ? $cart->coupon->calculateDiscount($cart->subtotal)
+            : 0;
+        $orderValue = max(0, $cart->subtotal - $discount);
+
         return view('cart.index', [
-            'cart' => $this->cartService->getCart()->load(
-                'items.product.images',
-                'items.product.category.translations',
-                'items.variant',
-                'coupon',
-            ),
+            'cart' => $cart,
+            'shippingCharge' => $this->shippingService->isFreeShipping($orderValue)
+                ? 0
+                : $this->shippingService->calculate(''),
+            'deliveryTime' => $this->shippingService->getDeliveryTime(),
+            'deliveryPartner' => $this->shippingService->getDeliveryPartner(),
         ]);
     }
 

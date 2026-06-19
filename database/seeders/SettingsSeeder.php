@@ -22,6 +22,9 @@ class SettingsSeeder extends Seeder
             ['group' => 'general', 'key' => 'site_logo', 'value' => 'settings/garikothay_logo.png', 'type' => SettingType::Image],
             ['group' => 'general', 'key' => 'site_favicon', 'value' => null, 'type' => SettingType::Image],
             ['group' => 'general', 'key' => 'free_shipping_threshold', 'value' => '1500', 'type' => SettingType::Number],
+            ['group' => 'logistics', 'key' => 'shipping_charge', 'value' => '120', 'type' => SettingType::Number],
+            ['group' => 'logistics', 'key' => 'delivery_time', 'value' => '2-5 business days', 'type' => SettingType::Text],
+            ['group' => 'logistics', 'key' => 'delivery_partner', 'value' => 'Steadfast', 'type' => SettingType::Text],
             // Checkout
             ['group' => 'checkout', 'key' => 'guest_checkout_enabled', 'value' => '1', 'type' => SettingType::Boolean],
             // Contact

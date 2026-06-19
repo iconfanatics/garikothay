@@ -67,6 +67,15 @@ class OrderResource extends Resource
                 ]),
             ]),
 
+            Forms\Components\Section::make('Logistics')->schema([
+                Forms\Components\TextInput::make('shipping_address.delivery_partner')
+                    ->label('Delivery Partner')
+                    ->disabled(),
+                Forms\Components\TextInput::make('shipping_address.delivery_time')
+                    ->label('Delivery Time')
+                    ->disabled(),
+            ])->columns(2),
+
             Forms\Components\Section::make('Notes')->schema([
                 Forms\Components\Textarea::make('notes')
                     ->label('Order Notes')

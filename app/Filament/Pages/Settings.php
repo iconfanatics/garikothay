@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Cache;
 
 class Settings extends Page
 {
@@ -30,6 +31,9 @@ class Settings extends Page
             'site_name' => $settings->get('site_name')?->value ?? '',
             'site_logo' => $settings->get('site_logo')?->value ?? '',
             'free_shipping_threshold' => $settings->get('free_shipping_threshold')?->value ?? '',
+            'shipping_charge' => $settings->get('shipping_charge')?->value ?? '120',
+            'delivery_time' => $settings->get('delivery_time')?->value ?? '2-5 business days',
+            'delivery_partner' => $settings->get('delivery_partner')?->value ?? 'Steadfast',
             'phone' => $settings->get('phone')?->value ?? '',
             'email' => $settings->get('email')?->value ?? '',
             'address' => $settings->get('address')?->value ?? '',
@@ -44,7 +48,40 @@ class Settings extends Page
                 Forms\Components\Section::make('General')->schema([
                     Forms\Components\TextInput::make('site_name')->label('Site Name'),
                     Forms\Components\FileUpload::make('site_logo')->label('Site Logo')->image()->directory('settings'),
-                    Forms\Components\TextInput::make('free_shipping_threshold')->label('Free Shipping Threshold (৳)')->numeric(),
+                ])->columns(2),
+                Forms\Components\Section::make('Logistics')->schema([
+                    Forms\Components\TextInput::make('shipping_charge')
+                        ->label('Shipping Charge (৳)')
+                        ->helperText('Flat shipping charge applied to orders.')
+                        ->numeric()
+                        ->minValue(0)
+                        ->required(),
+                    Forms\Components\TextInput::make('free_shipping_threshold')
+                        ->label('Free Shipping Threshold (৳)')
+                        ->helperText('Orders at or above this amount get free shipping. Set 0 to disable.')
+                        ->numeric()
+                        ->minValue(0)
+                        ->required(),
+                    Forms\Components\TextInput::make('delivery_time')
+                        ->label('Delivery Time')
+                        ->placeholder('2-5 business days')
+                        ->maxLength(100)
+                        ->required(),
+                    Forms\Components\Select::make('delivery_partner')
+                        ->label('Preferred Delivery Partner')
+                        ->options([
+                            'Steadfast' => 'Steadfast',
+                            'Pathao Courier' => 'Pathao Courier',
+                            'RedX' => 'RedX',
+                            'eCourier' => 'eCourier',
+                            'Paperfly' => 'Paperfly',
+                            'Sundarban Courier' => 'Sundarban Courier',
+                            'SA Paribahan' => 'SA Paribahan',
+                            'Janani Express' => 'Janani Express',
+                            'Own Delivery' => 'Own Delivery',
+                        ])
+                        ->searchable()
+                        ->required(),
                 ])->columns(2),
                 Forms\Components\Section::make('Contact')->schema([
                     Forms\Components\TextInput::make('phone')->label('Phone')->rule(new \App\Rules\BdPhone()),
@@ -68,7 +105,10 @@ class Settings extends Page
         $settingsMeta = [
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
             'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
-            'free_shipping_threshold' => ['group' => 'general', 'type' => SettingType::Number],
+            'free_shipping_threshold' => ['group' => 'logistics', 'type' => SettingType::Number],
+            'shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
+            'delivery_time' => ['group' => 'logistics', 'type' => SettingType::Text],
+            'delivery_partner' => ['group' => 'logistics', 'type' => SettingType::Text],
             'phone' => ['group' => 'contact', 'type' => SettingType::Text],
             'email' => ['group' => 'contact', 'type' => SettingType::Text],
             'address' => ['group' => 'contact', 'type' => SettingType::Textarea],
@@ -86,6 +126,7 @@ class Settings extends Page
                     'type' => $meta['type'],
                 ]
             );
+            Cache::forget("setting:{$key}");
         }
 
         Notification::make()

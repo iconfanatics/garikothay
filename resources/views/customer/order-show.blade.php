@@ -85,6 +85,16 @@
         <p class="text-gray-700 font-medium">{{ $order->shipping_name }}</p>
         <p class="text-gray-500 text-sm mt-1">{{ $order->shipping_phone }}</p>
         <p class="text-gray-500 text-sm">{{ $order->shipping_full_address }}</p>
+        @if($order->delivery_time || $order->delivery_partner)
+        <div class="mt-3 grid gap-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
+            @if($order->delivery_time)
+                <div><span class="font-medium text-gray-800">Delivery Time:</span> {{ $order->delivery_time }}</div>
+            @endif
+            @if($order->delivery_partner)
+                <div><span class="font-medium text-gray-800">Delivery Partner:</span> {{ $order->delivery_partner }}</div>
+            @endif
+        </div>
+        @endif
         @if($order->notes)
         <p class="text-gray-400 text-sm mt-2 italic">{{ __('general.note') }}: {{ $order->notes }}</p>
         @endif

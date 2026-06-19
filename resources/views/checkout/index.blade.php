@@ -192,13 +192,20 @@
                     @if($cart->coupon)
                     <div class="flex justify-between text-green-600"><span>{{ __('general.coupon') }} ({{ $cart->coupon->code }})</span><span>-৳{{ number_format($cart->coupon->calculateDiscount($cart->subtotal), 0) }}</span></div>
                     @endif
-                    <div class="flex justify-between text-gray-600"><span>{{ __('general.shipping') }}</span><span>{{ __('general.calculated_after_address') }}</span></div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>{{ __('general.shipping') }}</span>
+                        <span>{{ $shippingCharge > 0 ? '৳' . number_format($shippingCharge, 0) : __('general.free') }}</span>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
+                        <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-gray-800">{{ $deliveryTime }}</strong></div>
+                        <div class="mt-1 flex justify-between gap-3"><span>Delivery Partner</span><strong class="text-gray-800">{{ $deliveryPartner }}</strong></div>
+                    </div>
                     <hr>
                     <div class="flex justify-between font-bold text-gray-800 text-base">
                         <span>{{ __('general.total') }}</span>
                         @php
                             $checkoutDiscount = $cart->coupon ? $cart->coupon->calculateDiscount($cart->subtotal) : 0;
-                            $checkoutTotal = max(0, $cart->subtotal - $checkoutDiscount);
+                            $checkoutTotal = max(0, $cart->subtotal - $checkoutDiscount + $shippingCharge);
                         @endphp
                         <span>৳{{ number_format($checkoutTotal, 0) }}</span>
                     </div>

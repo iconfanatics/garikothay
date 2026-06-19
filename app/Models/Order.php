@@ -113,4 +113,14 @@ class Order extends Model
             $addr['postal_code'] ?? null,
         ]));
     }
+
+    public function getDeliveryTimeAttribute(): ?string
+    {
+        return $this->shipping_address['delivery_time'] ?? null;
+    }
+
+    public function getDeliveryPartnerAttribute(): ?string
+    {
+        return $this->shipping_address['delivery_partner'] ?? null;
+    }
 }

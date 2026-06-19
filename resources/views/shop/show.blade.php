@@ -495,6 +495,10 @@
     $approvedReviews = $product->reviews->where('is_approved', true);
     $categoryName = $product->category?->name ?? 'Garikothay';
     $brandName = $categoryName ?: 'Garikothay';
+    $freeShippingThreshold = (float) \App\Models\Setting::get('free_shipping_threshold', 1500);
+    $shippingCharge = (float) \App\Models\Setting::get('shipping_charge', 120);
+    $deliveryTime = \App\Models\Setting::get('delivery_time', '2-5 business days');
+    $deliveryPartner = \App\Models\Setting::get('delivery_partner', 'Steadfast');
 @endphp
 
 <div class="gk-product-page">
@@ -667,7 +671,10 @@
                     @endif
 
                     <div class="gk-trust-grid">
-                        <div><span>🚚</span>Free delivery over ৳5,000</div>
+                        <div>
+                            <span>🚚</span>
+                            {{ $freeShippingThreshold > 0 ? 'Free delivery over ৳' . number_format($freeShippingThreshold, 0) : 'Delivery ৳' . number_format($shippingCharge, 0) }}
+                        </div>
                         <div><span>🛡</span>100% Genuine</div>
                         <div><span>↻</span>7-day returns</div>
                     </div>
@@ -721,7 +728,13 @@
                     </div>
 
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'shipping' }">
-                        <p>Free shipping on orders over ৳5,000. Same-day dispatch within Dhaka when stock is available. Delivery usually takes 1-2 days inside Dhaka and 3-5 days outside Dhaka.</p>
+                        <p>
+                            Shipping charge: {{ $shippingCharge > 0 ? '৳' . number_format($shippingCharge, 0) : 'Free' }}.
+                            @if($freeShippingThreshold > 0)
+                                Orders over ৳{{ number_format($freeShippingThreshold, 0) }} qualify for free shipping.
+                            @endif
+                            Estimated delivery: {{ $deliveryTime }} via {{ $deliveryPartner }}.
+                        </p>
                     </div>
                 </div>
             </div>
