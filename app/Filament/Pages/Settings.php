@@ -26,12 +26,14 @@ class Settings extends Page
     public function mount(): void
     {
         $settings = Setting::all()->keyBy('key');
+        $legacyShippingCharge = $settings->get('shipping_charge')?->value ?? '150';
 
         $this->form->fill([
             'site_name' => $settings->get('site_name')?->value ?? '',
             'site_logo' => $settings->get('site_logo')?->value ?? '',
             'free_shipping_threshold' => $settings->get('free_shipping_threshold')?->value ?? '',
-            'shipping_charge' => $settings->get('shipping_charge')?->value ?? '120',
+            'dhaka_city_shipping_charge' => $settings->get('dhaka_city_shipping_charge')?->value ?? '80',
+            'outside_dhaka_shipping_charge' => $settings->get('outside_dhaka_shipping_charge')?->value ?? $legacyShippingCharge,
             'delivery_time' => $settings->get('delivery_time')?->value ?? '2-5 business days',
             'delivery_partner' => $settings->get('delivery_partner')?->value ?? 'Steadfast',
             'phone' => $settings->get('phone')?->value ?? '',
@@ -50,9 +52,15 @@ class Settings extends Page
                     Forms\Components\FileUpload::make('site_logo')->label('Site Logo')->image()->directory('settings'),
                 ])->columns(2),
                 Forms\Components\Section::make('Logistics')->schema([
-                    Forms\Components\TextInput::make('shipping_charge')
-                        ->label('Shipping Charge (৳)')
-                        ->helperText('Flat shipping charge applied to orders.')
+                    Forms\Components\TextInput::make('dhaka_city_shipping_charge')
+                        ->label('Inside Dhaka City Charge (৳)')
+                        ->helperText('Applied when both division and city are Dhaka.')
+                        ->numeric()
+                        ->minValue(0)
+                        ->required(),
+                    Forms\Components\TextInput::make('outside_dhaka_shipping_charge')
+                        ->label('Outside Dhaka Charge (৳)')
+                        ->helperText('Applied to every delivery outside Dhaka city.')
                         ->numeric()
                         ->minValue(0)
                         ->required(),
@@ -106,7 +114,8 @@ class Settings extends Page
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
             'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
             'free_shipping_threshold' => ['group' => 'logistics', 'type' => SettingType::Number],
-            'shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
+            'dhaka_city_shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
+            'outside_dhaka_shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
             'delivery_time' => ['group' => 'logistics', 'type' => SettingType::Text],
             'delivery_partner' => ['group' => 'logistics', 'type' => SettingType::Text],
             'phone' => ['group' => 'contact', 'type' => SettingType::Text],

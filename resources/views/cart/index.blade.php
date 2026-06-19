@@ -636,17 +636,18 @@
 
                         <div class="gk-cart-total-row">
                             <span>{{ __('general.shipping') }}</span>
-                            <span>{{ $shippingCharge > 0 ? '৳' . number_format($shippingCharge, 0) : __('general.free') }}</span>
+                            @if($freeShippingThreshold > 0 && $orderValue >= $freeShippingThreshold)
+                                <span>{{ __('general.free') }}</span>
+                            @else
+                                <span>৳{{ number_format($dhakaCityShippingCharge, 0) }} Dhaka / ৳{{ number_format($outsideDhakaShippingCharge, 0) }} Outside</span>
+                            @endif
                         </div>
 
-                        @php
-                            $cartDiscount = $cart->coupon ? $cart->coupon->calculateDiscount($cart->subtotal) : 0;
-                            $cartTotal = max(0, $cart->subtotal - $cartDiscount + $shippingCharge);
-                        @endphp
                         <div class="gk-cart-total-row is-final">
-                            <span>{{ __('general.total') }}</span>
-                            <strong>৳{{ number_format($cartTotal, 0) }}</strong>
+                            <span>Total before shipping</span>
+                            <strong>৳{{ number_format($orderValue, 0) }}</strong>
                         </div>
+                        <p style="margin:0; color:#6b7280; font-size:0.75rem;">Final total updates after city selection at checkout.</p>
                     </div>
 
                     <a href="{{ route('checkout.index') }}" class="gk-cart-checkout">

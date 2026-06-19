@@ -39,16 +39,16 @@ class CheckoutController extends Controller
             ? $cart->coupon->calculateDiscount($cart->subtotal)
             : 0;
         $orderValue = max(0, $cart->subtotal - $discount);
-        $shippingCharge = $this->shippingService->isFreeShipping($orderValue)
-            ? 0
-            : $this->shippingService->calculate('');
 
         return view('checkout.index', [
             'cart' => $cart,
             'addresses' => auth()->user()?->addresses ?? collect(),
             'divisions' => $this->shippingService->getDivisions(),
             'guestCheckoutEnabled' => $this->guestCheckoutEnabled(),
-            'shippingCharge' => $shippingCharge,
+            'orderValue' => $orderValue,
+            'freeShippingThreshold' => (float) Setting::get('free_shipping_threshold', 1500),
+            'dhakaCityShippingCharge' => $this->shippingService->getDhakaCityCharge(),
+            'outsideDhakaShippingCharge' => $this->shippingService->getOutsideDhakaCharge(),
             'deliveryTime' => $this->shippingService->getDeliveryTime(),
             'deliveryPartner' => $this->shippingService->getDeliveryPartner(),
         ]);

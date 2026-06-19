@@ -22,14 +22,18 @@ class ShippingSettingsTest extends TestCase
 
     public function test_shipping_service_uses_merchant_logistics_settings(): void
     {
-        $this->setSetting('shipping_charge', '175', SettingType::Number);
+        $this->setSetting('dhaka_city_shipping_charge', '80', SettingType::Number);
+        $this->setSetting('outside_dhaka_shipping_charge', '150', SettingType::Number);
         $this->setSetting('free_shipping_threshold', '0', SettingType::Number);
         $this->setSetting('delivery_time', '3-5 business days', SettingType::Text);
         $this->setSetting('delivery_partner', 'Pathao Courier', SettingType::Text);
 
         $shipping = app(ShippingService::class);
 
-        $this->assertSame(175.0, $shipping->calculate('Dhaka'));
+        $this->assertSame(80.0, $shipping->calculate('Dhaka', 'Dhaka'));
+        $this->assertSame(80.0, $shipping->calculate('ঢাকা', 'ঢাকা'));
+        $this->assertSame(150.0, $shipping->calculate('Dhaka', 'Savar'));
+        $this->assertSame(150.0, $shipping->calculate('Chittagong', 'Chittagong'));
         $this->assertFalse($shipping->isFreeShipping(100000));
         $this->assertSame('3-5 business days', $shipping->getDeliveryTime());
         $this->assertSame('Pathao Courier', $shipping->getDeliveryPartner());
@@ -37,7 +41,8 @@ class ShippingSettingsTest extends TestCase
 
     public function test_checkout_saves_shipping_charge_and_logistics_snapshot(): void
     {
-        $this->setSetting('shipping_charge', '150', SettingType::Number);
+        $this->setSetting('dhaka_city_shipping_charge', '80', SettingType::Number);
+        $this->setSetting('outside_dhaka_shipping_charge', '150', SettingType::Number);
         $this->setSetting('free_shipping_threshold', '5000', SettingType::Number);
         $this->setSetting('delivery_time', '2-4 business days', SettingType::Text);
         $this->setSetting('delivery_partner', 'Steadfast', SettingType::Text);
@@ -77,8 +82,8 @@ class ShippingSettingsTest extends TestCase
             'cod',
         );
 
-        $this->assertSame(150.0, (float) $order->shipping_amount);
-        $this->assertSame(2550.0, (float) $order->total);
+        $this->assertSame(80.0, (float) $order->shipping_amount);
+        $this->assertSame(2480.0, (float) $order->total);
         $this->assertSame('2-4 business days', $order->delivery_time);
         $this->assertSame('Steadfast', $order->delivery_partner);
     }

@@ -41,7 +41,10 @@ class CheckoutService
 
             $shipping = $this->shippingService->isFreeShipping($subtotal - $discount)
                 ? 0
-                : $this->shippingService->calculate($shippingAddress['division'] ?? 'Dhaka');
+                : $this->shippingService->calculate(
+                    $shippingAddress['division'] ?? '',
+                    $shippingAddress['city'] ?? null,
+                );
 
             $total = max(0, $subtotal - $discount + $shipping);
             $shippingAddress['delivery_time'] = $this->shippingService->getDeliveryTime();

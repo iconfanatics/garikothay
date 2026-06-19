@@ -35,9 +35,10 @@ class CartController extends Controller
 
         return view('cart.index', [
             'cart' => $cart,
-            'shippingCharge' => $this->shippingService->isFreeShipping($orderValue)
-                ? 0
-                : $this->shippingService->calculate(''),
+            'orderValue' => $orderValue,
+            'freeShippingThreshold' => (float) \App\Models\Setting::get('free_shipping_threshold', 1500),
+            'dhakaCityShippingCharge' => $this->shippingService->getDhakaCityCharge(),
+            'outsideDhakaShippingCharge' => $this->shippingService->getOutsideDhakaCharge(),
             'deliveryTime' => $this->shippingService->getDeliveryTime(),
             'deliveryPartner' => $this->shippingService->getDeliveryPartner(),
         ]);

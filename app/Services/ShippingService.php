@@ -19,9 +19,33 @@ class ShippingService
         'Mymensingh' => ['base' => 100, 'per_kg' => 30],
     ];
 
-    public function calculate(string $division, int $weightGrams = 0): float
+    public function calculate(string $division, ?string $city = null, int $weightGrams = 0): float
     {
-        return max(0, (float) Setting::get('shipping_charge', 120));
+        return $this->isDhakaCity($division, $city)
+            ? $this->getDhakaCityCharge()
+            : $this->getOutsideDhakaCharge();
+    }
+
+    public function getDhakaCityCharge(): float
+    {
+        return max(0, (float) Setting::get('dhaka_city_shipping_charge', 80));
+    }
+
+    public function getOutsideDhakaCharge(): float
+    {
+        return max(0, (float) Setting::get(
+            'outside_dhaka_shipping_charge',
+            Setting::get('shipping_charge', 150),
+        ));
+    }
+
+    public function isDhakaCity(string $division, ?string $city): bool
+    {
+        $normalizedDivision = mb_strtolower(trim($division));
+        $normalizedCity = mb_strtolower(trim((string) $city));
+
+        return in_array($normalizedDivision, ['dhaka', 'ঢাকা'], true)
+            && in_array($normalizedCity, ['dhaka', 'dhaka city', 'dacca', 'ঢাকা', 'ঢাকা সিটি'], true);
     }
 
     public function getDeliveryTime(): string

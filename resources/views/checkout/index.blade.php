@@ -5,6 +5,10 @@
 <div class="max-w-6xl mx-auto px-4 py-8" x-data="{
     addresses: {{ $addresses->toJson() }},
     selectedAddressId: null,
+    orderValue: @js((float) $orderValue),
+    freeShippingThreshold: @js((float) $freeShippingThreshold),
+    dhakaCityShippingCharge: @js((float) $dhakaCityShippingCharge),
+    outsideDhakaShippingCharge: @js((float) $outsideDhakaShippingCharge),
     formData: {
         full_name: @js(old('full_name', auth()->user()?->name ?? '')),
         email: @js(old('email', auth()->user()?->email ?? '')),
@@ -35,6 +39,29 @@
             this.formData.division = addr.division;
             this.formData.postal_code = addr.postal_code || '';
         }
+    },
+    get qualifiesForFreeShipping() {
+        return this.freeShippingThreshold > 0 && this.orderValue >= this.freeShippingThreshold;
+    },
+    get isDhakaCity() {
+        const division = String(this.formData.division || '').trim().toLocaleLowerCase();
+        const city = String(this.formData.city || '').trim().toLocaleLowerCase();
+
+        return ['dhaka', 'ঢাকা'].includes(division)
+            && ['dhaka', 'dhaka city', 'dacca', 'ঢাকা', 'ঢাকা সিটি'].includes(city);
+    },
+    get shippingCharge() {
+        if (this.qualifiesForFreeShipping) {
+            return 0;
+        }
+
+        return this.isDhakaCity ? this.dhakaCityShippingCharge : this.outsideDhakaShippingCharge;
+    },
+    get checkoutTotal() {
+        return this.orderValue + this.shippingCharge;
+    },
+    formatMoney(value) {
+        return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
     }
 }">
     <h1 class="text-3xl font-bold text-gray-800 mb-8">{{ __('general.checkout_title') }}</h1>
@@ -113,8 +140,11 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.city') }} *</label>
-                        <input type="text" name="city" x-model="formData.city" required
+                        <input type="text" name="city" x-model.trim="formData.city" required placeholder="Dhaka"
                             class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-[#2D6A4F]">
+                        <p class="mt-1 text-xs text-gray-500" x-show="formData.city">
+                            <span x-text="isDhakaCity ? 'Inside Dhaka city rate selected' : 'Outside Dhaka rate selected'"></span>
+                        </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.district') }} *</label>
@@ -194,7 +224,7 @@
                     @endif
                     <div class="flex justify-between text-gray-600">
                         <span>{{ __('general.shipping') }}</span>
-                        <span>{{ $shippingCharge > 0 ? '৳' . number_format($shippingCharge, 0) : __('general.free') }}</span>
+                        <span x-text="shippingCharge > 0 ? '৳' + formatMoney(shippingCharge) : @js(__('general.free'))"></span>
                     </div>
                     <div class="rounded-lg bg-gray-50 p-3 text-xs text-gray-600">
                         <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-gray-800">{{ $deliveryTime }}</strong></div>
@@ -203,11 +233,7 @@
                     <hr>
                     <div class="flex justify-between font-bold text-gray-800 text-base">
                         <span>{{ __('general.total') }}</span>
-                        @php
-                            $checkoutDiscount = $cart->coupon ? $cart->coupon->calculateDiscount($cart->subtotal) : 0;
-                            $checkoutTotal = max(0, $cart->subtotal - $checkoutDiscount + $shippingCharge);
-                        @endphp
-                        <span>৳{{ number_format($checkoutTotal, 0) }}</span>
+                        <span x-text="'৳' + formatMoney(checkoutTotal)"></span>
                     </div>
                 </div>
                 <button type="submit" class="w-full mt-6 bg-[#2D6A4F] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#52B788] transition">

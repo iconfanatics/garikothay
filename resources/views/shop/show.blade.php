@@ -495,8 +495,10 @@
     $approvedReviews = $product->reviews->where('is_approved', true);
     $categoryName = $product->category?->name ?? 'Garikothay';
     $brandName = $categoryName ?: 'Garikothay';
+    $shippingService = app(\App\Services\ShippingService::class);
     $freeShippingThreshold = (float) \App\Models\Setting::get('free_shipping_threshold', 1500);
-    $shippingCharge = (float) \App\Models\Setting::get('shipping_charge', 120);
+    $dhakaCityShippingCharge = $shippingService->getDhakaCityCharge();
+    $outsideDhakaShippingCharge = $shippingService->getOutsideDhakaCharge();
     $deliveryTime = \App\Models\Setting::get('delivery_time', '2-5 business days');
     $deliveryPartner = \App\Models\Setting::get('delivery_partner', 'Steadfast');
 @endphp
@@ -673,7 +675,7 @@
                     <div class="gk-trust-grid">
                         <div>
                             <span>🚚</span>
-                            {{ $freeShippingThreshold > 0 ? 'Free delivery over ৳' . number_format($freeShippingThreshold, 0) : 'Delivery ৳' . number_format($shippingCharge, 0) }}
+                            {{ $freeShippingThreshold > 0 ? 'Free delivery over ৳' . number_format($freeShippingThreshold, 0) : 'Dhaka delivery ৳' . number_format($dhakaCityShippingCharge, 0) }}
                         </div>
                         <div><span>🛡</span>100% Genuine</div>
                         <div><span>↻</span>7-day returns</div>
@@ -729,7 +731,7 @@
 
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'shipping' }">
                         <p>
-                            Shipping charge: {{ $shippingCharge > 0 ? '৳' . number_format($shippingCharge, 0) : 'Free' }}.
+                            Shipping charge: ৳{{ number_format($dhakaCityShippingCharge, 0) }} inside Dhaka city and ৳{{ number_format($outsideDhakaShippingCharge, 0) }} outside Dhaka.
                             @if($freeShippingThreshold > 0)
                                 Orders over ৳{{ number_format($freeShippingThreshold, 0) }} qualify for free shipping.
                             @endif
