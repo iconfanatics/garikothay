@@ -15,6 +15,7 @@ class NavigationItem extends Model
         'url',
         'sort_order',
         'is_active',
+        'translations',
     ];
 
     protected $casts = [

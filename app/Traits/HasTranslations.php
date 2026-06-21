@@ -9,6 +9,36 @@ use Illuminate\Support\Facades\App;
 
 trait HasTranslations
 {
+    protected array $pendingTranslations = [];
+
+    public static function bootHasTranslations()
+    {
+        static::saved(function ($model) {
+            if (!empty($model->pendingTranslations)) {
+                foreach ($model->pendingTranslations as $locale => $data) {
+                    $model->setTranslation($locale, $data);
+                }
+                $model->pendingTranslations = [];
+            }
+        });
+    }
+
+    public function setTranslationsAttribute(array $value)
+    {
+        $this->pendingTranslations = $value;
+    }
+
+    public function getTranslationsArrayAttribute(): array
+    {
+        $result = [];
+        // Use relation if loaded, otherwise query
+        $translations = $this->relationLoaded('translations') ? $this->translations : $this->translations()->get();
+        foreach ($translations as $translation) {
+            $result[$translation->locale] = $translation->toArray();
+        }
+        return $result;
+    }
+
     public function translate(string $locale = null): ?object
     {
         $locale = $locale ?? App::getLocale();
@@ -25,8 +55,6 @@ trait HasTranslations
 
     public function setTranslation(string $locale, array $data): void
     {
-        $translationClass = $this->getTranslationModelClass();
-
         $this->translations()->updateOrCreate(
             ['locale' => $locale],
             $data

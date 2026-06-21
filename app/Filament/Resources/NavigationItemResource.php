@@ -50,12 +50,22 @@ class NavigationItemResource extends Resource
                             Forms\Components\TextInput::make('translations.en.label')
                                 ->label('Label (EN)')
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->afterStateHydrated(function (Forms\Components\TextInput $component, $state, ?NavigationItem $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('label', 'en'));
+                                    }
+                                }),
                         ]),
                         Forms\Components\Tabs\Tab::make('Bengali (বাংলা)')->schema([
                             Forms\Components\TextInput::make('translations.bn.label')
                                 ->label('Label (BN)')
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->afterStateHydrated(function (Forms\Components\TextInput $component, $state, ?NavigationItem $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('label', 'bn'));
+                                    }
+                                }),
                         ]),
                     ])->columnSpanFull(),
                 ])

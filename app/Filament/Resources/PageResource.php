@@ -35,19 +35,39 @@ class PageResource extends Resource
                             Forms\Components\TextInput::make('translations.en.title')
                                 ->label('Title (EN)')
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->afterStateHydrated(function (Forms\Components\TextInput $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('title', 'en'));
+                                    }
+                                }),
                             Forms\Components\RichEditor::make('translations.en.content')
                                 ->label('Content (EN)')
                                 ->required()
-                                ->columnSpanFull(),
+                                ->columnSpanFull()
+                                ->afterStateHydrated(function (Forms\Components\RichEditor $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('content', 'en'));
+                                    }
+                                }),
                         ]),
                         Forms\Components\Tabs\Tab::make('Bengali (বাংলা)')->schema([
                             Forms\Components\TextInput::make('translations.bn.title')
                                 ->label('Title (BN)')
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->afterStateHydrated(function (Forms\Components\TextInput $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('title', 'bn'));
+                                    }
+                                }),
                             Forms\Components\RichEditor::make('translations.bn.content')
                                 ->label('Content (BN)')
-                                ->columnSpanFull(),
+                                ->columnSpanFull()
+                                ->afterStateHydrated(function (Forms\Components\RichEditor $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('content', 'bn'));
+                                    }
+                                }),
                         ]),
                     ])->columnSpanFull(),
                 ])

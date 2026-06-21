@@ -12,7 +12,7 @@ class Page extends Model
 {
     use HasTranslations;
 
-    protected $fillable = ['slug'];
+    protected $fillable = ['slug', 'translations'];
 
     public function translations(): HasMany
     {
