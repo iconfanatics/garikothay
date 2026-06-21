@@ -961,7 +961,29 @@
         ],
     ]);
 
-    $slides = $fallbackSlides;
+    $dbSlides = \App\Models\Setting::get('theme1_hero_slides');
+    $slides = empty($dbSlides) ? $fallbackSlides : collect($dbSlides)->map(function($slide) {
+        return [
+            'tag' => $slide['eyebrow'] ?? '',
+            'title' => $slide['title'] ?? '',
+            'subtitle' => $slide['copy'] ?? '',
+            'button' => $slide['btn_primary_text'] ?? 'Shop Now',
+            'link' => $slide['btn_primary_url'] ?? '#',
+            'image' => isset($slide['image']) ? asset('storage/' . $slide['image']) : '',
+            'btn2' => $slide['btn_secondary_text'] ?? null,
+            'link2' => $slide['btn_secondary_url'] ?? '#',
+        ];
+    });
+
+    $fallbackPromos = collect([
+        ['kicker' => 'All Brake Parts', 'title' => 'Up to 50% Off', 'link' => route('shop.index'), 'bg_start' => '#e11d48', 'bg_end' => '#be123c'],
+        ['kicker' => 'Orders over ৳5,000', 'title' => 'Free Shipping', 'link' => route('shop.index'), 'bg_start' => '#374151', 'bg_end' => '#000000'],
+        ['kicker' => 'Device + Install', 'title' => 'GPS Tracker', 'link' => route('shop.index'), 'bg_start' => '#0891b2', 'bg_end' => '#1d4ed8'],
+        ['kicker' => 'Service Bundles', 'title' => '15% Off Packs', 'link' => '#vehicle-services', 'bg_start' => '#f59e0b', 'bg_end' => '#c2410c'],
+    ]);
+    
+    $dbPromos = \App\Models\Setting::get('theme1_promo_banners');
+    $promos = empty($dbPromos) ? $fallbackPromos : collect($dbPromos);
 
     $saleProducts = $featured->filter(fn ($product) => (float) ($product->compare_price ?? 0) > (float) ($product->price ?? 0))->take(5);
     if ($saleProducts->isEmpty()) {
@@ -1049,10 +1071,17 @@
                                     {{ $slide['button'] }}
                                     <span aria-hidden="true">→</span>
                                 </a>
+                                @if(!empty($slide['btn2']))
+                                <a href="{{ $slide['link2'] }}" class="gk-btn gk-btn-dark">
+                                    {{ $slide['btn2'] }}
+                                    <span aria-hidden="true">→</span>
+                                </a>
+                                @else
                                 <a href="#vehicle-services" class="gk-btn gk-btn-dark">
                                     Services
                                     <span aria-hidden="true">→</span>
                                 </a>
+                                @endif
                             </div>
                         </div>
                     </article>
@@ -1070,22 +1099,12 @@
             </div>
 
             <div class="gk-promo-stack">
-                <a href="{{ route('shop.index') }}" class="gk-mini-promo" style="background: linear-gradient(135deg, #e11d48, #be123c);">
-                    <span>All Brake Parts</span>
-                    <strong>Up to 50% Off</strong>
+                @foreach($promos as $promo)
+                <a href="{{ $promo['link'] ?? '#' }}" class="gk-mini-promo" style="background: linear-gradient(135deg, {{ $promo['bg_start'] ?? '#e11d48' }}, {{ $promo['bg_end'] ?? '#be123c' }});">
+                    <span>{{ $promo['kicker'] ?? '' }}</span>
+                    <strong>{{ $promo['title'] ?? '' }}</strong>
                 </a>
-                <a href="{{ route('shop.index') }}" class="gk-mini-promo" style="background: linear-gradient(135deg, #374151, #000000);">
-                    <span>Orders over ৳5,000</span>
-                    <strong>Free Shipping</strong>
-                </a>
-                <a href="{{ route('shop.index') }}" class="gk-mini-promo" style="background: linear-gradient(135deg, #0891b2, #1d4ed8);">
-                    <span>Device + Install</span>
-                    <strong>GPS Tracker</strong>
-                </a>
-                <a href="#vehicle-services" class="gk-mini-promo" style="background: linear-gradient(135deg, #f59e0b, #c2410c);">
-                    <span>Service Bundles</span>
-                    <strong>15% Off Packs</strong>
-                </a>
+                @endforeach
             </div>
         </div>
     </section>
