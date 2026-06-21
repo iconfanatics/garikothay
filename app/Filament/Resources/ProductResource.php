@@ -164,21 +164,25 @@ class ProductResource extends Resource
                     Forms\Components\Section::make('Supplier / Shop Information')
                         ->description('Internal supplier details. These fields are only visible in the admin panel.')
                         ->schema([
-                            Forms\Components\Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('supplier_name')
-                                    ->label('Shop / Supplier Name')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('supplier_contact_person')
-                                    ->label('Contact Person')
-                                    ->helperText('Reference person, if applicable.')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('supplier_contact_number')
-                                    ->label('Contact Number')
-                                    ->tel()
-                                    ->maxLength(30),
-                                Forms\Components\Textarea::make('supplier_address')
-                                    ->label('Shop Address')
-                                    ->rows(3),
+                            Forms\Components\Grid::make(1)->schema([
+                                Forms\Components\Select::make('supplier_id')
+                                    ->relationship('supplier', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->label('Supplier')
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('contact_person')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('contact_number')
+                                            ->tel()
+                                            ->maxLength(255),
+                                        Forms\Components\Textarea::make('address')
+                                            ->maxLength(65535)
+                                            ->columnSpanFull(),
+                                    ]),
                             ]),
                         ]),
 

@@ -35,8 +35,7 @@ class Product extends Model
         'cost_price', 'stock_quantity', 'low_stock_threshold', 'weight_grams',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',
         'tax_rate', 'plant_type', 'sunlight', 'watering', 'difficulty', 'mature_size',
-        'supplier_name', 'supplier_contact_person', 'supplier_contact_number',
-        'supplier_address', 'minimum_selling_price', 'supplier_stock_status',
+        'supplier_id', 'minimum_selling_price', 'supplier_stock_status',
         'supplier_stock_updated_at', 'product_source_url', 'supplier_product_code',
         'has_return_support', 'is_authentic_product', 'supplier_shipping_charge',
         'supplier_delivery_time', 'supplier_delivery_partner', 'warranty_type',
@@ -69,6 +68,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
     public function translations(): HasMany

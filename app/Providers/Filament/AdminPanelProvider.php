@@ -14,6 +14,7 @@ use App\Filament\Resources\OrderResource;
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ReviewResource;
 use App\Filament\Resources\PageResource;
+use App\Filament\Resources\SupplierResource;
 use App\Filament\Resources\NavigationItemResource;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\AdminWelcome;
@@ -81,6 +82,7 @@ class AdminPanelProvider extends PanelProvider
                 BannerResource::class,
                 PageResource::class,
                 NavigationItemResource::class,
+                SupplierResource::class,
             ])
             ->pages([Dashboard::class, \App\Filament\Pages\Settings::class])
             ->widgets([
