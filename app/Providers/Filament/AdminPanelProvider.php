@@ -69,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make("Users"),
                 NavigationGroup::make("Settings"),
                 NavigationGroup::make("Site Management"),
+                NavigationGroup::make("Theme"),
             ])
             ->resources([
                 ProductResource::class,
@@ -84,7 +85,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationItemResource::class,
                 SupplierResource::class,
             ])
-            ->pages([Dashboard::class, \App\Filament\Pages\Settings::class])
+            ->pages([Dashboard::class, \App\Filament\Pages\Settings::class, \App\Filament\Pages\ThemeSettings::class])
             ->widgets([
                 AdminWelcome::class,
                 StatsOverview::class,
