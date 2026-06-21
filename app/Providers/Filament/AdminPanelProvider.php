@@ -13,6 +13,8 @@ use App\Filament\Resources\CustomerResource;
 use App\Filament\Resources\OrderResource;
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ReviewResource;
+use App\Filament\Resources\PageResource;
+use App\Filament\Resources\NavigationItemResource;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\AdminWelcome;
 use App\Filament\Widgets\LatestOrdersTable;
@@ -65,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make("Content"),
                 NavigationGroup::make("Users"),
                 NavigationGroup::make("Settings"),
+                NavigationGroup::make("Site Management"),
             ])
             ->resources([
                 ProductResource::class,
@@ -76,6 +79,8 @@ class AdminPanelProvider extends PanelProvider
                 BlogResource::class,
                 BlogCategoryResource::class,
                 BannerResource::class,
+                PageResource::class,
+                NavigationItemResource::class,
             ])
             ->pages([Dashboard::class, \App\Filament\Pages\Settings::class])
             ->widgets([
