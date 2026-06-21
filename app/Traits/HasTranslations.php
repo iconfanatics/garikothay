@@ -16,7 +16,15 @@ trait HasTranslations
         static::saved(function ($model) {
             if (!empty($model->pendingTranslations)) {
                 foreach ($model->pendingTranslations as $locale => $data) {
-                    $model->setTranslation($locale, $data);
+                    // Check if there is at least one non-null value in the data
+                    $hasData = collect($data)->filter(fn($val) => $val !== null && $val !== '')->isNotEmpty();
+                    
+                    if ($hasData) {
+                        $model->setTranslation($locale, $data);
+                    } else {
+                        // Optionally delete if it exists and all fields are empty
+                        $model->translations()->where('locale', $locale)->delete();
+                    }
                 }
                 $model->pendingTranslations = [];
             }
