@@ -22,7 +22,13 @@ Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('l
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
+Route::get('/clear-opcache', function () {
+    if (function_exists('opcache_reset')) {
+        opcache_reset();
+        return 'OPcache has been reset successfully.';
+    }
+    return 'OPcache is not enabled or function does not exist.';
+});
 // Shop
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/', [ShopController::class, 'index'])->name('index');
