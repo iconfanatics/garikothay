@@ -66,7 +66,7 @@ class NavigationItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('translations.label')
+                Tables\Columns\TextColumn::make('label')
                     ->label('Label')
                     ->searchable()
                     ->sortable(),
