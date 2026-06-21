@@ -79,16 +79,14 @@
                 {{ __('general.quick_links') }}
             </h4>
             <ul class="space-y-2 text-sm">
-                <li><a href="{{ route('shop.index') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.shop') }}</a></li>
-                <li><a href="{{ route('blog.index') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.blog') }}</a></li>
-                <li><a href="{{ route('page.about') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.about_us') }}</a></li>
-                <li><a href="{{ route('page.terms') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.terms') }}</a></li>
-                <li><a href="{{ route('page.privacy') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.privacy_policy') }}</a></li>
+                @php
+                    $quickLinks = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
+                        ? \App\Models\NavigationItem::where('group', 'footer_quick_links')->where('is_active', true)->orderBy('sort_order')->get()
+                        : collect();
+                @endphp
+                @foreach($quickLinks as $link)
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-primary-400 transition">{{ $link->label }}</a></li>
+                @endforeach
             </ul>
         </div>
         <div>
@@ -96,12 +94,14 @@
                 {{ __('general.customer_service') }}
             </h4>
             <ul class="space-y-2 text-sm">
-                <li><a href="{{ route('page.contact') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.contact_us') }}</a></li>
-                <li><a href="{{ route('page.faq') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.faq') }}</a></li>
-                <li><a href="{{ route('page.return-policy') }}"
-                        class="hover:text-primary-400 transition">{{ __('general.return_policy') }}</a></li>
+                @php
+                    $customerServiceLinks = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
+                        ? \App\Models\NavigationItem::where('group', 'footer_customer_service')->where('is_active', true)->orderBy('sort_order')->get()
+                        : collect();
+                @endphp
+                @foreach($customerServiceLinks as $link)
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-primary-400 transition">{{ $link->label }}</a></li>
+                @endforeach
             </ul>
         </div>
         <div>

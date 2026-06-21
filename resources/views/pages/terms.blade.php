@@ -10,7 +10,7 @@
     <div class="bg-primary-700 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold">{{ __('general.terms') }}</h1>
-            <p class="mt-2 text-primary-200">Last updated: January 1, 2025</p>
+            <p class="mt-2 text-primary-200">Last updated: {{ $page->updated_at->format('F j, Y') }}</p>
         </div>
     </div>
 

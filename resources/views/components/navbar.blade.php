@@ -1,20 +1,13 @@
 @props(['siteName'])
 
 @php
-    $topMenuItems = [
-        ['label' => 'Shop', 'href' => route('shop.index')],
-        ['label' => 'Categories', 'href' => route('shop.index')],
-        ['label' => 'Services', 'href' => '#vehicle-services'],
-        ['label' => 'Garage', 'href' => '#'],
-        ['label' => 'CarWash', 'href' => '#'],
-        ['label' => 'Fuel', 'href' => '#'],
-        ['label' => 'Driver', 'href' => '#'],
-        ['label' => 'GPS', 'href' => '#'],
-        ['label' => 'Tickets', 'href' => '#'],
-        ['label' => 'Fare Calc', 'href' => '#'],
-        ['label' => 'About', 'href' => '#'],
-        ['label' => 'Contact', 'href' => route('page.contact')],
-    ];
+    $topMenuItems = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
+        ? \App\Models\NavigationItem::where('group', 'top_nav')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn($item) => ['label' => $item->label, 'href' => url($item->url ?? '#')])
+        : collect();
 
     $searchCategories = \Illuminate\Support\Facades\Schema::hasTable('categories')
         ? \App\Models\Category::query()
