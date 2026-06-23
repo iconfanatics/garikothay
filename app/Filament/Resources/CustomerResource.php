@@ -157,8 +157,15 @@ class CustomerResource extends Resource
                     ->trueLabel("Verified")
                     ->falseLabel("Unverified"),
             ])
-            ->actions([Tables\Actions\ViewAction::make()])
-            ->bulkActions([]);
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getPages(): array
