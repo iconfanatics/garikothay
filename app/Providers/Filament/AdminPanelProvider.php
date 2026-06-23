@@ -105,6 +105,14 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([Authenticate::class]);
+            ->authMiddleware([\Filament\Http\Middleware\Authenticate::class])
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn (): string => '<style>
+                    .fi-ta-header-cell { position: sticky !important; top: 0 !important; z-index: 10 !important; }
+                    html:not(.dark) .fi-ta-header-cell { background-color: rgb(255 255 255) !important; }
+                    .dark .fi-ta-header-cell { background-color: rgb(24 24 27) !important; }
+                </style>'
+            );
     }
 }
