@@ -146,6 +146,16 @@ class Product extends Model
         return $this->getTranslation('description');
     }
 
+    public function getSpecificationsAttribute(): ?string
+    {
+        return $this->getTranslation('specifications');
+    }
+
+    public function getShippingReturnsAttribute(): ?string
+    {
+        return $this->getTranslation('shipping_returns');
+    }
+
     public function getPrimaryImageAttribute(): ?ProductImage
     {
         return $this->images->firstWhere('is_primary', true) ?? $this->images->first();

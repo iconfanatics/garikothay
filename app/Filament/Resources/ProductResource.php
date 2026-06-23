@@ -81,6 +81,18 @@ class ProductResource extends Resource
                     Forms\Components\RichEditor::make('translations.bn.description')
                         ->label('Description (BN)')
                         ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('translations.en.specifications')
+                        ->label('Specifications (EN)')
+                        ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('translations.bn.specifications')
+                        ->label('Specifications (BN)')
+                        ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('translations.en.shipping_returns')
+                        ->label('Shipping & Returns (EN)')
+                        ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('translations.bn.shipping_returns')
+                        ->label('Shipping & Returns (BN)')
+                        ->columnSpanFull(),
                     Forms\Components\FileUpload::make('image_paths')
                         ->label('Product Images')
                         ->helperText('Recommended: 1200 x 1200 px square image. JPG, PNG or WebP only, maximum 2 MB each. The first image is the primary image.')
