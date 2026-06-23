@@ -324,7 +324,8 @@ class ProductResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->stickyHeader();
     }
 
     public static function getPages(): array
