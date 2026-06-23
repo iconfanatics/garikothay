@@ -264,7 +264,8 @@
     </div>
 
 <nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }">
-    <div class="gk-header-row gk-nav-container py-3 md:py-4">
+    <!-- Desktop Header Row -->
+    <div class="gk-header-row gk-nav-container py-3 md:py-4 hidden md:grid">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
@@ -346,7 +347,7 @@
         </form>
 
         <!-- Desktop right section -->
-        <div class="hidden md:flex items-center gap-4">
+        <div class="hidden md:flex items-center justify-end gap-4">
             <!-- Nav links -->
             <a href="{{ route('home') }}"
                 class="hidden gk-link text-sm font-medium text-gray-700 transition">
@@ -384,7 +385,7 @@
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 <span
-                    class="cart-count absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">0</span>
+                    class="cart-count absolute -top-2 -right-2 bg-[var(--gk-red)] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">0</span>
             </a>
 
             <!-- User menu -->
@@ -453,28 +454,58 @@
                 </a>
             @endauth
         </div>
+    </div>
 
-        <!-- Mobile: cart + hamburger -->
-        <div class="flex md:hidden items-center gap-3">
-            <a href="{{ route('cart.index') }}" class="relative text-gray-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <span
-                    class="cart-count absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">0</span>
-            </a>
-            <button @click="mobileOpen = !mobileOpen" class="text-gray-700 p-1">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
+    <!-- Mobile Header Container -->
+    <div class="md:hidden flex flex-col">
+        <!-- Top Row: Hamburger, Logo, Cart -->
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-3">
+                <button @click="mobileOpen = true" class="text-gray-700 p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
+                    <span class="gk-brand-mark">G</span>
+                    <span class="leading-tight">
+                        <span class="gk-brand-title">Gari Kothay</span>
+                    </span>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <a href="{{ route('cart.index') }}" class="relative text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span class="cart-count absolute -top-2 -right-2 bg-[var(--gk-red)] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">0</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Mobile Search (Outside) -->
+        <div class="px-4 pb-3">
+            <form action="{{ route('search.index') }}" method="GET" class="w-full">
+                <div class="flex border border-[var(--gk-red)] rounded-md overflow-hidden bg-white">
+                    <input type="text" name="q" value="{{ request('q') }}"
+                        placeholder="{{ __('general.search_placeholder') ?? 'Search...' }}"
+                        required minlength="2"
+                        class="flex-1 px-3 py-2 text-sm outline-none">
+                    <button type="submit" class="gk-search-button text-white px-4 py-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Top menu -->
-    <div class="gk-main-menu hidden lg:block">
+    <!-- Top menu (Desktop) -->
+    <div class="gk-main-menu hidden md:block">
         <div class="gk-nav-container">
             <div class="flex items-center gap-1 overflow-x-auto">
                 <a href="{{ route('shop.index') }}" class="gk-menu-head shrink-0 rounded-none px-4 py-3 text-sm font-semibold transition">
@@ -491,68 +522,95 @@
         </div>
     </div>
 
-    <!-- Mobile menu -->
-    <div x-show="mobileOpen" x-cloak x-collapse class="md:hidden border-t border-gray-100 bg-white">
-        <div class="px-4 py-3 space-y-1">
-            <!-- Mobile search -->
-            <form action="{{ route('search.index') }}" method="GET" class="mb-3">
-                <div class="flex border border-gray-200 rounded-xl overflow-hidden">
-                    <input type="text" name="q" value="{{ request('q') }}"
-                        placeholder="{{ __('general.search_placeholder') }}"
-                        required minlength="2"
-                        oninvalid="this.setCustomValidity('Please type something to search.')"
-                        oninput="this.setCustomValidity('')"
-                        class="flex-1 px-4 py-2 text-sm outline-none">
-                    <button type="submit" class="bg-primary-600 text-white px-4 py-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
+    <!-- Mobile Offcanvas Menu -->
+    <div x-show="mobileOpen" x-cloak class="md:hidden relative z-[100]">
+        <!-- Backdrop -->
+        <div x-show="mobileOpen"
+             x-transition.opacity.duration.300ms
+             @click="mobileOpen = false"
+             class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm"></div>
+
+        <!-- Sliding Panel -->
+        <div x-show="mobileOpen"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="-translate-x-full"
+             class="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-white shadow-2xl flex flex-col h-[100dvh]">
+             
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <span class="gk-brand-mark">G</span>
+                    <span class="font-bold text-lg text-gray-900">Menu</span>
                 </div>
-            </form>
+                <button @click="mobileOpen = false" class="p-2 text-gray-500 hover:text-[var(--gk-red)] bg-gray-50 rounded-full">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                <div class="grid grid-cols-2 gap-2">
+                    @foreach($topMenuItems as $item)
+                        <a href="{{ $item['href'] }}"
+                            class="rounded-lg border border-gray-100 px-3 py-2.5 text-sm font-medium text-gray-700 hover:border-red-200 hover:bg-red-50 hover:text-red-700 transition flex items-center justify-center text-center">
+                            {{ $item['label'] }}
+                        </a>
+                    @endforeach
+                </div>
 
-            <div class="mb-3 grid grid-cols-2 gap-2">
-                @foreach($topMenuItems as $item)
-                    <a href="{{ $item['href'] }}"
-                        class="rounded-md border border-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 transition">
-                        {{ $item['label'] }}
+                <div class="space-y-1 mt-4">
+                    <a href="{{ route('home') }}"
+                        class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        {{ __('general.home') }}
                     </a>
-                @endforeach
+                    <a href="{{ route('shop.index') }}"
+                        class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        {{ __('general.shop') }}
+                    </a>
+                    <a href="{{ route('blog.index') }}"
+                        class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                        {{ __('general.blog') }}
+                    </a>
+                </div>
+
+                <div class="px-2 mt-4">
+                    <x-language-switcher />
+                </div>
             </div>
 
-            <a href="{{ route('home') }}"
-                class="flex items-center gap-2 px-2 py-2.5 text-gray-700 hover:text-primary-600 text-sm font-medium">{{ __('general.home') }}</a>
-            <a href="{{ route('shop.index') }}"
-                class="flex items-center gap-2 px-2 py-2.5 text-gray-700 hover:text-primary-600 text-sm font-medium">{{ __('general.shop') }}</a>
-            <a href="{{ route('blog.index') }}"
-                class="flex items-center gap-2 px-2 py-2.5 text-gray-700 hover:text-primary-600 text-sm font-medium">{{ __('general.blog') }}</a>
-
-            <div class="px-2 py-2">
-                <x-language-switcher />
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-100 bg-gray-50">
+                @auth
+                    <a href="{{ route('customer.dashboard') }}"
+                        class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-[var(--gk-red)] text-sm font-medium">{{ __('general.my_account') }}</a>
+                    <a href="{{ route('customer.orders') }}"
+                        class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-[var(--gk-red)] text-sm font-medium">{{ __('general.my_orders') }}</a>
+                    <form method="POST" action="{{ route('logout') }}" class="px-3 py-2">
+                        @csrf
+                        <button type="submit" class="text-sm text-[var(--gk-red)] font-medium w-full text-left">{{ __('general.logout') }}</button>
+                    </form>
+                @else
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="{{ route('login') }}"
+                            class="bg-[var(--gk-red)] hover:bg-[var(--gk-red-dark)] text-white text-sm font-medium px-4 py-2.5 rounded-lg text-center transition">
+                            {{ __('general.login') }}
+                        </a>
+                        <a href="{{ route('register') }}"
+                            class="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium px-4 py-2.5 rounded-lg text-center transition">
+                            {{ __('general.register') }}
+                        </a>
+                    </div>
+                @endauth
             </div>
-
-            <hr class="border-gray-100 my-1">
-
-            @auth
-                <a href="{{ route('customer.dashboard') }}"
-                    class="flex items-center gap-2 px-2 py-2.5 text-gray-700 hover:text-primary-600 text-sm">{{ __('general.my_account') }}</a>
-                <a href="{{ route('customer.orders') }}"
-                    class="flex items-center gap-2 px-2 py-2.5 text-gray-700 hover:text-primary-600 text-sm">{{ __('general.my_orders') }}</a>
-                <form method="POST" action="{{ route('logout') }}" class="px-2 py-1">
-                    @csrf
-                    <button type="submit" class="text-sm text-red-600 font-medium">{{ __('general.logout') }}</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}"
-                    class="block mx-2 my-1 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl text-center transition">
-                    {{ __('general.login') }}
-                </a>
-                <a href="{{ route('register') }}"
-                    class="block mx-2 my-1 border border-primary-600 text-primary-600 text-sm font-medium px-4 py-2.5 rounded-xl text-center hover:bg-primary-50 transition">
-                    {{ __('general.register') }}
-                </a>
-            @endauth
         </div>
     </div>
 </nav>
