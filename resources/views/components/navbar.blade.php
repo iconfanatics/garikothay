@@ -233,10 +233,8 @@
     }
 
     @media (max-width: 767px) {
-        .gk-site-nav .gk-header-row {
-            grid-template-columns: auto auto;
-            justify-content: space-between;
-            gap: 1rem;
+        .gk-desktop-header {
+            display: none !important;
         }
     }
 </style>
