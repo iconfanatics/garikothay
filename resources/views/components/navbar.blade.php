@@ -72,7 +72,7 @@
         --gk-nav: #1f2937;
     }
 
-    .gk-site-nav .gk-header-row {
+    .gk-desktop-header {
         display: grid;
         grid-template-columns: auto minmax(260px, 1fr) auto;
         align-items: center;
@@ -265,7 +265,7 @@
 
 <nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }">
     <!-- Desktop Header Row -->
-    <div class="gk-header-row gk-nav-container py-3 md:py-4 hidden md:grid">
+    <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:grid">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
@@ -460,12 +460,15 @@
     <div class="md:hidden flex flex-col">
         <!-- Top Row: Hamburger, Logo, Cart -->
         <div class="flex items-center justify-between px-4 py-3">
-            <div class="flex items-center gap-3">
+            <div class="w-1/3 flex justify-start">
                 <button @click="mobileOpen = true" class="text-gray-700 p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
+            </div>
+            
+            <div class="w-1/3 flex justify-center">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
                     <span class="gk-brand-mark">G</span>
                     <span class="leading-tight">
@@ -474,7 +477,7 @@
                 </a>
             </div>
             
-            <div class="flex items-center gap-3">
+            <div class="w-1/3 flex justify-end">
                 <a href="{{ route('cart.index') }}" class="relative text-gray-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
