@@ -302,7 +302,7 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('primaryImage.path')->label('Image')->disk('public')->circular(false)->size(50),
-                Tables\Columns\TextColumn::make('translations.name')->label('Name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('translations.name')->label('Name')->searchable(),
                 Tables\Columns\TextColumn::make('sku')->label('SKU')->searchable(),
                 Tables\Columns\TextColumn::make('price')->label('Price')->money('BDT')->sortable(),
                 Tables\Columns\TextColumn::make('stock_quantity')->label('Stock')
