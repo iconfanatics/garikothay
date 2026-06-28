@@ -42,7 +42,7 @@ class CheckoutRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => __('An account with this email already exists. Please log in to continue.'),
+            'email.unique' => __('An account with this email already exists. Please <a href=":url" class="underline font-bold text-primary-600">log in</a> to continue.', ['url' => route('login')]),
         ];
     }
 }

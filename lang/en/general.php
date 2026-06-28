@@ -225,4 +225,5 @@ return [
     'verification_link_resent' => 'A new verification link has been sent.',
     'resend_verification_email' => 'Resend Verification Email',
     'shop_now' => 'Shop Now',
+    'please_correct_errors' => 'Please correct the errors below:',
 ];

@@ -345,7 +345,7 @@
         <div class="font-bold mb-1">{{ __('general.please_correct_errors') }}</div>
         <ul class="list-disc pl-5 space-y-1">
             @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
+                <li>{!! $error !!}</li>
             @endforeach
         </ul>
     </div>
