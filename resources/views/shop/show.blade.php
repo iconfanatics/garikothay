@@ -348,7 +348,7 @@
 
     .gk-trust-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
         margin-top: 1.3rem;
         border-top: 1px solid #e5e7eb;
@@ -673,10 +673,6 @@
                     @endif
 
                     <div class="gk-trust-grid">
-                        <div>
-                            <span>🚚</span>
-                            {{ $freeShippingThreshold > 0 ? 'Free delivery over ৳' . number_format($freeShippingThreshold, 0) : 'Dhaka delivery ৳' . number_format($dhakaCityShippingCharge, 0) }}
-                        </div>
                         <div><span>🛡</span>100% Genuine</div>
                         <div><span>↻</span>7-day returns</div>
                     </div>
@@ -684,7 +680,7 @@
 
                 <div class="gk-product-tabs" style="grid-column:1 / -1;">
                     <div class="gk-tab-list">
-                        @foreach(['desc' => 'Description', 'specs' => 'Specifications', 'reviews' => 'Reviews (' . $approvedReviews->count() . ')', 'shipping' => 'Shipping'] as $key => $label)
+                        @foreach(['desc' => 'Description', 'specs' => 'Specifications', 'reviews' => 'Reviews (' . $approvedReviews->count() . ')'] as $key => $label)
                             <button type="button" class="gk-tab-button" :class="{ 'is-active': tab === '{{ $key }}' }" @click="tab = '{{ $key }}'">{{ $label }}</button>
                         @endforeach
                     </div>
@@ -729,15 +725,7 @@
                         @endforelse
                     </div>
 
-                    <div class="gk-tab-panel" :class="{ 'is-active': tab === 'shipping' }">
-                        <p>
-                            Shipping charge: ৳{{ number_format($dhakaCityShippingCharge, 0) }} inside Dhaka city and ৳{{ number_format($outsideDhakaShippingCharge, 0) }} outside Dhaka.
-                            @if($freeShippingThreshold > 0)
-                                Orders over ৳{{ number_format($freeShippingThreshold, 0) }} qualify for free shipping.
-                            @endif
-                            Estimated delivery: {{ $deliveryTime }} via {{ $deliveryPartner }}.
-                        </p>
-                    </div>
+
                 </div>
             </div>
 
