@@ -34,8 +34,8 @@ class CheckoutService
             $discount = 0;
             $coupon = $cart->coupon;
 
-            if ($coupon && $coupon->isValid()) {
-                $discount = $coupon->calculateDiscount($subtotal);
+            if ($coupon && $coupon->isValid($user)) {
+                $discount = $coupon->calculateDiscount($cart);
                 $this->couponService->incrementUsage($coupon);
             }
 

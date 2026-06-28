@@ -13,25 +13,30 @@ class CouponService
         private readonly CouponRepositoryInterface $couponRepository,
     ) {}
 
-    public function validate(string $code, float $subtotal): array
+    public function validate(string $code, \App\Models\Cart $cart, ?\App\Models\User $user = null): array
     {
         $coupon = $this->couponRepository->findValidByCode($code);
 
-        if (!$coupon) {
-            return ['valid' => false, 'message' => 'Invalid or expired coupon code.'];
+        if (!$coupon || !$coupon->isValid($user)) {
+            return ['valid' => false, 'message' => 'Invalid, expired, or restricted coupon code.'];
         }
 
-        if ($coupon->min_order_amount && $subtotal < $coupon->min_order_amount) {
+        if ($coupon->min_order_amount && $cart->subtotal < $coupon->min_order_amount) {
             return [
                 'valid' => false,
                 'message' => "Minimum order amount is ৳" . number_format($coupon->min_order_amount, 2),
             ];
         }
+        
+        $discountAmount = $coupon->calculateDiscount($cart);
+        if ($discountAmount <= 0) {
+            return ['valid' => false, 'message' => 'This coupon is not applicable to the items in your cart.'];
+        }
 
         return [
             'valid' => true,
             'coupon' => $coupon,
-            'discount' => $coupon->calculateDiscount($subtotal),
+            'discount' => $discountAmount,
         ];
     }
 

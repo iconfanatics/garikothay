@@ -35,8 +35,8 @@ class CheckoutController extends Controller
         }
 
         $cart = $this->cartService->getCart()->load('items.product.images', 'coupon');
-        $discount = $cart->coupon && $cart->coupon->isValid()
-            ? $cart->coupon->calculateDiscount($cart->subtotal)
+        $discount = $cart->coupon && $cart->coupon->isValid(auth()->user())
+            ? $cart->coupon->calculateDiscount($cart)
             : 0;
         $orderValue = max(0, $cart->subtotal - $discount);
 

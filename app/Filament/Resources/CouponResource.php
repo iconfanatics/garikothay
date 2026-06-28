@@ -97,6 +97,51 @@ class CouponResource extends Resource
                     ->label("Active")
                     ->default(true),
             ]),
+
+            Forms\Components\Section::make("Advanced Constraints")->schema([
+                Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Toggle::make("is_first_order_only")
+                        ->label("First Order Only")
+                        ->helperText("Valid only if the customer has no previous confirmed orders.")
+                        ->default(false),
+                    Forms\Components\Select::make("per_customer_limit")
+                        ->label("Per Customer Limit")
+                        ->options([
+                            1 => '1 Time Only',
+                        ])
+                        ->placeholder('Unlimited')
+                        ->default(null)
+                        ->helperText("How many times a single customer can use this coupon."),
+                ]),
+                Forms\Components\Select::make("applicable_type")
+                    ->label("Applicable Products/Categories")
+                    ->options([
+                        'all' => 'All Products',
+                        'products' => 'Specific Products',
+                        'categories' => 'Specific Categories',
+                    ])
+                    ->default('all')
+                    ->reactive()
+                    ->required(),
+                Forms\Components\Select::make("products")
+                    ->label("Specific Products")
+                    ->relationship('products', 'id')
+                    ->getOptionLabelFromRecordUsing(fn (\Illuminate\Database\Eloquent\Model $record) => $record->name)
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'products')
+                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'products'),
+                Forms\Components\Select::make("categories")
+                    ->label("Specific Categories")
+                    ->relationship('categories', 'id')
+                    ->getOptionLabelFromRecordUsing(fn (\Illuminate\Database\Eloquent\Model $record) => $record->name)
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'categories')
+                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'categories'),
+            ]),
         ]);
     }
 

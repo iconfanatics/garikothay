@@ -56,12 +56,18 @@ class CartService
     public function applyCoupon(string $code): array
     {
         $coupon = $this->couponRepository->findValidByCode($code);
+        $user = Auth::user();
 
-        if (!$coupon) {
-            return ['success' => false, 'message' => 'Invalid or expired coupon code.'];
+        if (!$coupon || !$coupon->isValid($user)) {
+            return ['success' => false, 'message' => 'Invalid or expired coupon code. This coupon may have usage limits or requires you to log in.'];
         }
 
         $cart = $this->getCart();
+        
+        $discountAmount = $coupon->calculateDiscount($cart);
+        if ($discountAmount <= 0) {
+            return ['success' => false, 'message' => 'This coupon is not applicable to the items in your cart.'];
+        }
 
         if ($coupon->min_order_amount && $cart->subtotal < $coupon->min_order_amount) {
             return [
@@ -75,7 +81,7 @@ class CartService
         return [
             'success' => true,
             'message' => 'Coupon applied successfully!',
-            'discount' => $coupon->calculateDiscount($cart->subtotal),
+            'discount' => $discountAmount,
         ];
     }
 
