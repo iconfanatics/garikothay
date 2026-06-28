@@ -282,52 +282,7 @@
                 selectedCategoryLabel: {{ \Illuminate\Support\Js::from($selectedSearchCategoryLabel) }}
             }">
             <div class="gk-search-box flex w-full transition">
-                <div class="relative hidden md:block">
-                    <button type="button"
-                        @click="categoryOpen = !categoryOpen"
-                        :aria-expanded="categoryOpen.toString()"
-                        class="flex h-full min-w-[138px] items-center justify-between gap-2 bg-gray-100 px-3 text-sm font-medium border-r text-gray-700">
-                        <span x-text="selectedCategoryLabel"></span>
-                        <svg class="w-3.5 h-3.5 transition" :class="{ 'rotate-180': categoryOpen }"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    <div x-show="categoryOpen" x-cloak x-transition @click.away="categoryOpen = false"
-                        class="gk-search-category-dropdown">
-                        <button type="button"
-                            @click="selectedCategory = ''; selectedCategoryLabel = 'All Categories'; categoryOpen = false"
-                            class="gk-search-category-link gk-search-category-link-all">
-                            <span>▦</span>
-                            <span>All Products</span>
-                        </button>
-
-                        @forelse($searchCategories as $category)
-                            <button type="button"
-                                @click="selectedCategory = {{ \Illuminate\Support\Js::from($category->slug) }}; selectedCategoryLabel = {{ \Illuminate\Support\Js::from($category->name) }}; categoryOpen = false"
-                                class="gk-search-category-link">
-                                <span style="color:var(--gk-red);">{{ $category->icon ?? '⚙' }}</span>
-                                <span style="flex:1;">{{ $category->name }}</span>
-                                <span style="color:#9ca3af;">›</span>
-                            </button>
-
-                            @if($category->children->isNotEmpty())
-                                <div class="gk-search-subcategories">
-                                    @foreach($category->children as $child)
-                                        <button type="button"
-                                            @click="selectedCategory = {{ \Illuminate\Support\Js::from($child->slug) }}; selectedCategoryLabel = {{ \Illuminate\Support\Js::from($child->name) }}; categoryOpen = false"
-                                            class="gk-search-subcategory-link">
-                                            {{ $child->name }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            @endif
-                        @empty
-                            <span class="block px-3 py-2 text-xs text-gray-500">No categories available</span>
-                        @endforelse
-                    </div>
-                </div>
+                <!-- Category dropdown removed as requested -->
                 <input type="hidden" name="category" x-model="selectedCategory">
                 <input type="text" name="q" value="{{ request('q') }}"
                     placeholder="Search for car parts, brands, services..."
@@ -509,10 +464,6 @@
     <div class="gk-main-menu hidden md:block">
         <div class="gk-nav-container">
             <div class="flex items-center gap-1 overflow-x-auto">
-                <a href="{{ route('shop.index') }}" class="gk-menu-head shrink-0 rounded-none px-4 py-3 text-sm font-semibold transition">
-                    ☰ All Categories
-                    <span aria-hidden="true">⌄</span>
-                </a>
                 @foreach($topMenuItems as $item)
                     <a href="{{ $item['href'] }}"
                         class="shrink-0 rounded-md px-3 py-3 text-sm font-medium transition">

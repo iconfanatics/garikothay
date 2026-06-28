@@ -116,7 +116,7 @@
 
     @media (min-width: 1024px) {
         .gk-hero-grid {
-            grid-template-columns: 240px minmax(0, 1fr) 280px;
+            grid-template-columns: minmax(0, 1fr) 280px;
         }
     }
 
@@ -1038,16 +1038,7 @@
 <div class="gk-page">
     <section class="gk-hero-wrap">
         <div class="gk-container gk-hero-grid">
-            <aside class="gk-sidebar">
-                <div class="gk-sidebar-title">Categories</div>
-                @foreach($displayCategories as $category)
-                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="gk-sidebar-link">
-                        <span class="gk-sidebar-icon">{{ $category->icon ?? '⚙' }}</span>
-                        <span style="flex:1;">{{ $category->name }}</span>
-                        <span aria-hidden="true">›</span>
-                    </a>
-                @endforeach
-            </aside>
+            <!-- Sidebar categories removed -->
 
             <div class="gk-hero" x-data="{
                 current: 0,
@@ -1159,35 +1150,7 @@
         </div>
     </section>
 
-    <section class="gk-section gk-section-muted">
-        <div class="gk-container">
-            <div class="gk-section-head">
-                <div>
-                    <h2 class="gk-section-title">Top Categories</h2>
-                    <p class="gk-section-subtitle">Find products by type, brand and vehicle needs.</p>
-                </div>
-                <a href="{{ route('shop.index') }}" class="gk-view-link">View All <span aria-hidden="true">→</span></a>
-            </div>
-            <div class="gk-category-grid">
-                @foreach($displayCategories as $category)
-                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="gk-category-card">
-                        <span class="gk-category-icon">
-                            @if($category->image)
-                                <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
-                            @else
-                                {{ $category->icon ?? '🔩' }}
-                            @endif
-                        </span>
-                        <span class="gk-category-name">{{ $category->name }}</span>
-                        @if(isset($category->products_count))
-                            <span class="gk-category-count">{{ $category->products_count }} items</span>
-                        @endif
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
+    <!-- Top Categories section removed -->
     <section class="gk-section">
         <div class="gk-container">
             <div class="gk-section-head">
