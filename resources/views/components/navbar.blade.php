@@ -491,7 +491,7 @@
             <form action="{{ route('search.index') }}" method="GET" class="w-full">
                 <div class="flex border border-[var(--gk-red)] rounded-md overflow-hidden bg-white">
                     <input type="text" name="q" value="{{ request('q') }}"
-                        placeholder="{{ __('general.search_placeholder') ?? 'Search...' }}"
+                        placeholder="Search for car parts, brands, services..."
                         required minlength="2"
                         class="flex-1 px-3 py-2 text-sm outline-none">
                     <button type="submit" class="gk-search-button text-white px-4 py-2">
