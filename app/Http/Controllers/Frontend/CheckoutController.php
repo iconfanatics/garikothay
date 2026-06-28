@@ -125,7 +125,7 @@ class CheckoutController extends Controller
 
     private function resolveGuestUser(array $data): User
     {
-        return User::firstOrCreate(
+        $user = User::withTrashed()->firstOrCreate(
             ['email' => $data['email']],
             [
                 'name' => $data['full_name'],
@@ -136,5 +136,11 @@ class CheckoutController extends Controller
                 'is_active' => true,
             ]
         );
+
+        if ($user->trashed()) {
+            $user->restore();
+        }
+
+        return $user;
     }
 }
