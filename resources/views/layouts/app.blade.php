@@ -47,7 +47,7 @@
 
         body {
             background-color: #F8FAF5;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, sans-serif !important;
             color: #1B1B1B;
         }
 
@@ -56,8 +56,9 @@
         h3,
         h4,
         h5,
-        h6 {
-            font-family: 'Oswald', 'Inter', sans-serif;
+        h6,
+        .font-oswald {
+            font-family: 'Oswald', 'Inter', sans-serif !important;
         }
     </style>
 </head>
