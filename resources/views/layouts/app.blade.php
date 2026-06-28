@@ -34,7 +34,7 @@
     <link rel="canonical" href="{{ url()->current() }}">
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -58,7 +58,7 @@
         h5,
         h6,
         .font-oswald {
-            font-family: 'Oswald', 'Inter', sans-serif !important;
+            font-family: 'Inter', system-ui, sans-serif !important;
         }
     </style>
 </head>
