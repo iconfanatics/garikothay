@@ -18,9 +18,16 @@ class CheckoutRequest extends FormRequest
 
     public function rules(): array
     {
+        $emailRules = ['nullable', 'email', 'max:255'];
+        
+        if (! auth()->check()) {
+            $emailRules[] = 'required';
+            $emailRules[] = Rule::unique('users', 'email')->whereNull('deleted_at');
+        }
+
         return [
             'full_name' => ['required', 'string', 'max:255'],
-            'email' => [Rule::requiredIf(fn () => ! auth()->check()), 'nullable', 'email', 'max:255'],
+            'email' => $emailRules,
             'phone' => ['required', 'string', new BdPhone()],
             'address_line_1' => ['required', 'string', 'max:255'],
             'address_line_2' => ['nullable', 'string', 'max:255'],
@@ -29,6 +36,13 @@ class CheckoutRequest extends FormRequest
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
             'notes' => ['nullable', 'string', 'max:500'],
             'save_address' => ['nullable', 'boolean'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.unique' => __('An account with this email already exists. Please log in to continue.'),
         ];
     }
 }
