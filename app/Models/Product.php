@@ -31,7 +31,7 @@ class Product extends Model
     }
 
     protected $fillable = [
-        'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
+        'brand', 'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
         'cost_price', 'stock_quantity', 'low_stock_threshold', 'weight_grams',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',
         'tax_rate', 'plant_type', 'sunlight', 'watering', 'difficulty', 'mature_size',

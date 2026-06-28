@@ -494,7 +494,7 @@
     $imageUrl = $product->primaryImage?->url ?? asset('images/product-placeholder.svg');
     $approvedReviews = $product->reviews->where('is_approved', true);
     $categoryName = $product->category?->name ?? 'Garikothay';
-    $brandName = $categoryName ?: 'Garikothay';
+    $brandName = $product->brand ?: 'Garikothay';
     $shippingService = app(\App\Services\ShippingService::class);
     $freeShippingThreshold = (float) \App\Models\Setting::get('free_shipping_threshold', 1500);
     $dhakaCityShippingCharge = $shippingService->getDhakaCityCharge();

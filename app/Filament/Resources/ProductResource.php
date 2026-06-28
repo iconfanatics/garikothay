@@ -65,6 +65,10 @@ class ProductResource extends Resource
                             ->searchable()
                             ->required(),
                     ]),
+                    Forms\Components\TextInput::make('brand')
+                        ->label('Brand')
+                        ->nullable()
+                        ->maxLength(255),
                     Forms\Components\TextInput::make('slug')
                         ->label('Slug')
                         ->required()
