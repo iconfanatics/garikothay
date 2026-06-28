@@ -101,8 +101,7 @@ class CategoryResource extends Resource
                     ->label('Parent Category')
                     ->placeholder('— (Top Level)')
                     ->badge()
-                    ->color('gray')
-                    ->sortable(),
+                    ->color('gray'),
                 Tables\Columns\TextColumn::make('slug')
                     ->label('Slug')
                     ->searchable()
@@ -120,8 +119,9 @@ class CategoryResource extends Resource
             ])
             ->defaultSort('sort_order')
             ->groups([
-                Tables\Grouping\Group::make('parent.name')
+                Tables\Grouping\Group::make('parent_id')
                     ->label('Parent Category')
+                    ->getTitleFromRecordUsing(fn (Category $record) => $record->parent?->name ?? 'Top Level')
                     ->collapsible(),
             ])
             ->filters([
