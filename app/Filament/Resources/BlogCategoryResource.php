@@ -46,6 +46,14 @@ class BlogCategoryResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->unique(BlogCategory::class, 'slug', ignoreRecord: true),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Active')
+                    ->default(true),
+                Forms\Components\FileUpload::make('image')
+                    ->label('Featured Image / Icon')
+                    ->image()
+                    ->directory('blog_categories')
+                    ->columnSpanFull(),
             ]),
         ]);
     }
@@ -63,8 +71,14 @@ class BlogCategoryResource extends Resource
                                 ->where('name', 'like', "%{$search}%"),
                         );
                     }),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Image/Icon')
+                    ->circular(false)
+                    ->size(40),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('Active'),
                 Tables\Columns\TextColumn::make('blogs_count')
                     ->label('Posts')
                     ->counts('blogs')

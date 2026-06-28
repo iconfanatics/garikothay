@@ -12,7 +12,7 @@ class BlogCategory extends Model
 {
     use HasTranslations;
 
-    protected $fillable = ['slug'];
+    protected $fillable = ['slug', 'is_active', 'image'];
 
     public function translations(): HasMany
     {
