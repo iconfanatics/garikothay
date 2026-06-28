@@ -113,6 +113,7 @@ class AdminPanelProvider extends PanelProvider
                     .fi-ta-header-cell { position: sticky !important; top: 0 !important; z-index: 10 !important; }
                     html:not(.dark) .fi-ta-header-cell { background-color: rgb(255 255 255) !important; }
                     .dark .fi-ta-header-cell { background-color: rgb(24 24 27) !important; }
+                    .trix-content p, .prose p, .fi-fo-rich-editor-content p { margin-top: 0.25em !important; margin-bottom: 0.25em !important; }
                 </style>'
             );
     }
