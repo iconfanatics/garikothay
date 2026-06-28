@@ -30,7 +30,9 @@ class Settings extends Page
 
         $this->form->fill([
             'site_name' => $settings->get('site_name')?->value ?? '',
+            'site_tagline' => $settings->get('site_tagline')?->value ?? '',
             'site_logo' => $settings->get('site_logo')?->value ?? '',
+            'site_favicon' => $settings->get('site_favicon')?->value ?? '',
             'free_shipping_threshold' => $settings->get('free_shipping_threshold')?->value ?? '',
             'dhaka_city_shipping_charge' => $settings->get('dhaka_city_shipping_charge')?->value ?? '80',
             'outside_dhaka_shipping_charge' => $settings->get('outside_dhaka_shipping_charge')?->value ?? $legacyShippingCharge,
@@ -40,6 +42,8 @@ class Settings extends Page
             'email' => $settings->get('email')?->value ?? '',
             'address' => $settings->get('address')?->value ?? '',
             'guest_checkout_enabled' => (bool) ($settings->get('guest_checkout_enabled')?->getCastedValue() ?? true),
+            'cod_enabled' => (bool) ($settings->get('cod_enabled')?->getCastedValue() ?? true),
+            'order_notes_enabled' => (bool) ($settings->get('order_notes_enabled')?->getCastedValue() ?? true),
         ]);
     }
 
@@ -49,7 +53,9 @@ class Settings extends Page
             ->schema([
                 Forms\Components\Section::make('General')->schema([
                     Forms\Components\TextInput::make('site_name')->label('Site Name'),
+                    Forms\Components\TextInput::make('site_tagline')->label('Site Tagline'),
                     Forms\Components\FileUpload::make('site_logo')->label('Site Logo')->image()->directory('settings'),
+                    Forms\Components\FileUpload::make('site_favicon')->label('Favicon')->image()->directory('settings'),
                 ])->columns(2),
                 Forms\Components\Section::make('Logistics')->schema([
                     Forms\Components\TextInput::make('dhaka_city_shipping_charge')
@@ -101,7 +107,15 @@ class Settings extends Page
                         ->label('Guest checkout')
                         ->helperText('Allow customers to place orders without logging in.')
                         ->default(true),
-                ]),
+                    Forms\Components\Toggle::make('cod_enabled')
+                        ->label('Cash on Delivery')
+                        ->helperText('Enable COD payment method.')
+                        ->default(true),
+                    Forms\Components\Toggle::make('order_notes_enabled')
+                        ->label('Order Notes')
+                        ->helperText('Allow customers to leave notes during checkout.')
+                        ->default(true),
+                ])->columns(3),
             ])
             ->statePath('data');
     }
@@ -112,7 +126,9 @@ class Settings extends Page
 
         $settingsMeta = [
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
+            'site_tagline' => ['group' => 'general', 'type' => SettingType::Text],
             'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
+            'site_favicon' => ['group' => 'general', 'type' => SettingType::Image],
             'free_shipping_threshold' => ['group' => 'logistics', 'type' => SettingType::Number],
             'dhaka_city_shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
             'outside_dhaka_shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
@@ -122,6 +138,8 @@ class Settings extends Page
             'email' => ['group' => 'contact', 'type' => SettingType::Text],
             'address' => ['group' => 'contact', 'type' => SettingType::Textarea],
             'guest_checkout_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
+            'cod_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
+            'order_notes_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
         ];
 
         foreach ($data as $key => $value) {

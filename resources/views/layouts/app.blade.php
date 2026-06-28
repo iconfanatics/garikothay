@@ -14,6 +14,15 @@
 
     <title>{{ $meta['title'] }}</title>
     <meta name="description" content="{{ $meta['metaDescription'] }}">
+    
+    @php
+        $favicon = \App\Models\Setting::get('site_favicon');
+    @endphp
+    @if($favicon)
+        <link rel="icon" href="{{ Storage::url($favicon) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}">
+    @endif
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{{ $meta['ogType'] }}">

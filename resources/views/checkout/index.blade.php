@@ -438,7 +438,11 @@
                     <p>Select how you would like to pay.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @php $codEnabled = (bool) \App\Models\Setting::get('cod_enabled', 1); @endphp
                     @foreach(\App\Enums\PaymentMethod::cases() as $method)
+                    @if($method->value === 'cod' && !$codEnabled)
+                        @continue
+                    @endif
                     <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer">
                         <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#e11d48]">
                         <div>
@@ -453,6 +457,7 @@
             </section>
 
             <!-- Notes -->
+            @if((bool) \App\Models\Setting::get('order_notes_enabled', 1))
             <section class="gk-checkout-panel gk-checkout-field">
                 <div class="gk-checkout-section-head">
                     <h2>{{ __('general.order_notes') }}</h2>
@@ -461,6 +466,7 @@
                 <textarea name="notes" rows="2" placeholder="{{ __('general.special_instructions') }}"
                     ></textarea>
             </section>
+            @endif
         </div>
 
         <!-- Order Summary -->
