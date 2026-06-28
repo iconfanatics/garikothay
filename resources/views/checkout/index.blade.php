@@ -342,7 +342,7 @@
 
     @if($errors->any())
     <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 mt-5 text-sm">
-        <div class="font-bold mb-1">{{ __('general.please_correct_errors', 'Please correct the errors below:') }}</div>
+        <div class="font-bold mb-1">{{ __('general.please_correct_errors') }}</div>
         <ul class="list-disc pl-5 space-y-1">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
