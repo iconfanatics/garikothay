@@ -690,15 +690,20 @@
                     </div>
 
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'specs' }">
-                        <table class="gk-spec-table">
-                            <tbody>
-                                <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
-                                <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
-                                <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
-                                <tr><td>Stock</td><td>{{ $product->stock_quantity }} units</td></tr>
-                                <tr><td>Warranty</td><td>Manufacturer warranty where applicable</td></tr>
-                            </tbody>
-                        </table>
+                        @if($product->specifications)
+                            <div class="prose max-w-none text-sm text-gray-700">
+                                {!! $product->specifications !!}
+                            </div>
+                        @else
+                            <table class="gk-spec-table">
+                                <tbody>
+                                    <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
+                                    <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
+                                    <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
+                                    <tr><td>Stock</td><td>{{ $product->stock_quantity }} units</td></tr>
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
 
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'reviews' }">
