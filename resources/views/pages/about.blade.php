@@ -6,15 +6,7 @@
 @section('content')
 <div class="bg-gray-50 min-h-screen">
 
-    <!-- Hero -->
-    <div class="bg-primary-700 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ __('general.about_us') }}</h1>
-            <p class="text-primary-200 text-lg max-w-2xl mx-auto">
-                {{ __('general.about_subtitle') }}
-            </p>
-        </div>
-    </div>
+    <!-- Hero Removed -->
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-16">
 
