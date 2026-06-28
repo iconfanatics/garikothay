@@ -105,10 +105,11 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->authMiddleware([\Filament\Http\Middleware\Authenticate::class])
+            ->authMiddleware([Authenticate::class])
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
+                    b, strong, .trix-content b, .trix-content strong { font-weight: bold !important; }
                     .fi-ta-content { max-height: 75vh !important; overflow-y: auto !important; }
                     .fi-ta-header-cell { position: sticky !important; top: 0 !important; z-index: 10 !important; }
                     html:not(.dark) .fi-ta-header-cell { background-color: rgb(255 255 255) !important; }
