@@ -91,7 +91,7 @@ class OrderResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Manage Order')->schema([
-                Forms\Components\Grid::make(3)->schema([
+                Forms\Components\Grid::make(4)->schema([
                     Forms\Components\Select::make('status')
                         ->label('Order Status')
                         ->options(\App\Enums\OrderStatus::options())
@@ -99,6 +99,10 @@ class OrderResource extends Resource
                     Forms\Components\Select::make('payment_status')
                         ->label('Payment Status')
                         ->options(\App\Enums\PaymentStatus::options())
+                        ->required(),
+                    Forms\Components\TextInput::make('payment_method')
+                        ->label('Payment Method')
+                        ->formatStateUsing(fn ($state) => $state ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A')
                         ->disabled(),
                     Forms\Components\TextInput::make('order_number')
                         ->label('Order Number')
@@ -184,6 +188,10 @@ class OrderResource extends Resource
                     ->badge()
                     ->default('None')
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->label('Payment Method')
+                    ->formatStateUsing(fn ($state) => $state ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A')
+                    ->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
