@@ -87,65 +87,71 @@ class OrderResource extends Resource
             ]);
     }
 
-    public static function form(Form $form): Form
+        public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Order Information')->schema([
-                Forms\Components\Grid::make(2)->schema([
-                    Forms\Components\TextInput::make('order_number')
-                        ->label('Order Number')
-                        ->disabled(),
-                    Forms\Components\TextInput::make('user.name')
-                        ->label('Customer')
-                        ->disabled(),
-                ]),
-                Forms\Components\Grid::make(2)->schema([
+            Forms\Components\Section::make('Manage Order')->schema([
+                Forms\Components\Grid::make(3)->schema([
                     Forms\Components\Select::make('status')
                         ->label('Order Status')
-                        ->options(OrderStatus::options())
+                        ->options(\App\Enums\OrderStatus::options())
                         ->required(),
                     Forms\Components\Select::make('payment_status')
                         ->label('Payment Status')
-                        ->options(PaymentStatus::options())
+                        ->options(\App\Enums\PaymentStatus::options())
+                        ->disabled(),
+                    Forms\Components\TextInput::make('order_number')
+                        ->label('Order Number')
                         ->disabled(),
                 ]),
+                Forms\Components\Textarea::make('notes')
+                    ->label('Admin Notes')
+                    ->rows(2),
             ]),
-
+            Forms\Components\Section::make('Customer & Shipping Info')->schema([
+                Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Placeholder::make('customer_name')
+                        ->label('Customer Name')
+                        ->content(fn ($record) => $record?->user?->name ?? 'N/A'),
+                    Forms\Components\Placeholder::make('phone')
+                        ->label('Phone Number')
+                        ->content(fn ($record) => $record?->shipping_phone ?? $record?->user?->phone ?? 'N/A'),
+                    Forms\Components\Placeholder::make('email')
+                        ->label('Email Address')
+                        ->content(fn ($record) => $record?->user?->email ?? 'N/A'),
+                    Forms\Components\Placeholder::make('address')
+                        ->label('Full Address')
+                        ->content(fn ($record) => $record?->shipping_full_address ?? 'N/A'),
+                ]),
+            ]),
+            Forms\Components\Section::make('Order Items')->schema([
+                Forms\Components\Repeater::make('items')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Grid::make(4)->schema([
+                            Forms\Components\TextInput::make('product_name')->label('Product')->disabled(),
+                            Forms\Components\Placeholder::make('variant_name')
+                                ->label('Variant')
+                                ->content(fn ($record) => $record?->variant?->name ?? 'N/A'),
+                            Forms\Components\TextInput::make('quantity')->label('Qty')->disabled(),
+                            Forms\Components\TextInput::make('total_price')->label('Total')->prefix('৳')->disabled(),
+                        ])
+                    ])
+                    ->disableItemCreation()
+                    ->disableItemDeletion()
+                    ->disableItemMovement()
+                    ->columns(1)
+            ]),
             Forms\Components\Section::make('Financials')->schema([
                 Forms\Components\Grid::make(4)->schema([
-                    Forms\Components\TextInput::make('subtotal')
-                        ->label('Subtotal (৳)')
-                        ->prefix('৳')
-                        ->disabled(),
-                    Forms\Components\TextInput::make('discount_amount')
-                        ->label('Discount (৳)')
-                        ->prefix('৳')
-                        ->disabled(),
-                    Forms\Components\TextInput::make('shipping_amount')
-                        ->label('Shipping (৳)')
-                        ->prefix('৳')
-                        ->disabled(),
-                    Forms\Components\TextInput::make('total')
-                        ->label('Total (৳)')
-                        ->prefix('৳')
-                        ->disabled(),
+                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->prefix('৳')->disabled(),
+                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->prefix('৳')->disabled(),
+                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->prefix('৳')->disabled(),
+                    Forms\Components\TextInput::make('total')->label('Total')->prefix('৳')->disabled(),
                 ]),
-            ]),
-
-            Forms\Components\Section::make('Logistics')->schema([
-                Forms\Components\TextInput::make('shipping_address.delivery_partner')
-                    ->label('Delivery Partner')
-                    ->disabled(),
-                Forms\Components\TextInput::make('shipping_address.delivery_time')
-                    ->label('Delivery Time')
-                    ->disabled(),
-            ])->columns(2),
-
-            Forms\Components\Section::make('Notes')->schema([
-                Forms\Components\Textarea::make('notes')
-                    ->label('Order Notes')
-                    ->rows(3)
-                    ->disabled(),
+                Forms\Components\Placeholder::make('coupon')
+                    ->label('Coupon Used')
+                    ->content(fn ($record) => $record?->coupon?->code ?? 'None'),
             ]),
         ]);
     }
@@ -214,9 +220,8 @@ class OrderResource extends Resource
                         return $indicators;
                     }),
             ])
-                        ->actions([
-                Tables\Actions\ViewAction::make()->label('View Details'),
-                Tables\Actions\EditAction::make()->label('Manage'),
+                                    ->actions([
+                Tables\Actions\EditAction::make()->label('Manage Order'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -235,7 +240,6 @@ class OrderResource extends Resource
         return [
             'index'  => Pages\ListOrders::route('/'),
             'create' => Pages\CreateOrder::route('/create'),
-            'view'   => Pages\ViewOrder::route('/{record}'),
             'edit'   => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
