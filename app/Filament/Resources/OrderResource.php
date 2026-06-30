@@ -33,6 +33,60 @@ class OrderResource extends Resource
         return 'danger';
     }
 
+        public static function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
+    {
+        return $infolist
+            ->schema([
+                \Filament\Infolists\Components\Section::make('Order Information')->schema([
+                    \Filament\Infolists\Components\Grid::make(4)->schema([
+                        \Filament\Infolists\Components\TextEntry::make('order_number')->label('Order Number')->weight('bold'),
+                        \Filament\Infolists\Components\TextEntry::make('status')
+                            ->badge()
+                            ->formatStateUsing(fn (\App\Enums\OrderStatus $state): string => $state->label())
+                            ->color(fn (\App\Enums\OrderStatus $state): string => $state->color()),
+                        \Filament\Infolists\Components\TextEntry::make('payment_status')
+                            ->badge()
+                            ->formatStateUsing(fn (\App\Enums\PaymentStatus $state): string => $state->label())
+                            ->color(fn (\App\Enums\PaymentStatus $state): string => $state->color()),
+                        \Filament\Infolists\Components\TextEntry::make('created_at')
+                            ->label('Order Date')
+                            ->dateTime('d M Y, h:i A'),
+                    ])
+                ]),
+                \Filament\Infolists\Components\Section::make('Customer & Shipping Details')->schema([
+                    \Filament\Infolists\Components\Grid::make(2)->schema([
+                        \Filament\Infolists\Components\TextEntry::make('shipping_full_name')->label('Customer Name')->default(fn ($record) => $record->user->name ?? 'N/A'),
+                        \Filament\Infolists\Components\TextEntry::make('shipping_phone')->label('Phone Number')->default(fn ($record) => $record->user->phone ?? 'N/A'),
+                        \Filament\Infolists\Components\TextEntry::make('user.email')->label('Email Address')->default('N/A'),
+                        \Filament\Infolists\Components\TextEntry::make('shipping_full_address')->label('Full Address')->default('N/A'),
+                    ])
+                ]),
+                \Filament\Infolists\Components\Section::make('Order Items')->schema([
+                    \Filament\Infolists\Components\RepeatableEntry::make('items')
+                        ->schema([
+                            \Filament\Infolists\Components\Grid::make(4)->schema([
+                                \Filament\Infolists\Components\TextEntry::make('product_name')->label('Product'),
+                                \Filament\Infolists\Components\TextEntry::make('variant.name')
+                                    ->label('Variant')
+                                    ->default('N/A'),
+                                \Filament\Infolists\Components\TextEntry::make('quantity')->label('Qty'),
+                                \Filament\Infolists\Components\TextEntry::make('total_price')->label('Total')->money('BDT'),
+                            ])
+                        ])
+                        ->columns(1)
+                ]),
+                \Filament\Infolists\Components\Section::make('Financials')->schema([
+                    \Filament\Infolists\Components\Grid::make(5)->schema([
+                        \Filament\Infolists\Components\TextEntry::make('subtotal')->money('BDT'),
+                        \Filament\Infolists\Components\TextEntry::make('discount_amount')->label('Discount')->money('BDT'),
+                        \Filament\Infolists\Components\TextEntry::make('shipping_amount')->label('Shipping')->money('BDT'),
+                        \Filament\Infolists\Components\TextEntry::make('total')->money('BDT')->weight('bold'),
+                        \Filament\Infolists\Components\TextEntry::make('coupon.code')->label('Coupon Used')->default('None')->badge(),
+                    ]),
+                ]),
+            ]);
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -160,7 +214,8 @@ class OrderResource extends Resource
                         return $indicators;
                     }),
             ])
-            ->actions([
+                        ->actions([
+                Tables\Actions\ViewAction::make()->label('View Details'),
                 Tables\Actions\EditAction::make()->label('Manage'),
             ])
             ->bulkActions([
@@ -180,6 +235,7 @@ class OrderResource extends Resource
         return [
             'index'  => Pages\ListOrders::route('/'),
             'create' => Pages\CreateOrder::route('/create'),
+            'view'   => Pages\ViewOrder::route('/{record}'),
             'edit'   => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
