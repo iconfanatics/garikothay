@@ -17,8 +17,21 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'avatar',
-        'email_verified_at', 'phone_verified_at', 'locale', 'is_active',
+        'name',
+        'email',
+        'password',
+        'phone',
+        'avatar',
+        'locale',
+        'is_active',
+        'email_verified_at',
+        'phone_verified_at',
+        'address',
+        'division',
+        'district',
+        'preferred_payment_method',
+        'notes',
+        'last_login_at',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -28,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'is_active' => 'boolean',
             'password' => 'hashed',
         ];

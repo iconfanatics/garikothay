@@ -31,5 +31,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(OrderPlaced::class, ClearProductCache::class);
         Event::listen(OrderStatusChanged::class, SendOrderStatusUpdateEmail::class);
         Event::listen(UserRegistered::class, SendWelcomeEmail::class);
+        Event::listen(\Illuminate\Auth\Events\Login::class, \App\Listeners\UpdateLastLogin::class);
     }
 }
