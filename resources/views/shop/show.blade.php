@@ -700,7 +700,6 @@
                                     <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
                                     <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
                                     <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
-                                    <tr><td>Stock</td><td>{{ $product->stock_quantity }} units</td></tr>
                                 </tbody>
                             </table>
                         @endif
