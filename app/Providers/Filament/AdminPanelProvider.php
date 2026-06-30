@@ -92,6 +92,10 @@ class AdminPanelProvider extends PanelProvider
                 RevenueChart::class,
                 LatestOrdersTable::class,
                 LowStockAlert::class,
+                \App\Filament\Widgets\TopSellingProducts::class,
+                \App\Filament\Widgets\OutOfStockProducts::class,
+                \App\Filament\Widgets\TopSuppliers::class,
+                \App\Filament\Widgets\CouponPerformance::class,
             ])
             ->middleware([
                 EncryptCookies::class,

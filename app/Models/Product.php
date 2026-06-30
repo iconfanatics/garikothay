@@ -105,6 +105,11 @@ class Product extends Model
         return $this->hasMany(Wishlist::class);
     }
 
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function scopeActive($query): void
     {
         $query->where('is_active', true);
