@@ -22,6 +22,17 @@ class OrderResource extends Resource
     protected static ?string $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getModel()::where('status', OrderStatus::Pending)->count();
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'danger';
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -88,6 +99,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordClasses(fn (Order $record) => $record->status === OrderStatus::Pending ? 'bg-primary-50/50 dark:bg-primary-900/10 border-l-4 border-primary-500 font-semibold' : null)
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Order #')
