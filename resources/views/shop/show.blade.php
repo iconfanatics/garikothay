@@ -182,7 +182,6 @@
         font-size: clamp(1.5rem, 3vw, 1.9rem);
         font-weight: 900;
         line-height: 1.1;
-        text-transform: uppercase;
     }
 
     .gk-product-meta {
