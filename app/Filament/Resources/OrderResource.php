@@ -149,9 +149,10 @@ class OrderResource extends Resource
                     Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->prefix('৳')->disabled(),
                     Forms\Components\TextInput::make('total')->label('Total')->prefix('৳')->disabled(),
                 ]),
-                Forms\Components\Placeholder::make('coupon')
+                Forms\Components\TextInput::make('coupon.code')
                     ->label('Coupon Used')
-                    ->content(fn ($record) => $record?->coupon?->code ?? 'None'),
+                    ->default('None')
+                    ->disabled(),
             ]),
         ]);
     }
@@ -178,6 +179,11 @@ class OrderResource extends Resource
                     ->label('Total')
                     ->money('BDT')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('coupon.code')
+                    ->label('Coupon')
+                    ->badge()
+                    ->default('None')
+                    ->toggleable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
