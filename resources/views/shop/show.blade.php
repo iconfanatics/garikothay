@@ -493,7 +493,7 @@
     $imageUrl = $product->primaryImage?->url ?? asset('images/product-placeholder.svg');
     $approvedReviews = $product->reviews->where('is_approved', true);
     $categoryName = $product->category?->name ?? 'Garikothay';
-    $brandName = $product->brand ?: 'Garikothay';
+    $brandName = $product->brand;
     $shippingService = app(\App\Services\ShippingService::class);
     $freeShippingThreshold = (float) \App\Models\Setting::get('free_shipping_threshold', 1500);
     $dhakaCityShippingCharge = $shippingService->getDhakaCityCharge();
@@ -532,11 +532,9 @@
             <div class="gk-side-card">
                 <h3 class="gk-side-title">🏷 Top Brands</h3>
                 <ul class="gk-side-list">
-                    @forelse($topBrands ?? collect() as $brand)
+                    @foreach($topBrands ?? collect() as $brand)
                         <li><a href="{{ route('shop.index') }}" class="{{ $brand === $brandName ? 'is-active' : '' }}">{{ $brand }}</a></li>
-                    @empty
-                        <li><a href="{{ route('shop.index') }}">Garikothay</a></li>
-                    @endforelse
+                    @endforeach
                 </ul>
             </div>
         </aside>
@@ -588,7 +586,6 @@
                 </div>
 
                 <div>
-                    <div class="gk-product-brand">{{ $brandName }}</div>
                     <h1 class="gk-product-title">{{ $product->name }}</h1>
 
                     <div class="gk-product-meta">
@@ -606,6 +603,10 @@
                             <span style="color:#e11d48; font-weight:800;">Out of Stock</span>
                         @endif
                         <span>·</span>
+                        @if($product->brand)
+                            <span>Brand: {{ $product->brand }}</span>
+                            <span>·</span>
+                        @endif
                         <span>SKU: {{ $product->sku }}</span>
                     </div>
 
@@ -696,7 +697,9 @@
                         @else
                             <table class="gk-spec-table">
                                 <tbody>
-                                    <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
+                                    @if($brandName)
+                                        <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
+                                    @endif
                                     <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
                                     <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
                                 </tbody>
