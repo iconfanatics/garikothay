@@ -240,16 +240,22 @@
 </style>
 
 @php
-    $marqueeItems = [
-        'Hard to find reliable garages? Now find trusted services instantly.',
-        'Find Car Wash, Garage, Fuel Stations, Driving Schools Near You.',
-        'List Your Business on Garikothay.com.',
-        'Promote your business through Garikothay.com.',
-        'Trusted Vehicle Platform in Bangladesh.',
-        'Get More Customers, Grow Faster.',
-        'Limited Featured Slots Available.',
-        'Discover trusted services today. Start your business journey now.',
-    ];
+    $marqueeItemsDb = \App\Models\Setting::get('theme1_top_ticker');
+    
+    if (!empty($marqueeItemsDb) && is_array($marqueeItemsDb) && count($marqueeItemsDb) > 0) {
+        $marqueeItems = array_column($marqueeItemsDb, 'text');
+    } else {
+        $marqueeItems = [
+            'Hard to find reliable garages? Now find trusted services instantly.',
+            'Find Car Wash, Garage, Fuel Stations, Driving Schools Near You.',
+            'List Your Business on Garikothay.com.',
+            'Promote your business through Garikothay.com.',
+            'Trusted Vehicle Platform in Bangladesh.',
+            'Get More Customers, Grow Faster.',
+            'Limited Featured Slots Available.',
+            'Discover trusted services today. Start your business journey now.',
+        ];
+    }
 @endphp
 
 <div class="sticky top-0 z-50">

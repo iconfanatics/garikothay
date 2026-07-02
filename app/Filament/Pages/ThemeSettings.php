@@ -28,6 +28,7 @@ class ThemeSettings extends Page
         $settings = Setting::all()->keyBy('key');
 
         $this->form->fill([
+            'theme1_top_ticker' => $settings->get('theme1_top_ticker')?->getCastedValue() ?? [],
             'theme1_hero_slides' => $settings->get('theme1_hero_slides')?->getCastedValue() ?? [],
             'theme1_promo_banners' => $settings->get('theme1_promo_banners')?->getCastedValue() ?? [],
         ]);
@@ -37,6 +38,22 @@ class ThemeSettings extends Page
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Top Ticker (Marquee)')
+                    ->description('Customize the scrolling text at the very top of the page.')
+                    ->schema([
+                        Forms\Components\Repeater::make('theme1_top_ticker')
+                            ->label('Ticker Items')
+                            ->schema([
+                                Forms\Components\TextInput::make('text')
+                                    ->label('Text')
+                                    ->required()
+                                    ->placeholder('e.g. Get More Customers, Grow Faster.'),
+                            ])
+                            ->itemLabel(fn (array $state): ?string => $state['text'] ?? null)
+                            ->collapsible()
+                            ->defaultItems(0)
+                    ]),
+                
                 Forms\Components\Section::make('Hero Slider')
                     ->description('Customize the main image slider on the homepage.')
                     ->schema([
@@ -117,6 +134,7 @@ class ThemeSettings extends Page
         $data = $this->form->getState();
 
         $settingsMeta = [
+            'theme1_top_ticker' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_hero_slides' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_promo_banners' => ['group' => 'theme', 'type' => SettingType::Json],
         ];
