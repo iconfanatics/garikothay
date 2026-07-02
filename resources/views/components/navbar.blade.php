@@ -48,7 +48,7 @@
         height: 2.25rem;
         align-items: center;
         white-space: nowrap;
-        animation: gk-topbar-marquee 45s linear infinite;
+        animation: gk-topbar-marquee 20s linear infinite;
     }
 
     .gk-topbar-item {
