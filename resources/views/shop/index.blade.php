@@ -632,7 +632,7 @@
     </section>
 
     <div class="gk-shop-container gk-shop-body">
-        <aside>
+        <aside style="position: relative; z-index: 40;">
             <button type="button" class="gk-mobile-filter" @click="filtersOpen = !filtersOpen">
                 <span>☷ {{ __('general.categories') }} & {{ __('general.filters') }}</span>
                 <span x-text="filtersOpen ? '−' : '+'"></span>
