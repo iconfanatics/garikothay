@@ -238,8 +238,8 @@
     }
 
     @keyframes gk-topbar-marquee {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
+        from { transform: translateX(100vw); }
+        to { transform: translateX(-100%); }
     }
 
     @media (max-width: 767px) {
@@ -262,8 +262,7 @@
     @if(count($marqueeItems) > 0)
     <div class="gk-topbar">
         <div class="gk-topbar-track {{ $isSliding ? 'is-sliding' : 'is-static' }}" style="--marquee-speed: {{ $marqueeSpeed }}s;">
-            @php $displayItems = $isSliding ? array_merge($marqueeItems, $marqueeItems) : $marqueeItems; @endphp
-            @foreach($displayItems as $item)
+            @foreach($marqueeItems as $item)
                 <span class="gk-topbar-item"><span class="gk-topbar-dot"></span>{{ $item }}</span>
             @endforeach
         </div>
