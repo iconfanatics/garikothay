@@ -153,7 +153,7 @@ class ThemeSettings extends Page
 
         $settingsMeta = [
             'theme1_top_ticker_speed' => ['group' => 'theme', 'type' => SettingType::Number],
-            'theme1_top_ticker_style' => ['group' => 'theme', 'type' => SettingType::String],
+            'theme1_top_ticker_style' => ['group' => 'theme', 'type' => SettingType::Text],
             'theme1_top_ticker' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_hero_slides' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_promo_banners' => ['group' => 'theme', 'type' => SettingType::Json],
