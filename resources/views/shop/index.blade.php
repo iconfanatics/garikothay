@@ -227,7 +227,6 @@
     }
 
     .gk-filter-panel {
-        overflow: hidden;
         border: 1px solid var(--shop-line);
         border-radius: 8px;
         background: #ffffff;
@@ -244,6 +243,7 @@
         font-size: 0.8rem;
         font-weight: 900;
         text-transform: uppercase;
+        border-radius: 7px 7px 0 0;
     }
 
     .gk-filter-content {
@@ -290,18 +290,55 @@
     }
 
     .gk-subcategory-list {
-        display: grid;
+        display: none;
         gap: 0.2rem;
         border-left: 2px solid #ffe4e6;
         margin: 0 0 0.55rem 1rem;
         padding-left: 0.6rem;
     }
 
+    .gk-category-row.is-open .gk-subcategory-list,
+    .gk-category-row:hover .gk-subcategory-list {
+        display: grid;
+    }
+
+    @media (min-width: 1024px) {
+        .gk-category-row {
+            position: relative;
+        }
+        .gk-subcategory-list {
+            position: absolute;
+            top: -1px;
+            left: 100%;
+            min-width: 220px;
+            background: #ffffff;
+            border: 1px solid var(--shop-line);
+            border-radius: 6px;
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.08);
+            padding: 0.75rem;
+            z-index: 100;
+            margin: 0;
+            border-left: none;
+            /* Give it a tiny gap so it doesn't overlap borders awkwardly */
+            margin-left: 2px;
+        }
+        /* Create a pseudo-element bridge to prevent hover loss when moving mouse to submenu */
+        .gk-subcategory-list::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -10px;
+            bottom: 0;
+            width: 10px;
+        }
+    }
+
     .gk-subcategory-link {
+        display: block;
         border-radius: 4px;
         color: var(--shop-muted);
-        padding: 0.3rem 0.45rem;
-        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
         text-decoration: none;
     }
 
@@ -624,7 +661,7 @@
                                         <span>{{ $category->name }}</span>
                                         <span class="gk-category-arrow">›</span>
                                     </a>
-                                    @if($parentIsActive && $category->children->isNotEmpty())
+                                    @if($category->children->isNotEmpty())
                                         <div class="gk-subcategory-list">
                                             @foreach($category->children as $child)
                                                 <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
