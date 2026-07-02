@@ -113,7 +113,7 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
-                    b, strong, .trix-content b, .trix-content strong { font-weight: bold !important; }
+                    html .trix-content b, html .trix-content strong { font-weight: 700; }
                     .fi-ta-content { max-height: 75vh !important; overflow-y: auto !important; }
                     .fi-ta-header-cell { position: sticky !important; top: 0 !important; z-index: 10 !important; }
                     html:not(.dark) .fi-ta-header-cell { background-color: rgb(255 255 255) !important; }
