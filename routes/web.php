@@ -118,4 +118,7 @@ Route::withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken
     Route::post('/payment/sslcommerz/ipn', [SslCommerzController::class, 'ipn'])->name('payment.sslcommerz.ipn');
 });
 
+// Dynamic Page fallback route
+Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');
+
 require __DIR__.'/auth.php';

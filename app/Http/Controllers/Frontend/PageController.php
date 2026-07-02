@@ -80,4 +80,13 @@ class PageController extends Controller
             'page' => Page::where('slug', 'return-policy')->firstOrFail()
         ]);
     }
+
+    public function show(string $slug): View
+    {
+        $page = Page::where('slug', $slug)->firstOrFail();
+        
+        return view('pages.show', [
+            'page' => $page
+        ]);
+    }
 }
