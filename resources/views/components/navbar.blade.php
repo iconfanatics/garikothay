@@ -242,8 +242,8 @@
 @php
     $marqueeItemsDb = \App\Models\Setting::get('theme1_top_ticker');
     
-    if (!empty($marqueeItemsDb) && is_array($marqueeItemsDb) && count($marqueeItemsDb) > 0) {
-        $marqueeItems = array_column($marqueeItemsDb, 'text');
+    if ($marqueeItemsDb !== null) {
+        $marqueeItems = is_array($marqueeItemsDb) ? array_column($marqueeItemsDb, 'text') : [];
     } else {
         $marqueeItems = [
             'Hard to find reliable garages? Now find trusted services instantly.',
@@ -259,6 +259,7 @@
 @endphp
 
 <div class="sticky top-0 z-50">
+    @if(count($marqueeItems) > 0)
     <div class="gk-topbar">
         <div class="gk-topbar-track">
             @foreach(array_merge($marqueeItems, $marqueeItems) as $item)
@@ -266,6 +267,7 @@
             @endforeach
         </div>
     </div>
+    @endif
 
 <nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }">
     <!-- Desktop Header Row -->
