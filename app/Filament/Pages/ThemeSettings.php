@@ -28,6 +28,7 @@ class ThemeSettings extends Page
         $settings = Setting::all()->keyBy('key');
 
         $this->form->fill([
+            'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
             'theme1_top_ticker' => $settings->get('theme1_top_ticker')?->getCastedValue() ?? [],
             'theme1_hero_slides' => $settings->get('theme1_hero_slides')?->getCastedValue() ?? [],
@@ -50,6 +51,14 @@ class ThemeSettings extends Page
                             ])
                             ->default('slide')
                             ->inline(),
+                        Forms\Components\TextInput::make('theme1_top_ticker_speed')
+                            ->label('Animation Speed (Seconds)')
+                            ->numeric()
+                            ->default(12)
+                            ->minValue(1)
+                            ->maxValue(100)
+                            ->helperText('Lower number means faster scrolling. Default is 12.')
+                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('theme1_top_ticker_style') === 'slide'),
                         Forms\Components\Repeater::make('theme1_top_ticker')
                             ->label('Ticker Items')
                             ->schema([
@@ -143,6 +152,7 @@ class ThemeSettings extends Page
         $data = $this->form->getState();
 
         $settingsMeta = [
+            'theme1_top_ticker_speed' => ['group' => 'theme', 'type' => SettingType::Number],
             'theme1_top_ticker_style' => ['group' => 'theme', 'type' => SettingType::String],
             'theme1_top_ticker' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_hero_slides' => ['group' => 'theme', 'type' => SettingType::Json],

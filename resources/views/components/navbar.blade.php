@@ -48,7 +48,7 @@
         height: 2.25rem;
         align-items: center;
         white-space: nowrap;
-        animation: gk-topbar-marquee 12s linear infinite;
+        animation: gk-topbar-marquee var(--marquee-speed, 12s) linear infinite;
     }
     
     .gk-topbar-track.is-static {
@@ -255,12 +255,13 @@
     
     $marqueeStyle = \App\Models\Setting::get('theme1_top_ticker_style', 'slide');
     $isSliding = $marqueeStyle === 'slide';
+    $marqueeSpeed = \App\Models\Setting::get('theme1_top_ticker_speed', 12);
 @endphp
 
 <div class="sticky top-0 z-50">
     @if(count($marqueeItems) > 0)
     <div class="gk-topbar">
-        <div class="gk-topbar-track {{ $isSliding ? 'is-sliding' : 'is-static' }}">
+        <div class="gk-topbar-track {{ $isSliding ? 'is-sliding' : 'is-static' }}" style="--marquee-speed: {{ $marqueeSpeed }}s;">
             @php $displayItems = $isSliding ? array_merge($marqueeItems, $marqueeItems) : $marqueeItems; @endphp
             @foreach($displayItems as $item)
                 <span class="gk-topbar-item"><span class="gk-topbar-dot"></span>{{ $item }}</span>
