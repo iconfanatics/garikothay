@@ -277,7 +277,7 @@
         text-decoration: none;
     }
 
-    .gk-category-link:hover,
+    .gk-category-row:hover .gk-category-link,
     .gk-category-link.is-active {
         background: #fff1f2;
         color: var(--shop-red);
@@ -659,7 +659,9 @@
                                        class="gk-category-link {{ $parentIsActive ? 'is-active' : '' }}">
                                         <span style="color:var(--shop-red);">{{ $category->icon ?? '⚙' }}</span>
                                         <span>{{ $category->name }}</span>
-                                        <span class="gk-category-arrow">›</span>
+                                        @if($category->children->isNotEmpty())
+                                            <span class="gk-category-arrow">›</span>
+                                        @endif
                                     </a>
                                     @if($category->children->isNotEmpty())
                                         <div class="gk-subcategory-list">
