@@ -42,13 +42,23 @@
         font-size: 0.78rem;
     }
 
-    .gk-topbar-track {
+    .gk-topbar-track.is-sliding {
         display: flex;
         width: max-content;
         height: 2.25rem;
         align-items: center;
         white-space: nowrap;
-        animation: gk-topbar-marquee 20s linear infinite;
+        animation: gk-topbar-marquee 12s linear infinite;
+    }
+    
+    .gk-topbar-track.is-static {
+        display: flex;
+        width: 100%;
+        height: 2.25rem;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .gk-topbar-item {
@@ -242,13 +252,17 @@
 @php
     $marqueeItemsDb = \App\Models\Setting::get('theme1_top_ticker');
     $marqueeItems = (is_array($marqueeItemsDb) && count($marqueeItemsDb) > 0) ? array_column($marqueeItemsDb, 'text') : [];
+    
+    $marqueeStyle = \App\Models\Setting::get('theme1_top_ticker_style', 'slide');
+    $isSliding = $marqueeStyle === 'slide';
 @endphp
 
 <div class="sticky top-0 z-50">
     @if(count($marqueeItems) > 0)
     <div class="gk-topbar">
-        <div class="gk-topbar-track">
-            @foreach(array_merge($marqueeItems, $marqueeItems) as $item)
+        <div class="gk-topbar-track {{ $isSliding ? 'is-sliding' : 'is-static' }}">
+            @php $displayItems = $isSliding ? array_merge($marqueeItems, $marqueeItems) : $marqueeItems; @endphp
+            @foreach($displayItems as $item)
                 <span class="gk-topbar-item"><span class="gk-topbar-dot"></span>{{ $item }}</span>
             @endforeach
         </div>

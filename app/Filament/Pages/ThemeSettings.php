@@ -28,6 +28,7 @@ class ThemeSettings extends Page
         $settings = Setting::all()->keyBy('key');
 
         $this->form->fill([
+            'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
             'theme1_top_ticker' => $settings->get('theme1_top_ticker')?->getCastedValue() ?? [],
             'theme1_hero_slides' => $settings->get('theme1_hero_slides')?->getCastedValue() ?? [],
             'theme1_promo_banners' => $settings->get('theme1_promo_banners')?->getCastedValue() ?? [],
@@ -41,6 +42,14 @@ class ThemeSettings extends Page
                 Forms\Components\Section::make('Top Ticker (Marquee)')
                     ->description('Customize the scrolling text at the very top of the page.')
                     ->schema([
+                        Forms\Components\Radio::make('theme1_top_ticker_style')
+                            ->label('Ticker Style')
+                            ->options([
+                                'slide' => 'Slide (Animated Marquee)',
+                                'static' => 'Static (Fixed Center)'
+                            ])
+                            ->default('slide')
+                            ->inline(),
                         Forms\Components\Repeater::make('theme1_top_ticker')
                             ->label('Ticker Items')
                             ->schema([
@@ -134,6 +143,7 @@ class ThemeSettings extends Page
         $data = $this->form->getState();
 
         $settingsMeta = [
+            'theme1_top_ticker_style' => ['group' => 'theme', 'type' => SettingType::String],
             'theme1_top_ticker' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_hero_slides' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_promo_banners' => ['group' => 'theme', 'type' => SettingType::Json],
