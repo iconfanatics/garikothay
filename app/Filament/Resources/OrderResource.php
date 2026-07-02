@@ -102,7 +102,7 @@ class OrderResource extends Resource
                         ->required(),
                     Forms\Components\TextInput::make('payment_method')
                         ->label('Payment Method')
-                        ->formatStateUsing(fn ($state) => $state ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A')
+                        ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\PaymentMethod ? $state->label() : (is_string($state) ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A'))
                         ->disabled(),
                     Forms\Components\TextInput::make('order_number')
                         ->label('Order Number')
@@ -190,7 +190,7 @@ class OrderResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Payment Method')
-                    ->formatStateUsing(fn ($state) => $state ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A')
+                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\PaymentMethod ? $state->label() : (is_string($state) ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A'))
                     ->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
