@@ -32,7 +32,9 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('translations.en.name')
                             ->label('Name (English)')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
                         Forms\Components\TextInput::make('translations.bn.name')
                             ->label('Name (বাংলা)')
                             ->maxLength(255),
@@ -72,7 +74,8 @@ class ProductResource extends Resource
                     Forms\Components\TextInput::make('slug')
                         ->label('Slug')
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->unique(Product::class, 'slug', ignoreRecord: true),
                     Forms\Components\Textarea::make('translations.en.short_description')
                         ->label('Short Description (EN)')
                         ->rows(2),
