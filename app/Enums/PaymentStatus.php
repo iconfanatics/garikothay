@@ -37,4 +37,15 @@ enum PaymentStatus: string
             fn (self $case) => [$case->value => $case->label()]
         )->toArray();
     }
+
+    /** @return self[] */
+    public function allowedTransitions(): array
+    {
+        return match($this) {
+            self::Unpaid => [self::Paid],
+            self::Paid => [self::PartiallyRefunded, self::Refunded],
+            self::PartiallyRefunded => [self::Refunded],
+            default => [],
+        };
+    }
 }

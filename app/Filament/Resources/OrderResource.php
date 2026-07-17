@@ -95,10 +95,24 @@ class OrderResource extends Resource
                     Forms\Components\Select::make('status')
                         ->label('Order Status')
                         ->options(\App\Enums\OrderStatus::options())
+                        ->disableOptionWhen(function (string $value, ?\App\Models\Order $record): bool {
+                            if (! $record) return false;
+                            $currentStatus = $record->status;
+                            if ($value === $currentStatus->value) return false;
+                            $allowed = array_map(fn($s) => $s->value, $currentStatus->allowedTransitions());
+                            return ! in_array($value, $allowed);
+                        })
                         ->required(),
                     Forms\Components\Select::make('payment_status')
                         ->label('Payment Status')
                         ->options(\App\Enums\PaymentStatus::options())
+                        ->disableOptionWhen(function (string $value, ?\App\Models\Order $record): bool {
+                            if (! $record) return false;
+                            $currentStatus = $record->payment_status;
+                            if ($value === $currentStatus->value) return false;
+                            $allowed = array_map(fn($s) => $s->value, $currentStatus->allowedTransitions());
+                            return ! in_array($value, $allowed);
+                        })
                         ->required(),
                     Forms\Components\TextInput::make('payment_method')
                         ->label('Payment Method')
