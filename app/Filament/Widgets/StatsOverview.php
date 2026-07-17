@@ -47,6 +47,31 @@ class StatsOverview extends BaseWidget
             ->where('created_at', '<', $today->copy()->subWeek())
             ->count();
 
+        $todayRevenueNet = Order::whereDate('created_at', $today)
+            ->where('payment_status', PaymentStatus::Paid)
+            ->sum(\Illuminate\Support\Facades\DB::raw('subtotal - discount_amount'));
+
+        $todayCogs = \App\Models\OrderItem::whereHas('order', function ($q) use ($today) {
+                $q->whereDate('created_at', $today)->where('payment_status', PaymentStatus::Paid);
+            })
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->sum(\Illuminate\Support\Facades\DB::raw('order_items.quantity * IFNULL(products.cost_price, 0)'));
+            
+        $todayProfit = $todayRevenueNet - $todayCogs;
+
+        $totalRevenueNet = Order::where('payment_status', PaymentStatus::Paid)
+            ->sum(\Illuminate\Support\Facades\DB::raw('subtotal - discount_amount'));
+
+        $totalCogs = \App\Models\OrderItem::whereHas('order', function ($q) {
+                $q->where('payment_status', PaymentStatus::Paid);
+            })
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->sum(\Illuminate\Support\Facades\DB::raw('order_items.quantity * IFNULL(products.cost_price, 0)'));
+            
+        $totalProfit = $totalRevenueNet - $totalCogs;
+
+        $totalRevenue = Order::where('payment_status', PaymentStatus::Paid)->sum('total');
+
         return [
             Stat::make("Today's Orders", (string) $todayOrdersCount)
                 ->description('Orders placed today')
@@ -77,19 +102,21 @@ class StatsOverview extends BaseWidget
                         ->map(fn ($v) => (float) $v)
                         ->toArray()
                 ),
-
-            Stat::make('Total Customers', number_format($totalCustomers))
-                ->description("{$newCustomersThisMonth} new this month")
-                ->descriptionIcon('heroicon-m-user-plus')
-                ->color('info')
-                ->chart(
-                    User::selectRaw('DATE(created_at) as date, COUNT(*) as count')
-                        ->whereDate('created_at', '>=', $today->copy()->subDays(6))
-                        ->groupBy('date')
-                        ->orderBy('date')
-                        ->pluck('count')
-                        ->toArray()
-                ),
+                
+            Stat::make("Today's Profit", '৳' . number_format((float) $todayProfit, 2))
+                ->description('Net profit from today\'s sales')
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('success'),
+                
+            Stat::make("Total Revenue", '৳' . number_format((float) $totalRevenue, 2))
+                ->description('All time total revenue')
+                ->descriptionIcon('heroicon-m-currency-bangladeshi')
+                ->color('info'),
+                
+            Stat::make("Total Profit", '৳' . number_format((float) $totalProfit, 2))
+                ->description('All time net profit')
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('success'),
 
             Stat::make('Pending Orders', (string) $pendingOrders)
                 ->description($pendingOrders > $lastWeekPending
