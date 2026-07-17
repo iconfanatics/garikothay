@@ -85,6 +85,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationItemResource::class,
                 SupplierResource::class,
                 \App\Filament\Resources\CartResource::class,
+                \App\Filament\Resources\InvoiceResource::class,
             ])
             ->pages([Dashboard::class, \App\Filament\Pages\Settings::class, \App\Filament\Pages\ThemeSettings::class])
             ->widgets([

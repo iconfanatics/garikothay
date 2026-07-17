@@ -69,6 +69,11 @@ class Order extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
+
     public function scopeByStatus($query, OrderStatus $status): void
     {
         $query->where('status', $status);

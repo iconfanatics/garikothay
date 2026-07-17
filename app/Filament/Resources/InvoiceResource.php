@@ -1,0 +1,105 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\InvoiceResource\Pages;
+use App\Models\Invoice;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+
+class InvoiceResource extends Resource
+{
+    protected static ?string $model = Invoice::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationGroup = 'Sales';
+    protected static ?int $navigationSort = 4;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Select::make('order_id')
+                    ->relationship('order', 'order_number')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+                Forms\Components\TextInput::make('invoice_number')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->default(fn () => 'INV-' . date('Ymd') . '-' . strtoupper(str()->random(4))),
+                Forms\Components\DateTimePicker::make('invoice_date')
+                    ->required()
+                    ->default(now()),
+                Forms\Components\Select::make('status')
+                    ->options(\App\Enums\InvoiceStatus::class)
+                    ->required()
+                    ->default(\App\Enums\InvoiceStatus::Pending),
+                Forms\Components\KeyValue::make('billing_information')
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('invoice_number')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('invoice_date')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('order.order_number')
+                    ->label('Linked Order')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('order.total')
+                    ->label('Amount')
+                    ->money('BDT')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->defaultSort('invoice_date', 'desc')
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(\App\Enums\InvoiceStatus::class),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListInvoices::route('/'),
+            'create' => Pages\CreateInvoice::route('/create'),
+            'view' => Pages\ViewInvoice::route('/{record}'),
+            'edit' => Pages\EditInvoice::route('/{record}/edit'),
+        ];
+    }
+}
