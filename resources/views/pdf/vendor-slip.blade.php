@@ -44,7 +44,7 @@
                 <td style="width: 50%; text-align: right;">
                     <strong>Order #:</strong> {{ $order->order_number }}<br>
                     <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}<br>
-                    <strong>Payment Method:</strong> <span class="status-badge">{{ strtoupper($order->payment_method ?? 'N/A') }}</span>
+                    <strong>Payment Method:</strong> <span class="status-badge">{{ strtoupper($order->payment_method instanceof \App\Enums\PaymentMethod ? $order->payment_method->label() : ($order->payment_method ?? 'N/A')) }}</span>
                 </td>
             </tr>
         </table>
