@@ -236,6 +236,14 @@ class OrderResource extends Resource
             ])
                                     ->actions([
                 Tables\Actions\EditAction::make()->label('Manage Order'),
+                Tables\Actions\Action::make('download_invoice')
+                    ->label('Download Invoice')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function (Order $record) {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $record]);
+                        return response()->streamDownload(fn () => print($pdf->output()), 'invoice-' . $record->order_number . '.pdf');
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
