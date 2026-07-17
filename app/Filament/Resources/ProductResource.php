@@ -141,7 +141,7 @@ class ProductResource extends Resource
                             ->required()
                             ->prefix('৳')
                             ->live(onBlur: true),
-                        Forms\Components\TextInput::make('compare_price')->label('Compare Price (৳)')->numeric()->prefix('৳'),
+                        Forms\Components\TextInput::make('compare_price')->label('Discount / Old Price (৳)')->numeric()->prefix('৳')->helperText('Used to show a discount (e.g., if price is 80 and old price is 100, 20% discount).'),
                         Forms\Components\TextInput::make('minimum_selling_price')
                             ->label('Minimum Selling Price (৳)')
                             ->numeric()
@@ -301,6 +301,30 @@ class ProductResource extends Resource
                             ->rows(5)
                             ->columnSpanFull(),
                     ]),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Variants')->schema([
+                    Forms\Components\Repeater::make('variants')
+                        ->relationship()
+                        ->schema([
+                            Forms\Components\Grid::make(3)->schema([
+                                Forms\Components\TextInput::make('name')->required()->label('Variant Name (e.g. Red / Large)'),
+                                Forms\Components\TextInput::make('sku')
+                                    ->unique(ignoreRecord: true)
+                                    ->label('SKU (Optional)')
+                                    ->nullable()
+                                    ->default(fn () => 'VAR-' . strtoupper(str()->random(6))),
+                                Forms\Components\TextInput::make('price_modifier')->numeric()->default(0)->label('Price Modifier (+/-)')->prefix('৳'),
+                            ]),
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\TextInput::make('stock_quantity')->numeric()->default(0)->required()->label('Stock Quantity'),
+                                Forms\Components\Toggle::make('is_active')->default(true)->label('Active'),
+                            ]),
+                        ])
+                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                        ->collapsible()
+                        ->defaultItems(0)
+                        ->addActionLabel('Add Variant')
                 ]),
 
                 Forms\Components\Tabs\Tab::make('SEO')->schema([
