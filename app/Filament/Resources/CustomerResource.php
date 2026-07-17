@@ -145,7 +145,7 @@ class CustomerResource extends Resource
                     Infolists\Components\TextEntry::make("last_login_at")
                         ->label("Last Login Date")
                         ->dateTime("d M Y, h:i A")
-                        ->default("Never"),
+                        ->placeholder("Never"),
                 ]),
             ]),
         ]);
