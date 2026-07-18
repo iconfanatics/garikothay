@@ -71,7 +71,11 @@ class OrderResource extends Resource
                                     ->default('N/A'),
                                 \Filament\Infolists\Components\TextEntry::make('quantity')->label('Qty'),
                                 \Filament\Infolists\Components\TextEntry::make('total_price')->label('Total')->money('BDT'),
-                            ])
+                            ]),
+                            \Filament\Infolists\Components\TextEntry::make('internal_note')
+                                ->label('Internal Note')
+                                ->hidden(fn ($state) => blank($state))
+                                ->columnSpanFull(),
                         ])
                         ->columns(1)
                 ]),
@@ -153,7 +157,11 @@ class OrderResource extends Resource
                                 ->content(fn ($record) => $record?->variant?->name ?? 'N/A'),
                             Forms\Components\TextInput::make('quantity')->label('Qty')->disabled(),
                             Forms\Components\TextInput::make('total_price')->label('Total')->prefix('৳')->disabled(),
-                        ])
+                        ]),
+                        Forms\Components\Textarea::make('internal_note')
+                            ->label('Internal Note (For this item)')
+                            ->rows(2)
+                            ->columnSpanFull(),
                     ])
                     ->disableItemCreation()
                     ->disableItemDeletion()
