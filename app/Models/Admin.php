@@ -33,6 +33,7 @@ class Admin extends Authenticatable implements FilamentUser
             'is_super_admin' => 'boolean',
             'is_active' => 'boolean',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
 
