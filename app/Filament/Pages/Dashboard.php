@@ -25,10 +25,14 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
+            AdminWelcome::class,
             StatsOverview::class,
+            \App\Filament\Widgets\CustomerAnalytics::class,
+            \App\Filament\Widgets\RevenueAnalytics::class,
             RevenueChart::class,
             LatestOrdersTable::class,
             LowStockAlert::class,
+            \App\Filament\Widgets\RecentActivities::class,
         ];
     }
 
