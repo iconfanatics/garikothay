@@ -29,6 +29,7 @@ class AdminWelcome extends Widget
 
         return [
             "adminName" => auth("admin")->user()?->name ?? "Admin",
+            "lastLogin" => auth("admin")->user()?->last_login_at?->format('d M Y, h:i A') ?? 'First Login',
             "todayOrders" => Order::whereDate("created_at", $today)->count(),
             "pendingOrders" => Order::where(
                 "status",

@@ -98,6 +98,9 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\OutOfStockProducts::class,
                 \App\Filament\Widgets\TopSuppliers::class,
                 \App\Filament\Widgets\CouponPerformance::class,
+                \App\Filament\Widgets\CustomerAnalytics::class,
+                \App\Filament\Widgets\RevenueAnalytics::class,
+                \App\Filament\Widgets\RecentActivities::class,
             ])
             ->middleware([
                 EncryptCookies::class,

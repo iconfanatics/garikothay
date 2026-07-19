@@ -72,58 +72,50 @@ class StatsOverview extends BaseWidget
 
         $totalRevenue = Order::where('payment_status', PaymentStatus::Paid)->sum('total');
 
-        return [
-            Stat::make("Today's Orders", (string) $todayOrdersCount)
-                ->description('Orders placed today')
-                ->descriptionIcon('heroicon-m-shopping-bag')
-                ->color('primary')
-                ->chart(
-                    Order::selectRaw('DATE(created_at) as date, COUNT(*) as count')
-                        ->whereDate('created_at', '>=', $today->copy()->subDays(6))
-                        ->groupBy('date')
-                        ->orderBy('date')
-                        ->pluck('count')
-                        ->toArray()
-                ),
+        $totalProducts = \App\Models\Product::count();
+        $inStockProducts = \App\Models\Product::where('stock_quantity', '>', 0)->count();
+        $outOfStockProducts = \App\Models\Product::where('stock_quantity', '<=', 0)->count();
+        $lowStockProducts = \App\Models\Product::whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0)->count();
+        
+        $completedOrders = Order::where('status', OrderStatus::Delivered)->count();
+        $cancelledOrders = Order::where('status', OrderStatus::Cancelled)->count();
+        $returnedOrders = Order::where('status', OrderStatus::Returned)->count();
 
-            Stat::make("Today's Revenue", '৳' . number_format((float) $todayRevenue, 2))
-                ->description($revenueChange >= 0
-                    ? "{$revenueChange}% increase from yesterday"
-                    : abs($revenueChange) . "% decrease from yesterday")
-                ->descriptionIcon($revenueChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
-                ->color($revenueChange >= 0 ? 'success' : 'danger')
-                ->chart(
-                    Order::selectRaw('DATE(created_at) as date, SUM(total) as revenue')
-                        ->where('payment_status', PaymentStatus::Paid)
-                        ->whereDate('created_at', '>=', $today->copy()->subDays(6))
-                        ->groupBy('date')
-                        ->orderBy('date')
-                        ->pluck('revenue')
-                        ->map(fn ($v) => (float) $v)
-                        ->toArray()
-                ),
-                
-            Stat::make("Today's Profit", '৳' . number_format((float) $todayProfit, 2))
-                ->description('Net profit from today\'s sales')
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
-                
+        return [
             Stat::make("Total Revenue", '৳' . number_format((float) $totalRevenue, 2))
                 ->description('All time total revenue')
                 ->descriptionIcon('heroicon-m-currency-bangladeshi')
+                ->color('success'),
+                
+            Stat::make("Total Products", (string) $totalProducts)
+                ->description("{$inStockProducts} In Stock, {$outOfStockProducts} Out of Stock")
+                ->descriptionIcon('heroicon-m-archive-box')
                 ->color('info'),
                 
-            Stat::make("Total Profit", '৳' . number_format((float) $totalProfit, 2))
-                ->description('All time net profit')
-                ->descriptionIcon('heroicon-m-banknotes')
+            Stat::make("Completed Orders", (string) $completedOrders)
+                ->description('Successfully delivered')
+                ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
-
-            Stat::make('Pending Orders', (string) $pendingOrders)
-                ->description($pendingOrders > $lastWeekPending
-                    ? 'More than last week — action needed'
-                    : 'On par with last week')
-                ->descriptionIcon('heroicon-m-clock')
-                ->color($pendingOrders > 10 ? 'warning' : 'gray'),
+                
+            Stat::make("Cancelled Orders", (string) $cancelledOrders)
+                ->description('Cancelled by admin/customer')
+                ->descriptionIcon('heroicon-m-x-circle')
+                ->color('danger'),
+                
+            Stat::make("Returned Orders", (string) $returnedOrders)
+                ->description('Returned products')
+                ->descriptionIcon('heroicon-m-arrow-uturn-left')
+                ->color('warning'),
+                
+            Stat::make("Low Stock Products", (string) $lowStockProducts)
+                ->description('Running out soon')
+                ->descriptionIcon('heroicon-m-exclamation-triangle')
+                ->color('warning'),
+                
+            Stat::make("Out of Stock Products", (string) $outOfStockProducts)
+                ->description('Currently unavailable')
+                ->descriptionIcon('heroicon-m-exclamation-circle')
+                ->color('danger'),
         ];
     }
 }

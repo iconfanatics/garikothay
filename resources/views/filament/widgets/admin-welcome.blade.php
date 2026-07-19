@@ -14,6 +14,7 @@
                     <h1 class="mt-5 text-3xl font-bold tracking-tight md:text-4xl">
                         Welcome back, {{ $adminName }}
                     </h1>
+                    <p class="mt-1 text-sm text-emerald-100">Last Login: {{ $lastLogin }}</p>
 
                     <p class="mt-3 max-w-2xl text-sm leading-6 text-emerald-50 md:text-base">
                         Monitor orders, revenue, customers, inventory, and store activity from one calm and focused workspace.
