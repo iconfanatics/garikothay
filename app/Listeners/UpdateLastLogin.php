@@ -9,14 +9,20 @@ class UpdateLastLogin
     public function handle(Login $event): void
     {
         if ($event->user) {
+            $ip = request()->ip();
+
             $event->user->last_login_at = now();
+            $event->user->last_login_ip = $ip;
             $event->user->save();
             
             // Force update via DB just in case Eloquent silently ignores it
             if (method_exists($event->user, 'getTable')) {
                 \Illuminate\Support\Facades\DB::table($event->user->getTable())
                     ->where('id', $event->user->id)
-                    ->update(['last_login_at' => now()]);
+                    ->update([
+                        'last_login_at' => now(),
+                        'last_login_ip' => $ip,
+                    ]);
             }
         }
     }

@@ -8,6 +8,9 @@
                     </h2>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                         Last Login: {{ $lastLogin }}
+                        @if($lastLogin !== 'First Login' && $lastLoginIp !== 'Unknown IP')
+                            &bull; IP: {{ $lastLoginIp }}
+                        @endif
                     </p>
                     <p class="mt-4 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
                         Monitor orders, revenue, customers, inventory, and store activity from one calm and focused workspace.

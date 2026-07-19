@@ -23,6 +23,7 @@ class Admin extends Authenticatable implements FilamentUser
         'is_super_admin',
         'is_active',
         'last_login_at',
+        'last_login_ip',
     ];
 
     protected $hidden = ['password', 'remember_token'];
