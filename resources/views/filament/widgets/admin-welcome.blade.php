@@ -8,7 +8,7 @@
                     </h2>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                         Last Login: {{ $lastLogin }}
-                        @if($lastLogin !== 'First Login' && $lastLoginIp !== 'Unknown IP')
+                        @if($lastLogin !== 'First Login')
                             &bull; IP: {{ $lastLoginIp }}
                         @endif
                     </p>
