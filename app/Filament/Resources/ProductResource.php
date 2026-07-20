@@ -307,15 +307,61 @@ class ProductResource extends Resource
                     Forms\Components\Repeater::make('variants')
                         ->relationship()
                         ->schema([
-                            Forms\Components\Grid::make(3)->schema([
-                                Forms\Components\TextInput::make('name')->required()->label('Variant Name (e.g. Red / Large)'),
-                                Forms\Components\TextInput::make('sku')
-                                    ->unique(ignoreRecord: true)
-                                    ->label('SKU (Optional)')
-                                    ->nullable()
-                                    ->default(fn () => 'VAR-' . strtoupper(str()->random(6))),
-                                Forms\Components\TextInput::make('price_modifier')->numeric()->default(0)->label('Price Modifier (+/-)')->prefix('৳'),
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\Grid::make(1)->schema([
+                                    Forms\Components\TextInput::make('name')->required()->label('Variant Name (e.g. Red / Large)'),
+                                    Forms\Components\TextInput::make('sku')
+                                        ->unique(ignoreRecord: true)
+                                        ->label('SKU (Optional)')
+                                        ->nullable()
+                                        ->default(fn () => 'VAR-' . strtoupper(str()->random(6))),
+                                ])->columnSpan(1),
+                                
+                                Forms\Components\FileUpload::make('image_gallery')
+                                    ->label('Variant Gallery')
+                                    ->multiple()
+                                    ->image()
+                                    ->directory('products/variants')
+                                    ->reorderable()
+                                    ->columnSpan(1),
                             ]),
+                            
+                            Forms\Components\Grid::make(4)->schema([
+                                Forms\Components\TextInput::make('price')
+                                    ->numeric()
+                                    ->label('Price')
+                                    ->prefix('৳')
+                                    ->nullable()
+                                    ->helperText('Overrides base price if set.'),
+                                    
+                                Forms\Components\TextInput::make('compare_price')
+                                    ->numeric()
+                                    ->label('Compare Price')
+                                    ->prefix('৳')
+                                    ->nullable(),
+                                    
+                                Forms\Components\TextInput::make('price_modifier')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->label('Price Modifier (+/-)')
+                                    ->prefix('৳')
+                                    ->helperText('Used if Price is empty.'),
+                                    
+                                Forms\Components\Placeholder::make('discount')
+                                    ->label('Discount')
+                                    ->content(function (Forms\Get $get): string {
+                                        $price = (float) ($get('price') ?? 0);
+                                        $compare = (float) ($get('compare_price') ?? 0);
+                                        
+                                        if ($price > 0 && $compare > $price) {
+                                            $discount = $compare - $price;
+                                            $percentage = ($discount / $compare) * 100;
+                                            return '৳' . number_format($discount, 2) . ' (' . number_format($percentage, 0) . '%)';
+                                        }
+                                        return '-';
+                                    }),
+                            ]),
+
                             Forms\Components\Grid::make(2)->schema([
                                 Forms\Components\TextInput::make('stock_quantity')->numeric()->default(0)->required()->label('Stock Quantity'),
                                 Forms\Components\Toggle::make('is_active')->default(true)->label('Active'),

@@ -9,12 +9,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductVariant extends Model
 {
-    protected $fillable = ['product_id', 'name', 'sku', 'price_modifier', 'stock_quantity', 'is_active'];
+    protected $fillable = [
+        'product_id', 'name', 'sku', 
+        'price', 'compare_price', 'price_modifier', 
+        'stock_quantity', 'image_gallery', 'is_active'
+    ];
 
     protected function casts(): array
     {
         return [
+            'price' => 'decimal:2',
+            'compare_price' => 'decimal:2',
             'price_modifier' => 'decimal:2',
+            'image_gallery' => 'array',
             'is_active' => 'boolean',
         ];
     }
@@ -26,7 +33,7 @@ class ProductVariant extends Model
 
     public function getFinalPriceAttribute(): float
     {
-        return (float) ($this->product->price + $this->price_modifier);
+        return $this->price ?? (float) ($this->product->price + $this->price_modifier);
     }
 
     public function scopeActive($query): void
