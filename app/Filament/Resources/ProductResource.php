@@ -271,6 +271,43 @@ class ProductResource extends Resource
                         ]),
                     ]),
 
+                    Forms\Components\Section::make('Customer Shipping & Handling')->schema([
+                        Forms\Components\Grid::make(3)->schema([
+                            Forms\Components\Toggle::make('requires_shipping')
+                                ->label('Requires Shipping')
+                                ->default(true)
+                                ->helperText('Disable for digital products or services.'),
+                            Forms\Components\Select::make('shipping_restriction')
+                                ->label('Shipping Restriction')
+                                ->options([
+                                    'home_delivery' => 'Home Delivery Available',
+                                    'pickup_only' => 'Pickup Only',
+                                    'courier_restricted' => 'Courier Restricted',
+                                ])
+                                ->default('home_delivery')
+                                ->native(false),
+                            Forms\Components\Toggle::make('is_free_shipping_eligible')
+                                ->label('Free Shipping Eligible')
+                                ->default(false),
+                        ]),
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Toggle::make('has_special_handling')
+                                ->label('Dangerous / Special Handling')
+                                ->default(false)
+                                ->live(),
+                            Forms\Components\Select::make('handling_type')
+                                ->label('Handling Type')
+                                ->options([
+                                    'fragile' => 'Fragile',
+                                    'liquid' => 'Liquid',
+                                    'battery' => 'Battery',
+                                    'hazardous' => 'Hazardous',
+                                ])
+                                ->native(false)
+                                ->visible(fn (Forms\Get $get) => $get('has_special_handling')),
+                        ]),
+                    ]),
+
                     Forms\Components\Section::make('Warranty')->schema([
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\Select::make('warranty_type')
