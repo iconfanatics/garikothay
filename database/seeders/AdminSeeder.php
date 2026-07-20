@@ -12,10 +12,18 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = app()->environment('local') ? 'admin@gardenngrow.com' : 'admin@garikothay.com';
+        Admin::firstOrCreate(
+            ['email' => 'admin@gardenngrow.com'],
+            [
+                'name' => 'Super Admin (Local)',
+                'password' => Hash::make('password'),
+                'is_super_admin' => true,
+                'is_active' => true,
+            ]
+        );
 
         Admin::firstOrCreate(
-            ['email' => $email],
+            ['email' => 'admin@garikothay.com'],
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('password'),
