@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Product extends Model
 {
