@@ -123,6 +123,57 @@ class ProductResource extends Resource
                         Forms\Components\Toggle::make('is_featured')->label('Featured'),
                         Forms\Components\Toggle::make('is_new_arrival')->label('New Arrival'),
                     ]),
+                    Forms\Components\Section::make('Publishing')->schema([
+                        Forms\Components\Grid::make(3)->schema([
+                            Forms\Components\Select::make('publish_status')
+                                ->label('Publish Status')
+                                ->options([
+                                    'Draft' => 'Draft',
+                                    'Scheduled' => 'Scheduled',
+                                    'Published' => 'Published',
+                                    'Unpublished' => 'Unpublished',
+                                    'Archived' => 'Archived',
+                                ])
+                                ->default('Draft')
+                                ->live(),
+                            Forms\Components\DateTimePicker::make('published_at')
+                                ->label('Publish Date & Time')
+                                ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published'])),
+                            Forms\Components\DateTimePicker::make('unpublished_at')
+                                ->label('Unpublish Date & Time')
+                                ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished'])),
+                        ]),
+                    ]),
+                    Forms\Components\Section::make('Documents')->schema([
+                        Forms\Components\FileUpload::make('documents')
+                            ->label('Product Documents (PDF)')
+                            ->helperText('Upload User Manuals, Installation Guides, etc.')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(5120)
+                            ->multiple()
+                            ->reorderable()
+                            ->disk('public')
+                            ->directory('product-documents')
+                            ->visibility('public')
+                            ->dehydrated(false)
+                            ->columnSpanFull(),
+                    ]),
+                    Forms\Components\Section::make('Activity Indicator')->schema([
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Placeholder::make('created_by')
+                                ->label('Created By')
+                                ->content(fn ($record) => $record?->createdByAdmin?->name ?? 'System'),
+                            Forms\Components\Placeholder::make('created_at')
+                                ->label('Created At')
+                                ->content(fn ($record) => $record?->created_at?->format('d M Y, h:i A') ?? '-'),
+                            Forms\Components\Placeholder::make('updated_by')
+                                ->label('Last Edited By')
+                                ->content(fn ($record) => $record?->updatedByAdmin?->name ?? 'System'),
+                            Forms\Components\Placeholder::make('updated_at')
+                                ->label('Last Saved Time')
+                                ->content(fn ($record) => $record?->updated_at?->format('d M Y, h:i A') ?? '-'),
+                        ]),
+                    ]),
                 ]),
 
                 Forms\Components\Tabs\Tab::make('Pricing & Stock')->schema([
@@ -142,6 +193,33 @@ class ProductResource extends Resource
                             ->prefix('৳')
                             ->live(onBlur: true),
                         Forms\Components\TextInput::make('compare_price')->label('Discount / Old Price (৳)')->numeric()->prefix('৳')->helperText('Used to show a discount (e.g., if price is 80 and old price is 100, 20% discount).'),
+                        Forms\Components\Select::make('discount_type')
+                            ->label('Discount Type')
+                            ->options([
+                                'Fixed' => 'Fixed Amount',
+                                'Percentage' => 'Percentage (%)',
+                            ])
+                            ->live(),
+                        Forms\Components\TextInput::make('discount_amount')
+                            ->label('Discount Amount')
+                            ->numeric()
+                            ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
+                            ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
+                            ->live(onBlur: true),
+                        Forms\Components\Placeholder::make('final_price_preview')
+                            ->label('Final Price Preview')
+                            ->content(function (Forms\Get $get) {
+                                $price = (float) $get('price');
+                                $discountType = $get('discount_type');
+                                $discountAmount = (float) $get('discount_amount');
+                                if (! $price || ! $discountAmount || ! $discountType) return '-';
+                                $final = $discountType === 'Percentage' ? $price - ($price * ($discountAmount / 100)) : $price - $discountAmount;
+                                return '৳' . number_format(max(0, $final), 2);
+                            }),
+                        Forms\Components\DateTimePicker::make('discount_start_date')->label('Discount Start Date'),
+                        Forms\Components\DateTimePicker::make('discount_end_date')->label('Discount End Date'),
+                        Forms\Components\TextInput::make('scheduled_price')->label('Scheduled Price')->numeric()->prefix('৳'),
+                        Forms\Components\DateTimePicker::make('price_effective_date')->label('Price Effective Date'),
                         Forms\Components\TextInput::make('minimum_selling_price')
                             ->label('Minimum Selling Price (৳)')
                             ->numeric()
@@ -427,29 +505,130 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('primaryImage.path')->label('Image')->disk('public')->circular(false)->size(50),
-                Tables\Columns\TextColumn::make('translations.name')->label('Name')->searchable(),
-                Tables\Columns\TextColumn::make('sku')->label('SKU')->searchable(),
-                Tables\Columns\TextColumn::make('supplier_product_code')->label('Supplier Code')->searchable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('price')->label('Price')->money('BDT')->sortable(),
-                Tables\Columns\TextColumn::make('stock_quantity')->label('Stock')
-                    ->badge()
-                    ->color(fn ($record) => $record->stock_quantity <= 0 ? 'danger' : ($record->stock_quantity <= $record->low_stock_threshold ? 'warning' : 'success')),
-                Tables\Columns\TextColumn::make('category.name')->label('Category'),
-                Tables\Columns\ToggleColumn::make('is_active')->label('Active'),
-                Tables\Columns\ToggleColumn::make('is_featured')->label('Featured'),
+                Tables\Columns\TextColumn::make('id')->label('Product ID')->sortable()->searchable(),
+                Tables\Columns\ImageColumn::make('primary_image')
+                    ->label('Thumbnail')
+                    ->state(function (Product $record) {
+                        return $record->images->first()?->path;
+                    })
+                    ->square(),
+                Tables\Columns\TextColumn::make('translations.name')
+                    ->label('Name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('sku')
+                    ->label('SKU')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Price')
+                    ->money('BDT')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('stock_quantity')
+                    ->label('Stock')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\BadgeColumn::make('publish_status')
+                    ->label('Status')
+                    ->colors([
+                        'danger' => 'Archived',
+                        'warning' => 'Draft',
+                        'success' => 'Published',
+                        'primary' => 'Scheduled',
+                        'secondary' => 'Unpublished',
+                    ]),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created Date')
+                    ->dateTime('d M Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Updated')
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('category_id')->relationship('category', 'id'),
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->label('Category')
+                    ->relationship('category', 'id')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name),
+                Tables\Filters\SelectFilter::make('brand')
+                    ->label('Brand')
+                    ->options(fn () => Product::query()->distinct()->whereNotNull('brand')->pluck('brand', 'brand')->toArray()),
+                Tables\Filters\SelectFilter::make('publish_status')
+                    ->label('Publish Status')
+                    ->options([
+                        'Draft' => 'Draft',
+                        'Scheduled' => 'Scheduled',
+                        'Published' => 'Published',
+                        'Unpublished' => 'Unpublished',
+                        'Archived' => 'Archived',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('activate')
+                        ->label('Activate')
+                        ->icon('heroicon-o-check-circle')
+                        ->action(fn ($records) => $records->each->update(['is_active' => true, 'publish_status' => 'Published'])),
+                    Tables\Actions\BulkAction::make('deactivate')
+                        ->label('Deactivate')
+                        ->icon('heroicon-o-x-circle')
+                        ->action(fn ($records) => $records->each->update(['is_active' => false, 'publish_status' => 'Unpublished'])),
+                    Tables\Actions\BulkAction::make('archive')
+                        ->label('Archive')
+                        ->icon('heroicon-o-archive-box')
+                        ->action(fn ($records) => $records->each->update(['publish_status' => 'Archived'])),
+                    Tables\Actions\BulkAction::make('change_category')
+                        ->label('Change Category')
+                        ->icon('heroicon-o-tag')
+                        ->form([
+                            Forms\Components\Select::make('category_id')
+                                ->label('New Category')
+                                ->options(Category::with('translations')->get()->pluck('name', 'id'))
+                                ->required(),
+                        ])
+                        ->action(fn ($records, array $data) => $records->each->update(['category_id' => $data['category_id']])),
+                    Tables\Actions\BulkAction::make('change_brand')
+                        ->label('Change Brand')
+                        ->icon('heroicon-o-briefcase')
+                        ->form([
+                            Forms\Components\TextInput::make('brand')
+                                ->label('New Brand')
+                                ->required(),
+                        ])
+                        ->action(fn ($records, array $data) => $records->each->update(['brand' => $data['brand']])),
+                    Tables\Actions\BulkAction::make('download')
+                        ->label('Download Export (CSV)')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function ($records) {
+                            $headers = array(
+                                "Content-type"        => "text/csv",
+                                "Content-Disposition" => "attachment; filename=products_export.csv",
+                                "Pragma"              => "no-cache",
+                                "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+                                "Expires"             => "0"
+                            );
+                            $columns = array('ID', 'Name', 'SKU', 'Price', 'Stock', 'Status');
+                            $callback = function() use($records, $columns) {
+                                $file = fopen('php://output', 'w');
+                                fputcsv($file, $columns);
+                                foreach ($records as $record) {
+                                    fputcsv($file, array($record->id, $record->name, $record->sku, $record->price, $record->stock_quantity, $record->publish_status));
+                                }
+                                fclose($file);
+                            };
+                            return response()->stream($callback, 200, $headers);
+                        }),
                 ]),
             ]);
     }

@@ -16,10 +16,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
 
 class Product extends Model
 {
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
 
     protected static function booted(): void
     {
@@ -27,7 +29,24 @@ class Product extends Model
             if (blank($product->sku)) {
                 $product->sku = static::generateUniqueSku();
             }
+            if (auth('admin')->check()) {
+                $product->created_by_admin_id = auth('admin')->id();
+            }
         });
+
+        static::updating(function (Product $product): void {
+            if (auth('admin')->check()) {
+                $product->updated_by_admin_id = auth('admin')->id();
+            }
+        });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 
     protected $fillable = [
@@ -41,6 +60,10 @@ class Product extends Model
         'has_return_support', 'is_authentic_product', 'supplier_shipping_charge',
         'supplier_delivery_time', 'supplier_delivery_partner', 'warranty_type',
         'warranty_duration', 'warranty_claim_process', 'internal_notes',
+        'publish_status', 'published_at', 'unpublished_at', 'discount_type',
+        'discount_amount', 'discount_start_date', 'discount_end_date',
+        'scheduled_price', 'price_effective_date', 'documents',
+        'created_by_admin_id', 'updated_by_admin_id',
     ];
 
     protected function casts(): array
@@ -65,7 +88,25 @@ class Product extends Model
             'sunlight' => SunlightRequirement::class,
             'watering' => WateringFrequency::class,
             'difficulty' => DifficultyLevel::class,
+            'published_at' => 'datetime',
+            'unpublished_at' => 'datetime',
+            'discount_start_date' => 'datetime',
+            'discount_end_date' => 'datetime',
+            'price_effective_date' => 'datetime',
+            'discount_amount' => 'decimal:2',
+            'scheduled_price' => 'decimal:2',
+            'documents' => 'array',
         ];
+    }
+
+    public function createdByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'created_by_admin_id');
+    }
+
+    public function updatedByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'updated_by_admin_id');
     }
 
     public function category(): BelongsTo

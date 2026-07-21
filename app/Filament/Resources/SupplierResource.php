@@ -33,6 +33,9 @@ class SupplierResource extends Resource
                 Forms\Components\Textarea::make('address')
                     ->maxLength(65535)
                     ->columnSpanFull(),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Active Supplier')
+                    ->default(true),
             ]);
     }
 
@@ -46,6 +49,8 @@ class SupplierResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact_number')
                     ->searchable(),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->label('Active'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

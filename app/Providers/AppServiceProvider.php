@@ -13,8 +13,10 @@ use App\Listeners\SendOrderStatusUpdateEmail;
 use App\Listeners\SendWelcomeEmail;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Supplier;
 use App\Observers\OrderObserver;
 use App\Observers\ProductObserver;
+use App\Observers\SupplierObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Product::observe(ProductObserver::class);
         Order::observe(OrderObserver::class);
+        Supplier::observe(SupplierObserver::class);
 
         Event::listen(OrderPlaced::class, SendOrderConfirmationEmail::class);
         Event::listen(OrderPlaced::class, ClearProductCache::class);
