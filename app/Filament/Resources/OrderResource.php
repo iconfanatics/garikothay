@@ -51,6 +51,16 @@ class OrderResource extends Resource
                         \Filament\Infolists\Components\TextEntry::make('created_at')
                             ->label('Order Date')
                             ->dateTime('d M Y, h:i A'),
+                    ]),
+                    \Filament\Infolists\Components\Grid::make(3)->schema([
+                        \Filament\Infolists\Components\TextEntry::make('assignedStaff.name')->label('Assigned Staff')->default('Unassigned'),
+                        \Filament\Infolists\Components\TextEntry::make('order_source')->label('Order Source'),
+                        \Filament\Infolists\Components\TextEntry::make('customer_type')->label('Customer Type'),
+                    ]),
+                    \Filament\Infolists\Components\Grid::make(3)->schema([
+                        \Filament\Infolists\Components\TextEntry::make('is_fraud')->label('Fraud Flag')->badge()->color(fn ($state) => $state ? 'danger' : 'success')->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
+                        \Filament\Infolists\Components\TextEntry::make('delivery_method')->label('Delivery Method')->default('N/A'),
+                        \Filament\Infolists\Components\TextEntry::make('tracking_number')->label('Tracking Number')->default('N/A'),
                     ])
                 ]),
                 \Filament\Infolists\Components\Section::make('Customer & Shipping Details')->schema([
@@ -126,6 +136,44 @@ class OrderResource extends Resource
                         ->label('Order Number')
                         ->disabled(),
                 ]),
+                Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Select::make('assigned_staff_id')
+                        ->label('Assigned Staff')
+                        ->relationship('assignedStaff', 'name')
+                        ->searchable()
+                        ->preload(),
+                    Forms\Components\Select::make('order_source')
+                        ->label('Order Source')
+                        ->options([
+                            'Website' => 'Website',
+                            'WhatsApp' => 'WhatsApp',
+                            'Call' => 'Call',
+                        ])
+                        ->default('Website'),
+                    Forms\Components\Select::make('customer_type')
+                        ->label('Customer Type')
+                        ->options([
+                            'Retail' => 'Retail',
+                        ])
+                        ->default('Retail'),
+                ]),
+                Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Toggle::make('is_fraud')
+                        ->label('Flag as Fraud')
+                        ->onColor('danger'),
+                    Forms\Components\Select::make('delivery_method')
+                        ->label('Delivery Method')
+                        ->options([
+                            'Pathao' => 'Pathao',
+                            'RedX' => 'RedX',
+                            'Steadfast' => 'Steadfast',
+                            'SA Paribahan' => 'SA Paribahan',
+                            'Sundarban' => 'Sundarban',
+                            'Own Delivery' => 'Own Delivery',
+                        ]),
+                    Forms\Components\TextInput::make('tracking_number')
+                        ->label('Tracking Number'),
+                ]),
                 Forms\Components\Textarea::make('notes')
                     ->label('Admin Notes')
                     ->rows(2),
@@ -188,6 +236,57 @@ class OrderResource extends Resource
         return $table
             ->recordClasses(fn (Order $record) => $record->status === OrderStatus::Pending ? 'bg-primary-50/50 dark:bg-primary-900/10 border-l-4 border-primary-500 font-semibold' : null)
             ->columns([
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Order Date & Time')
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('assignedStaff.name')
+                    ->label('Assigned Staff')
+                    ->sortable()
+                    ->searchable()
+                    ->default('Unassigned'),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Updated')
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('order_source')
+                    ->label('Order Source')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('customer_type')
+                    ->label('Customer Type')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('payment.paid_at')
+                    ->label('Payment Date')
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('is_fraud')
+                    ->label('Fraud Flag')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-exclamation-triangle')
+                    ->trueColor('danger')
+                    ->falseIcon('heroicon-o-check-circle')
+                    ->falseColor('success')
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('items_count')
+                    ->counts('items')
+                    ->label('Total Items')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->label('Payment Method')
+                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\PaymentMethod ? $state->label() : (is_string($state) ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('delivery_method')
+                    ->label('Delivery Method')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label('Status')
+                    ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
+                    ->color(fn (OrderStatus $state): string => $state->color()),
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Order #')
                     ->searchable()
@@ -205,27 +304,21 @@ class OrderResource extends Resource
                     ->label('Total')
                     ->money('BDT')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('coupon.code')
-                    ->label('Coupon')
-                    ->badge()
-                    ->default('None')
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('payment_method')
-                    ->label('Payment Method')
-                    ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\PaymentMethod ? $state->label() : (is_string($state) ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A'))
-                    ->searchable(),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
-                    ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
-                    ->color(fn (OrderStatus $state): string => $state->color()),
-                Tables\Columns\BadgeColumn::make('payment_status')
-                    ->label('Payment')
-                    ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
-                    ->color(fn (PaymentStatus $state): string => $state->color()),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Placed At')
-                    ->dateTime('d M Y, h:i A')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('tracking_number')
+                    ->label('Tracking #')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('invoice.invoice_number')
+                    ->label('Invoice #')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('shipping_phone')
+                    ->label('Shipping Phone')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where('shipping_address->phone', 'like', "%{$search}%")
+                                     ->orWhereHas('user', fn($q) => $q->where('phone', 'like', "%{$search}%"));
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -235,28 +328,49 @@ class OrderResource extends Resource
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->label('Payment Status')
                     ->options(PaymentStatus::options()),
+                Tables\Filters\SelectFilter::make('payment_method')
+                    ->label('Payment Method')
+                    ->options([
+                        'cod' => 'Cash on Delivery',
+                        'sslcommerz' => 'SSLCommerz',
+                        'stripe' => 'Stripe',
+                        'bkash' => 'bKash',
+                    ]),
+                Tables\Filters\SelectFilter::make('delivery_method')
+                    ->label('Delivery Method')
+                    ->options([
+                        'Pathao' => 'Pathao',
+                        'RedX' => 'RedX',
+                        'Steadfast' => 'Steadfast',
+                        'SA Paribahan' => 'SA Paribahan',
+                        'Sundarban' => 'Sundarban',
+                        'Own Delivery' => 'Own Delivery',
+                    ]),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
-                        Forms\Components\DatePicker::make('from')->label('From'),
-                        Forms\Components\DatePicker::make('until')->label('Until'),
+                        Forms\Components\DatePicker::make('from')->label('From Date'),
+                        Forms\Components\DatePicker::make('until')->label('To Date'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['from'], fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
                             ->when($data['until'], fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-                        if ($data['from'] ?? null) {
-                            $indicators[] = Tables\Filters\Indicator::make('From ' . $data['from'])->removeField('from');
-                        }
-                        if ($data['until'] ?? null) {
-                            $indicators[] = Tables\Filters\Indicator::make('Until ' . $data['until'])->removeField('until');
-                        }
-                        return $indicators;
                     }),
+                Tables\Filters\Filter::make('total')
+                    ->form([
+                        Forms\Components\TextInput::make('min')->label('Min Amount')->numeric(),
+                        Forms\Components\TextInput::make('max')->label('Max Amount')->numeric(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['min'], fn ($q, $min) => $q->where('total', '>=', $min))
+                            ->when($data['max'], fn ($q, $max) => $q->where('total', '<=', $max));
+                    }),
+                Tables\Filters\SelectFilter::make('assigned_staff_id')
+                    ->label('Assigned Staff')
+                    ->relationship('assignedStaff', 'name'),
             ])
-                                    ->actions([
+            ->actions([
                 Tables\Actions\EditAction::make()->label('Manage Order'),
                 Tables\Actions\Action::make('download_invoice')
                     ->label('Download Invoice')

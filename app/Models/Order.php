@@ -19,8 +19,8 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'order_number', 'status', 'payment_status', 'payment_method',
-        'subtotal', 'discount_amount', 'shipping_amount', 'tax_amount', 'total',
+        'user_id', 'assigned_staff_id', 'order_number', 'status', 'order_source', 'customer_type', 'payment_status', 'payment_method', 'delivery_method', 'tracking_number',
+        'subtotal', 'discount_amount', 'shipping_amount', 'tax_amount', 'total', 'is_fraud',
         'coupon_id', 'shipping_address', 'billing_address', 'notes',
         'shipped_at', 'delivered_at', 'cancelled_at',
     ];
@@ -41,7 +41,13 @@ class Order extends Model
             'shipped_at' => 'datetime',
             'delivered_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'is_fraud' => 'boolean',
         ];
+    }
+
+    public function assignedStaff(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'assigned_staff_id');
     }
 
     public function user(): BelongsTo
