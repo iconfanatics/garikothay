@@ -6,6 +6,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Resources\BannerResource;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 use App\Filament\Resources\BlogCategoryResource;
 use App\Filament\Resources\BlogResource;
 use App\Filament\Resources\CategoryResource;
@@ -136,6 +137,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                SpotlightPlugin::make(),
             ])
             ->authMiddleware([Authenticate::class])
             ->renderHook(

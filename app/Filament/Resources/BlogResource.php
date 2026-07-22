@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
 class BlogResource extends Resource
 {
     protected static ?string $model = Blog::class;
+    protected static ?string $recordTitleAttribute = 'title';
+
     protected static ?string $navigationIcon = "heroicon-o-document-text";
     protected static ?string $navigationGroup = "Content";
     protected static ?string $navigationLabel = "Blogs";

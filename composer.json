@@ -16,6 +16,7 @@
         "laravel/scout": "^10.0",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
+        "pxlrbt/filament-spotlight": "^1.0",
         "spatie/laravel-activitylog": "^4.0",
         "spatie/laravel-data": "^4.0",
         "spatie/laravel-permission": "^6.0",

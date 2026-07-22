@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
+    protected static ?string $recordTitleAttribute = 'order_number';
+
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?string $navigationGroup = 'Sales';
     protected static ?int $navigationSort = 1;

@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Builder;
 class CustomerResource extends Resource
 {
     protected static ?string $model = User::class;
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static ?string $navigationIcon = "heroicon-o-users";
     protected static ?string $navigationGroup = "Sales";
     protected static ?int $navigationSort = 2;
