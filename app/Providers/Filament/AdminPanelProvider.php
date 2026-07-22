@@ -123,7 +123,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\BannerStatsOverview::class,
                 \App\Filament\Widgets\BlogStatsOverview::class,
             ])
-            ->globalSearchProvider(\App\Filament\GlobalSearchProvider::class)
+            ->globalSearch(\App\Filament\GlobalSearchProvider::class)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
