@@ -13,6 +13,8 @@ class ReviewDashboard extends Page
     protected static ?string $title = 'Review Dashboard';
     protected static ?int $navigationSort = 5;
     
+    protected static string $view = 'filament.pages.review-dashboard';
+    
     protected function getHeaderWidgets(): array
     {
         return [
