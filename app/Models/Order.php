@@ -20,7 +20,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id', 'assigned_staff_id', 'order_number', 'status', 'order_source', 'customer_type', 'payment_status', 'payment_method', 'delivery_method', 'tracking_number',
-        'subtotal', 'discount_amount', 'shipping_amount', 'tax_amount', 'total', 'is_fraud',
+        'subtotal', 'discount_amount', 'shipping_amount', 'tax_amount', 'total', 'is_fraud', 'shipping_method_id',
         'coupon_id', 'shipping_address', 'billing_address', 'notes',
         'shipped_at', 'delivered_at', 'cancelled_at',
     ];
@@ -58,6 +58,11 @@ class Order extends Model
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    public function shippingMethod(): BelongsTo
+    {
+        return $this->belongsTo(ShippingMethod::class);
     }
 
     public function items(): HasMany
