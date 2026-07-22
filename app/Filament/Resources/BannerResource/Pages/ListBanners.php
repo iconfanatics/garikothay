@@ -18,4 +18,11 @@ class ListBanners extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\BannerStatsOverview::class,
+        ];
+    }
 }
