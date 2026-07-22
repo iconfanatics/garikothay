@@ -110,6 +110,9 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\CustomerAnalytics::class,
                 \App\Filament\Widgets\RevenueAnalytics::class,
                 \App\Filament\Widgets\RecentActivities::class,
+                \App\Filament\Widgets\PaymentStatsOverview::class,
+                \App\Filament\Widgets\PaymentRevenueChart::class,
+                \App\Filament\Widgets\PaymentMethodChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,
