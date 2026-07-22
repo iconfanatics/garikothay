@@ -9,6 +9,8 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'user_id', 'assigned_staff_id', 'order_number', 'status', 'order_source', 'customer_type', 'payment_status', 'payment_method', 'delivery_method', 'tracking_number',
@@ -25,7 +27,14 @@ class Order extends Model
         'shipped_at', 'delivered_at', 'cancelled_at',
     ];
 
-    protected function casts(): array
+        public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+protected function casts(): array
     {
         return [
             'status' => OrderStatus::class,

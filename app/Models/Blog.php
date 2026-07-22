@@ -7,19 +7,28 @@ namespace App\Models;
 use App\Traits\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Blog extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations;
 
     protected $fillable = [
         'blog_category_id', 'slug', 'featured_image', 'author_id', 'is_published', 'published_at',
     ];
 
-    protected function casts(): array
+        public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+protected function casts(): array
     {
         return [
             'is_published' => 'boolean',

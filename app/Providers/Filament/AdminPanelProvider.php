@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\BannerResource;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Resources\BlogCategoryResource;
 use App\Filament\Resources\BlogResource;
 use App\Filament\Resources\CategoryResource;
@@ -92,6 +93,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\PaymentResource::class,
                 \App\Filament\Resources\AnnouncementResource::class,
                 \App\Filament\Resources\BlogCommentResource::class,
+                \App\Filament\Resources\ActivityResource::class,
             ])
             ->pages([
                 Dashboard::class, 
@@ -131,6 +133,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+            ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
             ])
             ->authMiddleware([Authenticate::class])
             ->renderHook(
