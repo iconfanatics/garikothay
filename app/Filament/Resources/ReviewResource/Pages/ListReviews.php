@@ -15,4 +15,12 @@ class ListReviews extends ListRecords
     {
         return [];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\ReviewStatsOverview::class,
+            \App\Filament\Widgets\ReviewRatingChart::class,
+        ];
+    }
 }

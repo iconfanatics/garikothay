@@ -96,7 +96,6 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Settings::class, 
                 \App\Filament\Pages\ThemeSettings::class,
                 \App\Filament\Pages\PaymentDashboard::class,
-                \App\Filament\Pages\ReviewDashboard::class,
             ])
             ->widgets([
                 AdminWelcome::class,
