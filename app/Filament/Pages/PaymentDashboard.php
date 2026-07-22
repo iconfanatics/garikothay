@@ -12,6 +12,7 @@ class PaymentDashboard extends Page
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationGroup = 'Payment Management';
     protected static ?string $title = 'Payment Dashboard';
+    protected static string $view = 'filament.pages.payment-dashboard';
     
     protected function getHeaderWidgets(): array
     {
