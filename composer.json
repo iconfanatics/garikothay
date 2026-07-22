@@ -10,6 +10,7 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "bezhansalleh/filament-shield": "^3.2",
         "filament/filament": "^3.2",
+        "flowframe/laravel-trend": "*",
         "intervention/image-laravel": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/scout": "^10.0",
