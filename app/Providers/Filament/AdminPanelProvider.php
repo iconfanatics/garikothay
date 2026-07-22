@@ -90,6 +90,8 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\ShippingMethodResource::class,
                 \App\Filament\Resources\PaymentGatewayResource::class,
                 \App\Filament\Resources\PaymentResource::class,
+                \App\Filament\Resources\AnnouncementResource::class,
+                \App\Filament\Resources\BlogCommentResource::class,
             ])
             ->pages([
                 Dashboard::class, 

@@ -24,7 +24,13 @@ class Blog extends Model
         return [
             'is_published' => 'boolean',
             'published_at' => 'datetime',
+            'tags' => 'array',
         ];
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(BlogComment::class);
     }
 
     public function category(): BelongsTo

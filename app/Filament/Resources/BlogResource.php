@@ -85,6 +85,19 @@ class BlogResource extends Resource
                 ]),
             ]),
 
+                        Forms\Components\Section::make('SEO & Tags')->schema([
+                Forms\Components\TagsInput::make('tags')
+                    ->label('Tags')
+                    ->separator(',')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('seo_title')
+                    ->label('SEO Title')
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('meta_description')
+                    ->label('Meta Description')
+                    ->rows(3)
+                    ->columnSpanFull(),
+            ]),
             Forms\Components\Section::make("Publishing Details")->schema([
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\TextInput::make("slug")
