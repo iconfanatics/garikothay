@@ -9,13 +9,42 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Category extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, SoftDeletes, LogsActivity;
+
+    protected static function booted(): void
+    {
+        static::creating(function (Category $category): void {
+            if (auth('admin')->check()) {
+                $category->created_by_admin_id = auth('admin')->id();
+            }
+        });
+
+        static::updating(function (Category $category): void {
+            if (auth('admin')->check()) {
+                $category->updated_by_admin_id = auth('admin')->id();
+            }
+        });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     protected $fillable = [
         'parent_id', 'slug', 'icon', 'image', 'sort_order', 'is_active',
+        'cover_image', 'banner_image', 'mobile_banner', 'is_featured',
+        'publish_status', 'published_at', 'unpublished_at', 'is_locked',
+        'created_by_admin_id', 'updated_by_admin_id',
     ];
 
     protected function casts(): array
@@ -23,8 +52,22 @@ class Category extends Model
         return [
             'parent_id' => 'integer',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
+            'is_locked' => 'boolean',
             'sort_order' => 'integer',
+            'published_at' => 'datetime',
+            'unpublished_at' => 'datetime',
         ];
+    }
+
+    public function createdByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'created_by_admin_id');
+    }
+
+    public function updatedByAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'updated_by_admin_id');
     }
 
     public function parent(): BelongsTo
