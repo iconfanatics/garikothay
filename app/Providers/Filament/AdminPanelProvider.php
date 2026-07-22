@@ -86,8 +86,17 @@ class AdminPanelProvider extends PanelProvider
                 SupplierResource::class,
                 \App\Filament\Resources\CartResource::class,
                 \App\Filament\Resources\InvoiceResource::class,
+                \App\Filament\Resources\ShippingZoneResource::class,
+                \App\Filament\Resources\ShippingMethodResource::class,
+                \App\Filament\Resources\PaymentGatewayResource::class,
+                \App\Filament\Resources\PaymentResource::class,
             ])
-            ->pages([Dashboard::class, \App\Filament\Pages\Settings::class, \App\Filament\Pages\ThemeSettings::class])
+            ->pages([
+                Dashboard::class, 
+                \App\Filament\Pages\Settings::class, 
+                \App\Filament\Pages\ThemeSettings::class,
+                \App\Filament\Pages\PaymentDashboard::class,
+            ])
             ->widgets([
                 AdminWelcome::class,
                 StatsOverview::class,
