@@ -106,7 +106,7 @@ class AnnouncementResource extends Resource
         public static function getWidgets(): array
     {
         return [
-            Widgets\AnnouncementStatsOverview::class,
+            AnnouncementResource\Widgets\AnnouncementStatsOverview::class,
         ];
     }
 
