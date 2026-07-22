@@ -13,7 +13,7 @@ use Filament\Panel;
 
 class Admin extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \Spatie\Permission\Traits\HasRoles;
 
     protected $fillable = [
         'name',

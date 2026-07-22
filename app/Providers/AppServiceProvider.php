@@ -35,5 +35,11 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(OrderStatusChanged::class, SendOrderStatusUpdateEmail::class);
         Event::listen(UserRegistered::class, SendWelcomeEmail::class);
         Event::listen(\Illuminate\Auth\Events\Login::class, \App\Listeners\UpdateLastLogin::class);
+
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            if ($user instanceof \App\Models\Admin && $user->is_super_admin) {
+                return true;
+            }
+        });
     }
 }
