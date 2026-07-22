@@ -96,6 +96,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Settings::class, 
                 \App\Filament\Pages\ThemeSettings::class,
                 \App\Filament\Pages\PaymentDashboard::class,
+                \App\Filament\Pages\ReviewDashboard::class,
             ])
             ->widgets([
                 AdminWelcome::class,
@@ -113,6 +114,8 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\PaymentStatsOverview::class,
                 \App\Filament\Widgets\PaymentRevenueChart::class,
                 \App\Filament\Widgets\PaymentMethodChart::class,
+                \App\Filament\Widgets\ReviewStatsOverview::class,
+                \App\Filament\Widgets\ReviewRatingChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,
