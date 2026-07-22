@@ -13,9 +13,6 @@ class ReviewDashboard extends Page
     protected static ?string $title = 'Review Dashboard';
     protected static ?int $navigationSort = 5;
     
-    // We explicitly set the view to the default filament page view so it renders header widgets automatically
-    protected static string $view = 'filament-panels::pages.dashboard';
-    
     protected function getHeaderWidgets(): array
     {
         return [
