@@ -255,6 +255,63 @@
     .gk-checkout-submit:hover {
         background: #e11d48;
     }
+
+    .gk-checkout-coupon {
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 0;
+        margin: 1rem 0;
+    }
+
+    .gk-checkout-coupon label {
+        display: block;
+        margin-bottom: 0.45rem;
+        color: #374151;
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    .gk-checkout-coupon-row {
+        display: flex;
+        min-height: 40px;
+        overflow: hidden;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+    }
+
+    .gk-checkout-coupon-row:focus-within {
+        border-color: #e11d48;
+        box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.1);
+    }
+
+    .gk-checkout-coupon-row input {
+        min-width: 0;
+        flex: 1;
+        border: 0;
+        padding: 0 0.7rem;
+        font-size: 0.78rem;
+        outline: none;
+    }
+
+    .gk-checkout-coupon-row button {
+        border: 0;
+        background: #111827;
+        color: #ffffff;
+        padding: 0 0.9rem;
+        font-size: 0.75rem;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .gk-checkout-coupon-row button:hover {
+        background: #e11d48;
+    }
+
+    .gk-checkout-coupon-message {
+        margin-top: 0.4rem;
+        color: #6b7280;
+        font-size: 0.7rem;
+    }
 </style>
 @endpush
 
@@ -274,6 +331,30 @@
         address_line_2: @js(old('address_line_2')),
         city: @js(old('city')),
         postal_code: @js(old('postal_code'))
+    },
+    couponCode: '',
+    couponMsg: '',
+    applyingCoupon: false,
+    applyCoupon() {
+        if (!this.couponCode.trim()) {
+            this.couponMsg = 'Please enter a coupon code.';
+            return;
+        }
+
+        this.applyingCoupon = true;
+        fetch('/cart/coupon', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+            body: JSON.stringify({code: this.couponCode})
+        }).then(async response => {
+            const data = await response.json();
+            this.couponMsg = data.message;
+            if (data.success) window.location.reload();
+        }).catch(() => {
+            this.couponMsg = 'Unable to apply the coupon right now.';
+        }).finally(() => {
+            this.applyingCoupon = false;
+        });
     },
     init() {
         const defaultAddr = this.addresses.find(a => a.is_default);
@@ -488,6 +569,28 @@
                     </div>
                     @endforeach
                 </div>
+                
+                <div class="gk-checkout-coupon">
+                    @if($cart->coupon)
+                        <div class="flex items-center justify-between bg-green-50 text-green-700 p-3 rounded border border-green-200">
+                            <div>
+                                <span class="font-bold text-sm">Coupon Applied:</span>
+                                <span class="text-sm ml-1">{{ $cart->coupon->code }}</span>
+                            </div>
+                            <button type="button" class="text-sm font-bold text-red-600 hover:text-red-800" onclick="fetch('/cart/coupon', {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(() => window.location.reload())">Remove</button>
+                        </div>
+                    @else
+                        <label for="checkout-coupon">{{ __('general.coupon_code') }}</label>
+                        <div class="gk-checkout-coupon-row">
+                            <input id="checkout-coupon" x-model="couponCode" type="text" placeholder="{{ __('general.enter_code') }}">
+                            <button type="button" @click="applyCoupon()" :disabled="applyingCoupon">
+                                <span x-text="applyingCoupon ? 'Applying...' : '{{ __('general.apply') }}'"></span>
+                            </button>
+                        </div>
+                        <p x-show="couponMsg" x-text="couponMsg" class="gk-checkout-coupon-message"></p>
+                    @endif
+                </div>
+
                 <div class="gk-checkout-totals">
                     <div class="gk-checkout-total-row"><span>{{ __('general.subtotal') }}</span><span>৳{{ number_format($cart->subtotal, 0) }}</span></div>
                     @if($cart->coupon)

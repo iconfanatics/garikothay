@@ -265,60 +265,6 @@
         font-size: 0.72rem;
     }
 
-    .gk-cart-coupon {
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1rem 0;
-    }
-
-    .gk-cart-coupon label {
-        display: block;
-        margin-bottom: 0.45rem;
-        color: #374151;
-        font-size: 0.75rem;
-        font-weight: 800;
-    }
-
-    .gk-cart-coupon-row {
-        display: flex;
-        min-height: 40px;
-        overflow: hidden;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-    }
-
-    .gk-cart-coupon-row:focus-within {
-        border-color: #e11d48;
-        box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.1);
-    }
-
-    .gk-cart-coupon-row input {
-        min-width: 0;
-        flex: 1;
-        border: 0;
-        padding: 0 0.7rem;
-        font-size: 0.78rem;
-        outline: none;
-    }
-
-    .gk-cart-coupon-row button {
-        border: 0;
-        background: #111827;
-        color: #ffffff;
-        padding: 0 0.9rem;
-        font-size: 0.75rem;
-        font-weight: 800;
-        cursor: pointer;
-    }
-
-    .gk-cart-coupon-row button:hover {
-        background: #e11d48;
-    }
-
-    .gk-cart-coupon-message {
-        margin-top: 0.4rem;
-        color: #6b7280;
-        font-size: 0.7rem;
-    }
 
     .gk-cart-totals {
         display: grid;
@@ -516,32 +462,7 @@
                 <a href="{{ route('shop.index') }}">{{ __('general.start_shopping') }} →</a>
             </div>
         @else
-            <div class="gk-cart-layout" x-data="{
-                couponCode: '',
-                couponMsg: '',
-                applyingCoupon: false,
-                applyCoupon() {
-                    if (!this.couponCode.trim()) {
-                        this.couponMsg = 'Please enter a coupon code.';
-                        return;
-                    }
-
-                    this.applyingCoupon = true;
-                    fetch('/cart/coupon', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                        body: JSON.stringify({code: this.couponCode})
-                    }).then(async response => {
-                        const data = await response.json();
-                        this.couponMsg = data.message;
-                        if (data.success) window.location.reload();
-                    }).catch(() => {
-                        this.couponMsg = 'Unable to apply the coupon right now.';
-                    }).finally(() => {
-                        this.applyingCoupon = false;
-                    });
-                }
-            }">
+            <div class="gk-cart-layout">
                 <section class="gk-cart-list" aria-label="Cart items">
                     @foreach($cart->items as $item)
                         <article class="gk-cart-item" x-data="{
@@ -610,16 +531,7 @@
                         <p class="gk-cart-summary-count">{{ $cart->item_count }} item{{ $cart->item_count === 1 ? '' : 's' }} in your cart</p>
                     </div>
 
-                    <div class="gk-cart-coupon">
-                        <label for="cart-coupon">{{ __('general.coupon_code') }}</label>
-                        <div class="gk-cart-coupon-row">
-                            <input id="cart-coupon" x-model="couponCode" type="text" placeholder="{{ __('general.enter_code') }}">
-                            <button type="button" @click="applyCoupon()" :disabled="applyingCoupon">
-                                <span x-text="applyingCoupon ? 'Applying...' : '{{ __('general.apply') }}'"></span>
-                            </button>
-                        </div>
-                        <p x-show="couponMsg" x-text="couponMsg" class="gk-cart-coupon-message"></p>
-                    </div>
+
 
                     <div class="gk-cart-totals">
                         <div class="gk-cart-total-row">
