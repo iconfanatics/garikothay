@@ -94,6 +94,34 @@ class PaymentResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('From Date'),
+                        Forms\Components\DatePicker::make('created_until')->label('To Date'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['created_from'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('From: ' . \Carbon\Carbon::parse($data['created_from'])->toFormattedDateString())
+                                ->removeField('created_from');
+                        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('Until: ' . \Carbon\Carbon::parse($data['created_until'])->toFormattedDateString())
+                                ->removeField('created_until');
+                        }
+                        return $indicators;
+                    }),
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
