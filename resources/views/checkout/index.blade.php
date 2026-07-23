@@ -383,20 +383,20 @@
                         <label>{{ __('general.full_name') }} *</label>
                         <input type="text" name="full_name" x-model="formData.full_name" required
                             class="@error('full_name') border-red-400 @enderror">
-                        @error('full_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('full_name') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                     </div>
                     <div class="gk-checkout-field">
                         <label>Mobile Number *</label>
                         <input type="tel" name="phone" x-model="formData.phone" required placeholder="01XXXXXXXXX"
                             class="@error('phone') border-red-400 @enderror">
-                        @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('phone') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                     </div>
                     @guest
                     <div class="gk-checkout-field">
                         <label>{{ __('general.email') }} *</label>
                         <input type="email" name="email" x-model="formData.email" required
                             class="@error('email') border-red-400 @enderror">
-                        @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('email') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                     </div>
                     @endguest
                     <div class="gk-checkout-field sm:col-span-2 xl:col-span-2">
