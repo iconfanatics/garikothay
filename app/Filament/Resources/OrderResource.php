@@ -372,6 +372,7 @@ class OrderResource extends Resource
                     ->label('Assigned Staff')
                     ->relationship('assignedStaff', 'name'),
             ])
+            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make()->label('Manage Order'),
                 Tables\Actions\Action::make('download_invoice')

@@ -134,6 +134,7 @@ class PaymentResource extends Resource
                         return \App\Models\PaymentGateway::pluck('name', 'slug')->toArray();
                     }),
             ])
+            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
