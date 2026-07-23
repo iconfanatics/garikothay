@@ -568,6 +568,12 @@ class ProductResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('view_product')
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(fn (\App\Models\Product $record): string => route('shop.show', $record->slug))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
