@@ -50,6 +50,22 @@ class PageResource extends Resource
                                         $component->state($record->getTranslation('content', 'en'));
                                     }
                                 }),
+                            Forms\Components\TextInput::make('translations.en.meta_title')
+                                ->label('Meta Title (EN)')
+                                ->maxLength(255)
+                                ->afterStateHydrated(function (Forms\Components\TextInput $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('meta_title', 'en'));
+                                    }
+                                }),
+                            Forms\Components\Textarea::make('translations.en.meta_description')
+                                ->label('Meta Description (EN)')
+                                ->rows(3)
+                                ->afterStateHydrated(function (Forms\Components\Textarea $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('meta_description', 'en'));
+                                    }
+                                }),
                         ]),
                         Forms\Components\Tabs\Tab::make('Bengali (বাংলা)')->schema([
                             Forms\Components\TextInput::make('translations.bn.title')
@@ -66,6 +82,22 @@ class PageResource extends Resource
                                 ->afterStateHydrated(function (Forms\Components\RichEditor $component, $state, ?Page $record) {
                                     if ($record) {
                                         $component->state($record->getTranslation('content', 'bn'));
+                                    }
+                                }),
+                            Forms\Components\TextInput::make('translations.bn.meta_title')
+                                ->label('Meta Title (BN)')
+                                ->maxLength(255)
+                                ->afterStateHydrated(function (Forms\Components\TextInput $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('meta_title', 'bn'));
+                                    }
+                                }),
+                            Forms\Components\Textarea::make('translations.bn.meta_description')
+                                ->label('Meta Description (BN)')
+                                ->rows(3)
+                                ->afterStateHydrated(function (Forms\Components\Textarea $component, $state, ?Page $record) {
+                                    if ($record) {
+                                        $component->state($record->getTranslation('meta_description', 'bn'));
                                     }
                                 }),
                         ]),
