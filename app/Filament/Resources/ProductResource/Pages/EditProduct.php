@@ -14,7 +14,15 @@ class EditProduct extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [Actions\DeleteAction::make()];
+        return [
+            Actions\Action::make('view_product')
+                ->label('View Product')
+                ->icon('heroicon-o-eye')
+                ->color('info')
+                ->url(fn (\App\Models\Product $record): string => route('shop.show', $record->slug))
+                ->openUrlInNewTab(),
+            Actions\DeleteAction::make(),
+        ];
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
