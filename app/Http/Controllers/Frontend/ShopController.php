@@ -53,7 +53,7 @@ class ShopController extends Controller
     {
         $product = $this->productRepository->findBySlug($slug);
 
-        abort_if(!$product || !$product->is_active, 404);
+        abort_if(!$product || (!$product->is_active && !auth('admin')->check()), 404);
 
         return view('shop.show', [
             'product' => $product,
