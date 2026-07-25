@@ -45,7 +45,7 @@
 
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.password') }}</label>
-                <input id="password" type="password" name="password" required
+                <input id="password" type="password" name="password" required value="{{ old('password') }}"
                     class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 @error('password') border-red-400 @enderror">
                 @error('password')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -54,7 +54,7 @@
 
             <div>
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.confirm_password') }}</label>
-                <input id="password_confirmation" type="password" name="password_confirmation" required
+                <input id="password_confirmation" type="password" name="password_confirmation" required value="{{ old('password_confirmation') }}"
                     class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500">
             </div>
 
