@@ -359,6 +359,8 @@ class CustomerResource extends Resource
                     ->options(fn() => \App\Models\User::whereNotNull('district')->where('district', '!=', '')->distinct()->pluck('district', 'district')->toArray())
                     ->searchable(),
             ])
+            ->filtersFormColumns(2)
+            ->filtersFormWidth('4xl')
                         ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('create_order')
