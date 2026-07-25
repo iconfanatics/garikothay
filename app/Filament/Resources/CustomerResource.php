@@ -157,6 +157,11 @@ class CustomerResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make("customer_id")
+                    ->label("Customer ID")
+                    ->state(fn(\App\Models\User $record): string => '#CUST-' . str_pad((string)$record->id, 4, '0', STR_PAD_LEFT))
+                    ->searchable(['id'])
+                    ->sortable(['id']),
                 Tables\Columns\TextColumn::make("name")
                     ->label("Name")
                     ->searchable()
@@ -180,9 +185,21 @@ class CustomerResource extends Resource
                     ->dateTime("d M Y")
                     ->placeholder("No")
                     ->sortable(),
-                Tables\Columns\IconColumn::make("is_active")
-                    ->label("Active")
-                    ->boolean(),
+                Tables\Columns\TextColumn::make("last_order_date")
+                    ->label("Last Order")
+                    ->dateTime("d M Y")
+                    ->placeholder("Never")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("last_login_at")
+                    ->label("Last Login")
+                    ->dateTime("d M Y")
+                    ->placeholder("Never")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make("is_active")
+                    ->label("Status")
+                    ->formatStateUsing(fn(bool $state): string => $state ? 'Active' : 'Inactive')
+                    ->badge()
+                    ->color(fn(bool $state): string => $state ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make("created_at")
                     ->label("Joined")
                     ->dateTime("d M Y")
@@ -268,7 +285,13 @@ class CustomerResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->withCount("orders");
+        return parent::getEloquentQuery()->withCount("orders")
+            ->addSelect([
+                'last_order_date' => \App\Models\Order::select('created_at')
+                    ->whereColumn('user_id', 'users.id')
+                    ->latest()
+                    ->take(1),
+            ]);
     }
 
     public static function canCreate(): bool
