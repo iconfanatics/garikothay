@@ -6,9 +6,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Payment extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'order_id', 'transaction_id', 'payment_method', 'amount',
         'currency', 'status', 'gateway_response', 'paid_at',
@@ -21,6 +24,15 @@ class Payment extends Model
             'gateway_response' => 'array',
             'paid_at' => 'datetime',
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'amount', 'payment_method'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Payment {$eventName}");
     }
 
     public function order(): BelongsTo

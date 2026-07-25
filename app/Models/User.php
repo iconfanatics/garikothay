@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, SoftDeletes, \Spatie\Permission\Traits\HasRoles;
+    use HasFactory, Notifiable, SoftDeletes, \Spatie\Permission\Traits\HasRoles, LogsActivity;
 
     protected $fillable = [
         'name',
@@ -47,6 +49,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'tags' => 'array',
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'phone', 'address', 'password', 'is_active', 'division', 'district'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Profile {$eventName}");
     }
 
     public function addresses(): HasMany

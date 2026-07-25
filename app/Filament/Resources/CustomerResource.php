@@ -166,6 +166,12 @@ class CustomerResource extends Resource
                         ->placeholder("Never"),
                 ]),
             ]),
+
+            Infolists\Components\Section::make("Activity Timeline")->schema([
+                Infolists\Components\ViewEntry::make('activity_timeline')
+                    ->label('')
+                    ->view('filament.infolists.components.activity-timeline')
+            ]),
         ]);
     }
 
