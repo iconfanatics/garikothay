@@ -556,7 +556,7 @@ class ProductResource extends Resource
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->name),
                 Tables\Filters\SelectFilter::make('brand')
                     ->label('Brand')
-                    ->options(fn () => Product::query()->distinct()->whereNotNull('brand')->pluck('brand', 'brand')->toArray()),
+                    ->options(fn () => \App\Models\Product::query()->distinct()->whereNotNull('brand')->pluck('brand', 'brand')->toArray()),
                 Tables\Filters\SelectFilter::make('publish_status')
                     ->label('Publish Status')
                     ->options([
@@ -566,6 +566,28 @@ class ProductResource extends Resource
                         'Unpublished' => 'Unpublished',
                         'Archived' => 'Archived',
                     ]),
+                Tables\Filters\SelectFilter::make('stock_level')
+                    ->label('Stock Level')
+                    ->options([
+                        'out_of_stock' => 'Out of Stock',
+                        'low_stock' => 'Low Stock',
+                        'in_stock' => 'In Stock',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['value'] === 'out_of_stock',
+                                fn (Builder $query): Builder => $query->where('stock_quantity', '<=', 0),
+                            )
+                            ->when(
+                                $data['value'] === 'low_stock',
+                                fn (Builder $query): Builder => $query->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0),
+                            )
+                            ->when(
+                                $data['value'] === 'in_stock',
+                                fn (Builder $query): Builder => $query->where('stock_quantity', '>', 0),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('view_product')
