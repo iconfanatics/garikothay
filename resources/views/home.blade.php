@@ -8,7 +8,7 @@
 <style>
     :root {
         --gk-primary: #e11d48;
-        --gk-primary-dark: #be123c;
+        --gk-rose-dark: #be123c;
         --gk-ink: #111827;
         --gk-nav: #1f2937;
         --gk-muted: #6b7280;
@@ -99,7 +99,7 @@
     }
 
     .gk-view-link:hover {
-        color: var(--gk-primary-dark);
+        color: var(--gk-rose-dark);
     }
 
     .gk-hero-wrap {

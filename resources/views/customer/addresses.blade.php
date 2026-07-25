@@ -31,7 +31,7 @@
 
     <div class="flex items-center justify-between mb-8">
         <h1 class="text-2xl font-bold text-gray-900">{{ __('general.addresses') }}</h1>
-        <button @click="openAdd()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+        <button @click="openAdd()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
             {{ __('general.add_new_address') }}
         </button>
     </div>
@@ -56,7 +56,7 @@
         @foreach($addresses as $address)
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative group">
             <div class="flex items-start justify-between mb-3">
-                <span class="text-xs font-semibold uppercase tracking-wide bg-primary-100 text-primary-700 px-2.5 py-1 rounded-full">
+                <span class="text-xs font-semibold uppercase tracking-wide bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full">
                     {{ $address->label->label() ?? $address->label }}
                 </span>
                 @if($address->is_default)
@@ -72,7 +72,7 @@
             @endif
 
             <div class="mt-4 pt-4 border-t border-gray-50 flex gap-3 opacity-0 group-hover:opacity-100 transition">
-                <button @click="openEdit({{ Js::from($address) }})" class="text-sm text-primary-600 hover:text-primary-800 font-medium">{{ __('general.edit') }}</button>
+                <button @click="openEdit({{ Js::from($address) }})" class="text-sm text-rose-600 hover:text-rose-800 font-medium">{{ __('general.edit') }}</button>
                 <form action="{{ route('customer.addresses.destroy', $address) }}" method="POST" class="inline" onsubmit="return confirm('{{ __('general.delete_address_confirm') }}');">
                     @csrf
                     @method('DELETE')
@@ -110,7 +110,7 @@
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div class="col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.label') }}</label>
-                                <select name="label" x-model="formData.label" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <select name="label" x-model="formData.label" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                                     <option value="home">{{ __('general.home') }}</option>
                                     <option value="office">{{ __('general.office') }}</option>
                                     <option value="other">{{ __('general.other') }}</option>
@@ -118,49 +118,49 @@
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                <input type="text" name="full_name" x-model="formData.full_name" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="full_name" x-model="formData.full_name" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input type="text" name="phone" x-model="formData.phone" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="phone" x-model="formData.phone" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
-                                <input type="text" name="address_line_1" x-model="formData.address_line_1" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="address_line_1" x-model="formData.address_line_1" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
-                                <input type="text" name="address_line_2" x-model="formData.address_line_2" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="address_line_2" x-model="formData.address_line_2" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                <input type="text" name="city" x-model="formData.city" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="city" x-model="formData.city" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-                                <input type="text" name="postal_code" x-model="formData.postal_code" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="postal_code" x-model="formData.postal_code" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">District</label>
-                                <input type="text" name="district" x-model="formData.district" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="district" x-model="formData.district" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Division</label>
-                                <input type="text" name="division" x-model="formData.division" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500">
+                                <input type="text" name="division" x-model="formData.division" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 mt-2">
                                 <label class="flex items-center gap-2">
-                                    <input type="checkbox" name="is_default" value="1" x-model="formData.is_default" class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    <input type="checkbox" name="is_default" value="1" x-model="formData.is_default" class="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500">
                                     <span class="text-sm text-gray-700">{{ __('general.set_as_default') }}</span>
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl">
-                        <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-rose-600 text-base font-medium text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 sm:ml-3 sm:w-auto sm:text-sm">
                             {{ __('general.save_address_btn') }}
                         </button>
-                        <button type="button" @click="showModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button type="button" @click="showModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             {{ __('general.cancel') }}
                         </button>
                     </div>

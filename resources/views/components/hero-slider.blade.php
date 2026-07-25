@@ -104,7 +104,7 @@
         animation: fadeSlideUp 0.8s ease 0.8s both;
     }
 
-    .btn-primary-hero {
+    .btn-rose-hero {
         display: inline-flex;
         align-items: center;
         gap: 0.6rem;
@@ -119,7 +119,7 @@
         box-shadow: 0 4px 24px rgba(59, 130, 246, 0.4);
     }
 
-    .btn-primary-hero:hover {
+    .btn-rose-hero:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 32px rgba(59, 130, 246, 0.6);
         background: linear-gradient(135deg, #1D4ED8, #2563EB);
@@ -312,7 +312,7 @@
                     গাড়ি কোথায় - আপনার সম্পূর্ণ অটোমোটিভ সমাধান। গাড়ি কেনা, ভাড়া, সার্ভিস, যন্ত্রাংশ ও আরও অনেক কিছু।
                 </p>
                 <div class="hero-actions">
-                    <a href="{{ $banner->link ?? route('shop.index') }}" class="btn-primary-hero">
+                    <a href="{{ $banner->link ?? route('shop.index') }}" class="btn-rose-hero">
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         {{ $banner->translate()?->button_text ?? 'পণ্য দেখুন' }}
                     </a>
@@ -359,7 +359,7 @@
                     গাড়ি কেনাবেচা, ভাড়া, GPS ট্র্যাকিং, ড্রাইভার সার্ভিস, জ্বালানি স্টেশন, গ্যারেজ এবং আরও অনেক কিছু — সব এক জায়গায়।
                 </p>
                 <div class="hero-actions">
-                    <a href="{{ route('shop.index') }}" class="btn-primary-hero">
+                    <a href="{{ route('shop.index') }}" class="btn-rose-hero">
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                         পণ্য দেখুন
                     </a>

@@ -7,10 +7,10 @@
 <div class="bg-gray-50 min-h-screen">
 
     <!-- Header -->
-    <div class="bg-primary-700 text-white py-12">
+    <div class="bg-rose-700 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold">{{ __('general.return_policy') }}</h1>
-            <p class="mt-2 text-primary-200">Our 7-day replacement warranty</p>
+            <p class="mt-2 text-rose-200">Our 7-day replacement warranty</p>
         </div>
     </div>
 
@@ -37,11 +37,11 @@
         </div>
 
         <!-- Contact CTA -->
-        <div class="bg-primary-600 rounded-2xl p-6 text-center text-white">
+        <div class="bg-rose-600 rounded-2xl p-6 text-center text-white">
             <p class="font-medium mb-4">Have an issue with your order? We're here to help.</p>
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
                 <a href="{{ route('page.contact') }}"
-                   class="inline-block bg-white text-primary-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-primary-50 transition text-sm">
+                   class="inline-block bg-white text-rose-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-rose-50 transition text-sm">
                     {{ __('general.contact_us') }}
                 </a>
                 <a href="https://wa.me/{{ \App\Models\Setting::get('whatsapp') }}"

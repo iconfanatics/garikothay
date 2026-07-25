@@ -21,13 +21,13 @@
             @method('PUT')
 
             <div x-data="{ photoName: null, photoPreview: null }" class="flex items-center gap-5 mb-4">
-                <div class="w-20 h-20 rounded-full overflow-hidden bg-primary-100 flex items-center justify-center relative">
+                <div class="w-20 h-20 rounded-full overflow-hidden bg-rose-100 flex items-center justify-center relative">
                     <!-- Current Profile Photo -->
                     <div x-show="!photoPreview" class="w-full h-full">
                         @if($user->avatar)
                         <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                         @else
-                        <span class="w-full h-full flex items-center justify-center text-primary-600 text-2xl font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                        <span class="w-full h-full flex items-center justify-center text-rose-600 text-2xl font-bold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                         @endif
                     </div>
                     <!-- New Profile Photo Preview -->
@@ -55,13 +55,13 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.full_name') }}</label>
                     <input type="text" name="name" value="{{ old('name', $user->name) }}" required
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 @error('name') border-red-400 @enderror">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 @error('name') border-red-400 @enderror">
                     @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.phone') }}</label>
                     <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 @error('phone') border-red-400 @enderror">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 @error('phone') border-red-400 @enderror">
                     @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -74,7 +74,7 @@
 
             <div class="flex justify-end">
                 <button type="submit"
-                    class="bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-2.5 rounded-xl transition">
+                    class="bg-rose-600 hover:bg-rose-700 text-white font-medium px-6 py-2.5 rounded-xl transition">
                     {{ __('general.save_changes') }}
                 </button>
             </div>
@@ -91,20 +91,20 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.current_password') }}</label>
                 <input type="password" name="current_password" required
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 @error('current_password') border-red-400 @enderror">
+                    class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 @error('current_password') border-red-400 @enderror">
                 @error('current_password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.new_password') }}</label>
                     <input type="password" name="password" required
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 @error('password') border-red-400 @enderror">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 @error('password') border-red-400 @enderror">
                     @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.confirm_password') }}</label>
                     <input type="password" name="password_confirmation" required
-                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500">
                 </div>
             </div>
             <div class="flex justify-end">

@@ -22,7 +22,7 @@
         </svg>
         <p class="font-medium">{{ __('general.wishlist_is_empty') }}</p>
         <a href="{{ route('shop.index') }}"
-           class="mt-4 inline-block bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 transition text-sm font-medium">
+           class="mt-4 inline-block bg-rose-600 text-white px-6 py-2 rounded-xl hover:bg-rose-700 transition text-sm font-medium">
             {{ __('general.start_shopping') }}
         </a>
     </div>

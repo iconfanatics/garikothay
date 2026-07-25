@@ -22,12 +22,12 @@
 
         <!-- Breadcrumb -->
         <nav class="text-sm text-gray-400 mb-6 flex items-center gap-2">
-            <a href="{{ route('home') }}" class="hover:text-primary-600">{{ __('general.home') }}</a>
+            <a href="{{ route('home') }}" class="hover:text-rose-600">{{ __('general.home') }}</a>
             <span>/</span>
-            <a href="{{ route('blog.index') }}" class="hover:text-primary-600">{{ __('general.blog') }}</a>
+            <a href="{{ route('blog.index') }}" class="hover:text-rose-600">{{ __('general.blog') }}</a>
             @if($blog->category)
             <span>/</span>
-            <a href="{{ route('blog.index', ['category' => $blog->category->slug]) }}" class="hover:text-primary-600">
+            <a href="{{ route('blog.index', ['category' => $blog->category->slug]) }}" class="hover:text-rose-600">
                 {{ $blog->category->getTranslation('name') }}
             </a>
             @endif
@@ -35,7 +35,7 @@
 
         <!-- Category badge -->
         @if($blog->category)
-        <span class="inline-block bg-primary-100 text-primary-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
+        <span class="inline-block bg-rose-100 text-rose-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
             {{ $blog->category->getTranslation('name') }}
         </span>
         @endif
@@ -73,7 +73,7 @@
         <!-- Footer nav -->
         <div class="mt-12 pt-8 border-t border-gray-200 flex justify-between items-center">
             <a href="{{ route('blog.index') }}"
-               class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium">
+               class="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-medium">
                 ← {{ __('general.blog') }}
             </a>
         </div>

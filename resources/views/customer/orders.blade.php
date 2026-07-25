@@ -28,9 +28,9 @@
                     </p>
                 </div>
                 <div class="flex items-center gap-4">
-                    <span class="text-lg font-bold text-primary-700">৳{{ number_format($order->total, 2) }}</span>
+                    <span class="text-lg font-bold text-rose-700">৳{{ number_format($order->total, 2) }}</span>
                     <a href="{{ route('customer.order.show', $order->order_number) }}"
-                       class="text-sm bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition">
+                       class="text-sm bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition">
                         {{ __('general.view_details') }}
                     </a>
                 </div>
@@ -50,7 +50,7 @@
         </svg>
         <p class="font-medium">{{ __('general.no_orders_yet') }}</p>
         <a href="{{ route('shop.index') }}"
-           class="mt-4 inline-block bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 transition text-sm font-medium">
+           class="mt-4 inline-block bg-rose-600 text-white px-6 py-2 rounded-xl hover:bg-rose-700 transition text-sm font-medium">
             {{ __('general.start_shopping') }}
         </a>
     </div>

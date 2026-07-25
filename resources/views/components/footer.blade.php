@@ -85,7 +85,7 @@
                         : collect();
                 @endphp
                 @foreach($quickLinks as $link)
-                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-primary-400 transition">{{ $link->label }}</a></li>
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
             </ul>
         </div>
@@ -100,7 +100,7 @@
                         : collect();
                 @endphp
                 @foreach($customerServiceLinks as $link)
-                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-primary-400 transition">{{ $link->label }}</a></li>
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
             </ul>
         </div>

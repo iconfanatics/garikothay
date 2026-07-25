@@ -339,7 +339,7 @@
             </a>
 
             <!-- Cart -->
-            <a href="{{ route('cart.index') }}" class="relative text-gray-600 hover:text-primary-600 transition"
+            <a href="{{ route('cart.index') }}" class="relative text-gray-600 hover:text-rose-600 transition"
                 id="cart-icon">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -353,11 +353,11 @@
             @auth
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open"
-                        class="flex items-center gap-1.5 text-sm text-gray-700 hover:text-primary-600 transition font-medium">
+                        class="flex items-center gap-1.5 text-sm text-gray-700 hover:text-rose-600 transition font-medium">
                         @if(auth()->user()->avatar)
                             <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-7 h-7 rounded-full object-cover">
                         @else
-                            <div class="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xs">
+                            <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 font-bold text-xs">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @endif
