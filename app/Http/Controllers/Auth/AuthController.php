@@ -97,8 +97,12 @@ class AuthController extends Controller
         return redirect()->route('home');
     }
 
-    public function showEmailVerification(): View
+    public function showEmailVerification(Request $request): View|RedirectResponse
     {
+        if ($request->user() && $request->user()->hasVerifiedEmail()) {
+            return redirect()->route('customer.dashboard');
+        }
+        
         return view('auth.verify-email');
     }
 
