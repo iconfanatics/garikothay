@@ -199,6 +199,28 @@ class CustomerResource extends Resource
                     ->nullable()
                     ->trueLabel("Verified")
                     ->falseLabel("Unverified"),
+                Tables\Filters\SelectFilter::make('customer_segment')
+                    ->label('Customer Segment')
+                    ->options([
+                        'new_this_month' => 'New Customers (This Month)',
+                        'active_last_30_days' => 'Active Customers (Last 30 Days)',
+                        'returning' => 'Returning Customers (>1 Order)',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['value'] === 'new_this_month',
+                                fn (Builder $query): Builder => $query->where('created_at', '>=', \Illuminate\Support\Carbon::now()->startOfMonth()),
+                            )
+                            ->when(
+                                $data['value'] === 'active_last_30_days',
+                                fn (Builder $query): Builder => $query->whereHas('orders', fn ($q) => $q->where('created_at', '>=', \Illuminate\Support\Carbon::now()->subDays(30))),
+                            )
+                            ->when(
+                                $data['value'] === 'returning',
+                                fn (Builder $query): Builder => $query->whereHas('orders', fn ($q) => $q->select('id'), '>', 1),
+                            );
+                    }),
             ])
                         ->actions([
                 Tables\Actions\ActionGroup::make([

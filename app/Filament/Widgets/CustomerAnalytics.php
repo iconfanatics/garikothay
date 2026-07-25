@@ -38,17 +38,20 @@ class CustomerAnalytics extends BaseWidget
             Stat::make('New Customers (This Month)', (string) $newCustomers)
                 ->description('Registered since ' . $thisMonth->format('M j'))
                 ->descriptionIcon('heroicon-m-user-plus')
-                ->color('success'),
+                ->color('success')
+                ->url(route('filament.admin.resources.customers.index', ['tableFilters' => ['customer_segment' => ['value' => 'new_this_month']]])),
 
             Stat::make('Active Customers', (string) $activeCustomers)
                 ->description('Placed an order in last 30 days')
                 ->descriptionIcon('heroicon-m-user-group')
-                ->color('primary'),
+                ->color('primary')
+                ->url(route('filament.admin.resources.customers.index', ['tableFilters' => ['customer_segment' => ['value' => 'active_last_30_days']]])),
 
             Stat::make('Returning Customers', (string) $returningCustomers)
                 ->description('Customers with more than 1 order')
                 ->descriptionIcon('heroicon-m-arrow-path-rounded-square')
-                ->color('info'),
+                ->color('info')
+                ->url(route('filament.admin.resources.customers.index', ['tableFilters' => ['customer_segment' => ['value' => 'returning']]])),
         ];
     }
 }
