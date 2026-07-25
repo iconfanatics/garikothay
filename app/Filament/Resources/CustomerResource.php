@@ -121,7 +121,9 @@ class CustomerResource extends Resource
                 Infolists\Components\Grid::make(4)->schema([
                     Infolists\Components\TextEntry::make("total_orders")
                         ->label("Total Orders")
-                        ->state(fn(User $record): int => $record->orders()->count()),
+                        ->state(fn(User $record): int => $record->orders()->count())
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id]))
+                        ->color('primary'),
                     Infolists\Components\TextEntry::make("total_products")
                         ->label("Total Products Purchased")
                         ->state(fn(User $record): int => (int) \Illuminate\Support\Facades\DB::table('order_items')
@@ -131,23 +133,30 @@ class CustomerResource extends Resource
                             ->sum('order_items.quantity')),
                     Infolists\Components\TextEntry::make("total_spent")
                         ->label("Total Spent")
-                        ->state(fn(User $record): string => "৳" . number_format($record->total_spent, 2)),
+                        ->state(fn(User $record): string => "৳" . number_format($record->total_spent, 2))
+                        ->url(fn (User $record): string => route('filament.admin.resources.payments.index', ['tableFilters[order_user_id][value]' => $record->id]))
+                        ->color('primary'),
                     Infolists\Components\TextEntry::make("coupon_usage")
                         ->label("Coupon Usage Count")
-                        ->state(fn(User $record): int => $record->orders()->whereNotNull('coupon_id')->whereNotIn('status', ['cancelled'])->count()),
+                        ->state(fn(User $record): int => $record->orders()->whereNotNull('coupon_id')->whereNotIn('status', ['cancelled'])->count())
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id, 'tableFilters[has_coupon][value]' => true]))
+                        ->color('primary'),
                     
                     Infolists\Components\TextEntry::make("pending_orders")
                         ->label("Pending Orders")
                         ->state(fn(User $record): int => $record->orders()->where('status', 'pending')->count())
-                        ->color('warning'),
+                        ->color('warning')
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id, 'tableFilters[status][value]' => 'pending'])),
                     Infolists\Components\TextEntry::make("completed_orders")
                         ->label("Completed Orders")
                         ->state(fn(User $record): int => $record->orders()->where('status', 'delivered')->count())
-                        ->color('success'),
+                        ->color('success')
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id, 'tableFilters[status][value]' => 'delivered'])),
                     Infolists\Components\TextEntry::make("cancelled_orders")
                         ->label("Cancelled Orders")
                         ->state(fn(User $record): int => $record->orders()->where('status', 'cancelled')->count())
-                        ->color('danger'),
+                        ->color('danger')
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id, 'tableFilters[status][value]' => 'cancelled'])),
                     Infolists\Components\TextEntry::make("last_order_date")
                         ->label("Last Order Date")
                         ->state(fn(User $record): ?string => $record->orders()->latest()->first()?->created_at?->format('d M Y, h:i A') ?? 'Never'),
@@ -395,6 +404,14 @@ class CustomerResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\OrdersRelationManager::class,
+            RelationManagers\PaymentsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
