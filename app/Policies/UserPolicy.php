@@ -16,7 +16,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function viewAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function viewAny(User $user): bool
     {
         return $user->can('view_any_customer');
     }
@@ -27,7 +27,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function view(\Illuminate\Foundation\Auth\User $user): bool
+    public function view(User $user): bool
     {
         return $user->can('view_customer');
     }
@@ -38,7 +38,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function create(\Illuminate\Foundation\Auth\User $user): bool
+    public function create(User $user): bool
     {
         return $user->can('create_customer');
     }
@@ -49,7 +49,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function update(\Illuminate\Foundation\Auth\User $user): bool
+    public function update(User $user): bool
     {
         return $user->can('update_customer');
     }
@@ -60,7 +60,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function delete(\Illuminate\Foundation\Auth\User $user): bool
+    public function delete(User $user): bool
     {
         return $user->can('delete_customer');
     }
@@ -71,7 +71,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function deleteAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_customer');
     }
@@ -82,7 +82,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function forceDelete(\Illuminate\Foundation\Auth\User $user): bool
+    public function forceDelete(User $user): bool
     {
         return $user->can('force_delete_customer');
     }
@@ -93,7 +93,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function forceDeleteAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function forceDeleteAny(User $user): bool
     {
         return $user->can('force_delete_any_customer');
     }
@@ -104,7 +104,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function restore(\Illuminate\Foundation\Auth\User $user): bool
+    public function restore(User $user): bool
     {
         return $user->can('restore_customer');
     }
@@ -115,7 +115,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function restoreAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function restoreAny(User $user): bool
     {
         return $user->can('restore_any_customer');
     }
@@ -126,7 +126,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function replicate(\Illuminate\Foundation\Auth\User $user): bool
+    public function replicate(User $user): bool
     {
         return $user->can('replicate_customer');
     }
@@ -137,7 +137,7 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return bool
      */
-    public function reorder(\Illuminate\Foundation\Auth\User $user): bool
+    public function reorder(User $user): bool
     {
         return $user->can('reorder_customer');
     }

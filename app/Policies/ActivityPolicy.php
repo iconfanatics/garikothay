@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\NavigationItem;
+use Spatie\Activitylog\Models\Activity;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class NavigationItemPolicy
+class ActivityPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class NavigationItemPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_navigation::item');
+        return $user->can('view_any_activity');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, NavigationItem $navigationItem): bool
+    public function view(User $user, Activity $activity): bool
     {
-        return $user->can('view_navigation::item');
+        return $user->can('view_activity');
     }
 
     /**
@@ -31,23 +31,23 @@ class NavigationItemPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_navigation::item');
+        return $user->can('create_activity');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, NavigationItem $navigationItem): bool
+    public function update(User $user, Activity $activity): bool
     {
-        return $user->can('update_navigation::item');
+        return $user->can('update_activity');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, NavigationItem $navigationItem): bool
+    public function delete(User $user, Activity $activity): bool
     {
-        return $user->can('delete_navigation::item');
+        return $user->can('delete_activity');
     }
 
     /**
@@ -55,15 +55,15 @@ class NavigationItemPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_navigation::item');
+        return $user->can('delete_any_activity');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, NavigationItem $navigationItem): bool
+    public function forceDelete(User $user, Activity $activity): bool
     {
-        return $user->can('force_delete_navigation::item');
+        return $user->can('force_delete_activity');
     }
 
     /**
@@ -71,15 +71,15 @@ class NavigationItemPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_navigation::item');
+        return $user->can('force_delete_any_activity');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, NavigationItem $navigationItem): bool
+    public function restore(User $user, Activity $activity): bool
     {
-        return $user->can('restore_navigation::item');
+        return $user->can('restore_activity');
     }
 
     /**
@@ -87,15 +87,15 @@ class NavigationItemPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_navigation::item');
+        return $user->can('restore_any_activity');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, NavigationItem $navigationItem): bool
+    public function replicate(User $user, Activity $activity): bool
     {
-        return $user->can('replicate_navigation::item');
+        return $user->can('replicate_activity');
     }
 
     /**
@@ -103,6 +103,6 @@ class NavigationItemPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_navigation::item');
+        return $user->can('reorder_activity');
     }
 }

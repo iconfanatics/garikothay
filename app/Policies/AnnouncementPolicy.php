@@ -13,7 +13,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function viewAny(User $user): bool
     {
         return $user->can('view_any_announcement');
     }
@@ -21,7 +21,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(\Illuminate\Foundation\Auth\User $user, Announcement $announcement): bool
+    public function view(User $user, Announcement $announcement): bool
     {
         return $user->can('view_announcement');
     }
@@ -29,7 +29,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(\Illuminate\Foundation\Auth\User $user): bool
+    public function create(User $user): bool
     {
         return $user->can('create_announcement');
     }
@@ -37,7 +37,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(\Illuminate\Foundation\Auth\User $user, Announcement $announcement): bool
+    public function update(User $user, Announcement $announcement): bool
     {
         return $user->can('update_announcement');
     }
@@ -45,7 +45,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(\Illuminate\Foundation\Auth\User $user, Announcement $announcement): bool
+    public function delete(User $user, Announcement $announcement): bool
     {
         return $user->can('delete_announcement');
     }
@@ -53,7 +53,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can bulk delete.
      */
-    public function deleteAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_announcement');
     }
@@ -61,7 +61,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(\Illuminate\Foundation\Auth\User $user, Announcement $announcement): bool
+    public function forceDelete(User $user, Announcement $announcement): bool
     {
         return $user->can('force_delete_announcement');
     }
@@ -69,7 +69,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can permanently bulk delete.
      */
-    public function forceDeleteAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function forceDeleteAny(User $user): bool
     {
         return $user->can('force_delete_any_announcement');
     }
@@ -77,7 +77,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(\Illuminate\Foundation\Auth\User $user, Announcement $announcement): bool
+    public function restore(User $user, Announcement $announcement): bool
     {
         return $user->can('restore_announcement');
     }
@@ -85,7 +85,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can bulk restore.
      */
-    public function restoreAny(\Illuminate\Foundation\Auth\User $user): bool
+    public function restoreAny(User $user): bool
     {
         return $user->can('restore_any_announcement');
     }
@@ -93,7 +93,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(\Illuminate\Foundation\Auth\User $user, Announcement $announcement): bool
+    public function replicate(User $user, Announcement $announcement): bool
     {
         return $user->can('replicate_announcement');
     }
@@ -101,7 +101,7 @@ class AnnouncementPolicy
     /**
      * Determine whether the user can reorder.
      */
-    public function reorder(\Illuminate\Foundation\Auth\User $user): bool
+    public function reorder(User $user): bool
     {
         return $user->can('reorder_announcement');
     }

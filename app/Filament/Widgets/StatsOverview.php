@@ -81,11 +81,40 @@ class StatsOverview extends BaseWidget
         $cancelledOrders = Order::where('status', OrderStatus::Cancelled)->count();
         $returnedOrders = Order::where('status', OrderStatus::Returned)->count();
 
+        $totalCategories = \App\Models\Category::count();
+        $totalOrdersCount = Order::count();
+        $totalBrands = \App\Models\Supplier::count();
+
         return [
+            Stat::make("Today's Sales", '৳' . number_format((float) $todayRevenue, 2))
+                ->description("{$todayOrdersCount} orders today")
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->color($revenueChange >= 0 ? 'success' : 'danger'),
+
             Stat::make("Total Revenue", '৳' . number_format((float) $totalRevenue, 2))
                 ->description('All time total revenue')
                 ->descriptionIcon('heroicon-m-currency-bangladeshi')
                 ->color('success'),
+
+            Stat::make("Total Order", (string) $totalOrdersCount)
+                ->description('Total orders placed')
+                ->descriptionIcon('heroicon-m-shopping-bag')
+                ->color('info'),
+                
+            Stat::make("Total Customer", (string) $totalCustomers)
+                ->description("{$newCustomersThisMonth} new this month")
+                ->descriptionIcon('heroicon-m-users')
+                ->color('info'),
+
+            Stat::make("Total Categories", (string) $totalCategories)
+                ->description('Product categories')
+                ->descriptionIcon('heroicon-m-tag')
+                ->color('primary'),
+
+            Stat::make("Total Brands/Suppliers", (string) $totalBrands)
+                ->description('Active brands')
+                ->descriptionIcon('heroicon-m-briefcase')
+                ->color('primary'),
                 
             Stat::make("Total Products", (string) $totalProducts)
                 ->description("{$inStockProducts} In Stock, {$outOfStockProducts} Out of Stock")
