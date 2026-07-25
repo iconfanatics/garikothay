@@ -18,7 +18,7 @@ class StaffResource extends Resource
     protected static ?string $model = \App\Models\User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Filament Shield';
     protected static ?string $modelLabel = 'Admin / Staff';
     protected static ?string $pluralModelLabel = 'Admins & Staff';
     protected static ?int $navigationSort = 10;
