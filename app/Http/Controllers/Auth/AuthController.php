@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 use App\Rules\BdPhone;
@@ -60,8 +61,14 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone' => ['nullable', 'string', new BdPhone(), 'unique:users,phone'],
+            'email' => [
+                'required', 'string', 'email', 'max:255', 
+                Rule::unique('users')->whereNull('deleted_at')
+            ],
+            'phone' => [
+                'nullable', 'string', new BdPhone(), 
+                Rule::unique('users', 'phone')->whereNull('deleted_at')
+            ],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
