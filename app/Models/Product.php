@@ -51,7 +51,7 @@ class Product extends Model
 
     protected $fillable = [
         'brand', 'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
-        'cost_price', 'stock_quantity', 'low_stock_threshold', 'weight_grams',
+        'cost_price', 'stock_quantity', 'reserved_stock', 'is_preorder', 'low_stock_threshold', 'weight_grams',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',
         'shipping_restriction', 'has_special_handling', 'handling_type', 'is_free_shipping_eligible',
         'tax_rate', 'plant_type', 'sunlight', 'watering', 'difficulty', 'mature_size',
@@ -79,6 +79,7 @@ class Product extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'is_new_arrival' => 'boolean',
+            'is_preorder' => 'boolean',
             'requires_shipping' => 'boolean',
             'has_special_handling' => 'boolean',
             'is_free_shipping_eligible' => 'boolean',

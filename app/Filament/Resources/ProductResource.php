@@ -120,10 +120,11 @@ class ProductResource extends Resource
                         ->visibility('public')
                         ->dehydrated(false)
                         ->columnSpanFull(),
-                    Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Grid::make(4)->schema([
                         Forms\Components\Toggle::make('is_active')->label('Active')->default(true),
                         Forms\Components\Toggle::make('is_featured')->label('Featured'),
                         Forms\Components\Toggle::make('is_new_arrival')->label('New Arrival'),
+                        Forms\Components\Toggle::make('is_preorder')->label('Pre-Order'),
                     ]),
                     Forms\Components\Section::make('Publishing')->schema([
                         Forms\Components\Grid::make(3)->schema([
@@ -243,14 +244,15 @@ class ProductResource extends Resource
                                 return '৳' . number_format($profit, 2) . ' (' . number_format($percentage, 2) . '%)';
                             }),
                     ]),
-                    Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Grid::make(4)->schema([
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU')
                             ->helperText('Leave blank to generate automatically, for example GK-BCDf34.')
                             ->placeholder('Auto-generated if blank')
                             ->nullable()
                             ->unique(ignoreRecord: true),
-                        Forms\Components\TextInput::make('stock_quantity')->label('Stock Qty')->numeric()->required()->default(0),
+                        Forms\Components\TextInput::make('stock_quantity')->label('Total Stock')->numeric()->required()->default(0),
+                        Forms\Components\TextInput::make('reserved_stock')->label('Reserved Stock')->numeric()->default(0)->helperText('Booked but not shipped'),
                         Forms\Components\TextInput::make('low_stock_threshold')->label('Low Stock Alert')->numeric()->default(5),
                     ]),
                     Forms\Components\Grid::make(2)->schema([
@@ -566,12 +568,16 @@ class ProductResource extends Resource
                         'Unpublished' => 'Unpublished',
                         'Archived' => 'Archived',
                     ]),
+                Tables\Filters\TernaryFilter::make('is_preorder')
+                    ->label('Pre-Order Status'),
                 Tables\Filters\SelectFilter::make('stock_level')
                     ->label('Stock Level')
                     ->options([
                         'out_of_stock' => 'Out of Stock',
                         'low_stock' => 'Low Stock',
                         'in_stock' => 'In Stock',
+                        'available_stock' => 'Available Stock',
+                        'reserved_stock' => 'Reserved Stock',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -586,6 +592,14 @@ class ProductResource extends Resource
                             ->when(
                                 $data['value'] === 'in_stock',
                                 fn (Builder $query): Builder => $query->where('stock_quantity', '>', 0),
+                            )
+                            ->when(
+                                $data['value'] === 'available_stock',
+                                fn (Builder $query): Builder => $query->whereRaw('stock_quantity > reserved_stock'),
+                            )
+                            ->when(
+                                $data['value'] === 'reserved_stock',
+                                fn (Builder $query): Builder => $query->where('reserved_stock', '>', 0),
                             );
                     }),
             ])

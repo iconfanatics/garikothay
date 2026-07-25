@@ -102,6 +102,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Settings::class, 
                 \App\Filament\Pages\ThemeSettings::class,
                 \App\Filament\Pages\PaymentDashboard::class,
+                \App\Filament\Pages\InventoryDashboard::class,
             ])
             ->widgets([
                 AdminWelcome::class,
@@ -123,6 +124,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\ReviewRatingChart::class,
                 \App\Filament\Widgets\BannerStatsOverview::class,
                 \App\Filament\Widgets\BlogStatsOverview::class,
+                \App\Filament\Widgets\InventoryStatsOverview::class,
             ])
             ->globalSearch(\App\Filament\GlobalSearchProvider::class)
             ->middleware([
