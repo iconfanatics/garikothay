@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StaffResource extends Resource
 {
-    protected static ?string $model = \App\Models\User::class;
+    protected static ?string $model = \App\Models\Admin::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'Filament Shield';
@@ -37,9 +37,6 @@ class StaffResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('phone')
-                            ->tel()
-                            ->maxLength(20),
                         Forms\Components\TextInput::make('password')
                             ->password()
                             ->dehydrated(fn ($state) => filled($state))
@@ -50,6 +47,13 @@ class StaffResource extends Resource
                             ->multiple()
                             ->preload()
                             ->searchable(),
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active Account')
+                            ->default(true),
+                        Forms\Components\Toggle::make('is_super_admin')
+                            ->label('Is Super Admin')
+                            ->default(false)
+                            ->hidden(fn () => !auth()->user()->is_super_admin),
                     ])->columns(2)
             ]);
     }
@@ -62,11 +66,13 @@ class StaffResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->badge()
                     ->searchable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->boolean(),
+                Tables\Columns\IconColumn::make('is_super_admin')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -100,11 +106,5 @@ class StaffResource extends Resource
             'create' => Pages\CreateStaff::route('/create'),
             'edit' => Pages\EditStaff::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        // Only show users who have roles (Admins/Staff)
-        return parent::getEloquentQuery()->whereHas('roles');
     }
 }
