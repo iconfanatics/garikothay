@@ -67,6 +67,9 @@ class CustomerResource extends Resource
                 ]),
             ]),
             Forms\Components\Section::make("Admin Notes")->schema([
+                Forms\Components\TagsInput::make("tags")
+                    ->label("Customer Tags")
+                    ->placeholder("e.g. VIP, Wholesaler, Problematic"),
                 Forms\Components\Textarea::make("notes")
                     ->label("Notes (Admin Only)")
                     ->rows(3),
@@ -106,6 +109,10 @@ class CustomerResource extends Resource
                         ->formatStateUsing(fn(?string $state) => $state ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? $state : 'N/A'),
                 ]),
                 Infolists\Components\Grid::make(1)->schema([
+                    Infolists\Components\TextEntry::make("tags")
+                        ->label("Tags")
+                        ->badge()
+                        ->default("None"),
                     Infolists\Components\TextEntry::make("notes")->label("Notes (Admin Only)")->default("None"),
                 ])
             ]),
@@ -238,6 +245,119 @@ class CustomerResource extends Resource
                                 fn (Builder $query): Builder => $query->whereHas('orders', fn ($q) => $q->select('id'), '>', 1),
                             );
                     }),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Registration From'),
+                        Forms\Components\DatePicker::make('created_until')->label('Registration Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                Tables\Filters\Filter::make('last_login_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('login_from')->label('Last Login From'),
+                        Forms\Components\DatePicker::make('login_until')->label('Last Login Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['login_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('last_login_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['login_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('last_login_at', '<=', $date),
+                            );
+                    }),
+                Tables\Filters\Filter::make('last_order_date')
+                    ->form([
+                        Forms\Components\DatePicker::make('order_from')->label('Last Order From'),
+                        Forms\Components\DatePicker::make('order_until')->label('Last Order Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['order_from'],
+                                fn (Builder $query, $date): Builder => $query->whereHas('orders', fn($q) => $q->whereDate('created_at', '>=', $date)),
+                            )
+                            ->when(
+                                $data['order_until'],
+                                fn (Builder $query, $date): Builder => $query->whereHas('orders', fn($q) => $q->whereDate('created_at', '<=', $date)),
+                            );
+                    }),
+                Tables\Filters\Filter::make('total_orders')
+                    ->form([
+                        Forms\Components\TextInput::make('min_orders')->label('Min Orders')->numeric(),
+                        Forms\Components\TextInput::make('max_orders')->label('Max Orders')->numeric(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['min_orders'],
+                                fn (Builder $query, $value): Builder => $query->has('orders', '>=', $value),
+                            )
+                            ->when(
+                                $data['max_orders'],
+                                fn (Builder $query, $value): Builder => $query->has('orders', '<=', $value),
+                            );
+                    }),
+                Tables\Filters\Filter::make('total_spending')
+                    ->form([
+                        Forms\Components\TextInput::make('min_spent')->label('Min Spending')->numeric(),
+                        Forms\Components\TextInput::make('max_spent')->label('Max Spending')->numeric(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['min_spent'],
+                                fn (Builder $query, $value): Builder => $query->whereHas('orders', function ($q) use ($value) {
+                                    $q->selectRaw('user_id, sum(total) as total_sum')
+                                      ->groupBy('user_id')
+                                      ->havingRaw('sum(total) >= ?', [$value]);
+                                }),
+                            )
+                            ->when(
+                                $data['max_spent'],
+                                fn (Builder $query, $value): Builder => $query->whereHas('orders', function ($q) use ($value) {
+                                    $q->selectRaw('user_id, sum(total) as total_sum')
+                                      ->groupBy('user_id')
+                                      ->havingRaw('sum(total) <= ?', [$value]);
+                                }),
+                            );
+                    }),
+                Tables\Filters\SelectFilter::make('tags')
+                    ->label('Customer Tags')
+                    ->options(fn() => \App\Models\User::whereNotNull('tags')->pluck('tags')->flatten()->unique()->mapWithKeys(fn($tag) => [$tag => $tag])->toArray())
+                    ->searchable()
+                    ->multiple()
+                    ->query(function (Builder $query, array $data) {
+                        return $query->when(
+                            $data['values'] ?? null,
+                            function (Builder $query, $values) {
+                                $query->where(function ($q) use ($values) {
+                                    foreach ($values as $value) {
+                                        $q->orWhereJsonContains('tags', $value);
+                                    }
+                                });
+                            }
+                        );
+                    }),
+                Tables\Filters\SelectFilter::make('division')
+                    ->label('Division')
+                    ->options(fn() => \App\Models\User::whereNotNull('division')->where('division', '!=', '')->distinct()->pluck('division', 'division')->toArray())
+                    ->searchable(),
+                Tables\Filters\SelectFilter::make('district')
+                    ->label('District')
+                    ->options(fn() => \App\Models\User::whereNotNull('district')->where('district', '!=', '')->distinct()->pluck('district', 'district')->toArray())
+                    ->searchable(),
             ])
                         ->actions([
                 Tables\Actions\ActionGroup::make([

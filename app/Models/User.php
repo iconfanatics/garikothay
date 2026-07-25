@@ -32,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'preferred_payment_method',
         'notes',
         'last_login_at',
+        'tags',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -44,6 +45,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'last_login_at' => 'datetime',
             'is_active' => 'boolean',
             'password' => 'hashed',
+            'tags' => 'array',
         ];
     }
 
