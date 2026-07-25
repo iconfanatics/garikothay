@@ -13,5 +13,10 @@ class SendOrderConfirmationEmail implements ShouldQueue
     public function handle(OrderPlaced $event): void
     {
         $event->order->user->notify(new OrderConfirmationNotification($event->order));
+        
+        $adminEmail = config('mail.from.address');
+        if ($adminEmail) {
+            \Illuminate\Support\Facades\Mail::to($adminEmail)->send(new \App\Mail\AdminNewOrderMail($event->order));
+        }
     }
 }
