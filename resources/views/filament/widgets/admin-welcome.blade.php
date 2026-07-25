@@ -7,6 +7,7 @@
                         Welcome back, {{ $adminName }}
                     </h2>
                     <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        {{ now()->timezone('Asia/Dhaka')->format('l, jS F Y, h:i A') }} (Dhaka Time) &bull;
                         Last Login: {{ $lastLogin }}
                         @if($lastLogin !== 'First Login')
                             &bull; IP: {{ $lastLoginIp }}
