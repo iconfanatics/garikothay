@@ -5,7 +5,13 @@
 @section('content')
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <h1 class="text-2xl font-bold text-gray-900 mb-8">{{ __('general.profile') }}</h1>
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">{{ __('general.profile') }}</h1>
+        <a href="{{ route('customer.dashboard') }}" class="text-sm font-medium text-rose-600 hover:text-rose-700 flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            {{ __('Back to Dashboard') }}
+        </a>
+    </div>
 
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 mb-6">
