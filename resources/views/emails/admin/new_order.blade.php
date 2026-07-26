@@ -11,7 +11,7 @@ A new order has been placed on {{ config('app.name') }}.
 
 Please check the admin panel to process this order.
 
-<x-mail::button :url="route('filament.admin.resources.orders.view', $order)">
+<x-mail::button :url="route('filament.admin.resources.orders.edit', $order)">
 View Order in Admin Panel
 </x-mail::button>
 
