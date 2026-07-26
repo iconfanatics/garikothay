@@ -62,7 +62,7 @@ class Product extends Model
         'warranty_duration', 'warranty_claim_process', 'internal_notes',
         'publish_status', 'published_at', 'unpublished_at', 'discount_type',
         'discount_amount', 'discount_start_date', 'discount_end_date',
-        'scheduled_price', 'price_effective_date', 'documents',
+        'scheduled_price', 'price_effective_date', 'documents', 'faqs',
         'created_by_admin_id', 'updated_by_admin_id',
     ];
 
@@ -97,6 +97,7 @@ class Product extends Model
             'discount_amount' => 'decimal:2',
             'scheduled_price' => 'decimal:2',
             'documents' => 'array',
+            'faqs' => 'array',
         ];
     }
 

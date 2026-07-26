@@ -680,7 +680,8 @@
 
                 <div class="gk-product-tabs" style="grid-column:1 / -1;">
                     <div class="gk-tab-list">
-                        @foreach(['desc' => 'Description', 'specs' => 'Specifications', 'reviews' => 'Reviews (' . $approvedReviews->count() . ')'] as $key => $label)
+                        @foreach(['desc' => 'Description', 'specs' => 'Specifications', 'faqs' => 'Product FAQ', 'reviews' => 'Reviews (' . $approvedReviews->count() . ')'] as $key => $label)
+                            @if($key === 'faqs' && empty($product->faqs)) @continue @endif
                             <button type="button" class="gk-tab-button" :class="{ 'is-active': tab === '{{ $key }}' }" @click="tab = '{{ $key }}'">{{ $label }}</button>
                         @endforeach
                     </div>
@@ -730,6 +731,19 @@
                             <p>{{ __('general.no_reviews_yet') }}</p>
                         @endforelse
                     </div>
+
+                    @if(!empty($product->faqs))
+                    <div class="gk-tab-panel" :class="{ 'is-active': tab === 'faqs' }">
+                        <div style="display:flex; flex-direction:column; gap:1.2rem;">
+                            @foreach($product->faqs as $faq)
+                                <div>
+                                    <h4 style="font-weight:900; color:#111827; margin-bottom:0.3rem;">Q: {{ $faq['question'] ?? '' }}</h4>
+                                    <p style="margin:0;">A: {{ $faq['answer'] ?? '' }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
 
 
                 </div>

@@ -102,6 +102,18 @@ class ProductResource extends Resource
                     Forms\Components\RichEditor::make('translations.bn.shipping_returns')
                         ->label('Shipping & Returns (BN)')
                         ->columnSpanFull(),
+                    Forms\Components\Section::make('Product FAQs')->schema([
+                        Forms\Components\Repeater::make('faqs')
+                            ->label('Frequently Asked Questions')
+                            ->schema([
+                                Forms\Components\TextInput::make('question')->required()->label('Question (e.g. Is this battery maintenance free?)')->maxLength(255),
+                                Forms\Components\Textarea::make('answer')->required()->label('Answer')->rows(2),
+                            ])
+                            ->collapsible()
+                            ->defaultItems(0)
+                            ->addActionLabel('Add FAQ')
+                            ->columnSpanFull(),
+                    ]),
                     Forms\Components\FileUpload::make('image_paths')
                         ->label('Product Images')
                         ->helperText('Recommended: 1200 x 1200 px square image. JPG, PNG or WebP only, maximum 2 MB each. The first image is the primary image.')
