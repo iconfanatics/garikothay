@@ -350,9 +350,12 @@ class OrderResource extends Resource
                     ]),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
-                        Forms\Components\DatePicker::make('from')->label('From Date'),
-                        Forms\Components\DatePicker::make('until')->label('To Date'),
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\DatePicker::make('from')->label('From Date'),
+                            Forms\Components\DatePicker::make('until')->label('To Date'),
+                        ])
                     ])
+                    ->columnSpan(['md' => 2])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['from'], fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
@@ -360,9 +363,12 @@ class OrderResource extends Resource
                     }),
                 Tables\Filters\Filter::make('total')
                     ->form([
-                        Forms\Components\TextInput::make('min')->label('Min Amount')->numeric(),
-                        Forms\Components\TextInput::make('max')->label('Max Amount')->numeric(),
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('min')->label('Min Amount')->numeric(),
+                            Forms\Components\TextInput::make('max')->label('Max Amount')->numeric(),
+                        ])
                     ])
+                    ->columnSpan(['md' => 2])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['min'], fn ($q, $min) => $q->where('total', '>=', $min))
