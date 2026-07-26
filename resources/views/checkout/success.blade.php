@@ -124,10 +124,12 @@
             
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-                <a href="{{ route('customer.order.show', $order->order_number) }}" class="bg-gradient-to-r from-rose-600 to-rose-500 text-white px-8 py-4 rounded-xl font-bold hover:from-rose-700 hover:to-rose-600 shadow-lg shadow-rose-500/30 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2">
+                @auth
+                <a href="{{ route('customer.order.show', $order->order_number) }}" class="bg-rose-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-rose-700 shadow-lg shadow-rose-500/30 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                     {{ __('Track Order') }}
                 </a>
+                @endauth
                 <a href="{{ route('shop.index') }}" class="bg-white border-2 border-rose-100 text-rose-700 px-8 py-4 rounded-xl font-bold hover:bg-rose-50 hover:border-rose-200 transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                     {{ __('Continue Shopping') }}
