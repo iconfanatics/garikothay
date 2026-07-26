@@ -2,52 +2,12 @@
 @section('title', __('Order Confirmed') . ' | ' . \App\Models\Setting::get('site_name', 'Garikothay'))
 
 @section('content')
-<div class="min-h-[80vh] bg-gradient-to-br from-rose-50 via-white to-rose-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden" x-data="{ showPopup: false }" x-init="setTimeout(() => showPopup = true, 500)">
+<div class="min-h-[80vh] bg-gradient-to-br from-rose-50 via-white to-rose-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
     
     <!-- Background Decorative Elements -->
     <div class="absolute top-0 left-0 w-64 h-64 bg-rose-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
     <div class="absolute top-0 right-0 w-64 h-64 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
     <div class="absolute -bottom-8 left-20 w-64 h-64 bg-rose-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-
-    <!-- Celebration Popup -->
-    <template x-if="showPopup">
-        <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" 
-             x-transition:enter="transition ease-out duration-500"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100">
-            
-            <div class="bg-white rounded-3xl shadow-2xl p-10 max-w-md w-full relative overflow-hidden border border-white/40"
-                 @click.away="showPopup = false"
-                 x-transition:enter="transition cubic-bezier(0.34, 1.56, 0.64, 1) duration-700 delay-100"
-                 x-transition:enter-start="opacity-0 scale-75 translate-y-12"
-                 x-transition:enter-end="opacity-100 scale-100 translate-y-0">
-                
-                <div class="absolute inset-0 bg-gradient-to-b from-rose-50/50 to-transparent"></div>
-                
-                <div class="relative z-10 text-center">
-                    <div class="w-28 h-28 mx-auto bg-gradient-to-tr from-rose-600 to-rose-400 text-white rounded-full flex items-center justify-center mb-6 shadow-xl shadow-rose-500/30 ring-8 ring-rose-50 relative">
-                        <div class="absolute inset-0 rounded-full bg-rose-400 animate-ping opacity-20"></div>
-                        <svg class="w-14 h-14 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-
-                    <h2 class="text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">{{ __('Success!') }}</h2>
-                    <p class="text-gray-500 mb-8 text-lg">{{ __('Your order has been placed successfully. Thank you for choosing us!') }}</p>
-
-                    <button @click="showPopup = false" class="w-full bg-gradient-to-r from-rose-600 to-rose-500 text-white py-4 rounded-2xl font-bold text-lg hover:from-rose-700 hover:to-rose-600 shadow-lg shadow-rose-500/30 transition-all transform hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-2">
-                        <span>{{ __('Awesome!') }}</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </button>
-                </div>
-                
-                <!-- Confetti dots -->
-                <div class="absolute top-10 left-10 w-3 h-3 bg-yellow-400 rounded-full animate-bounce delay-100"></div>
-                <div class="absolute top-20 right-12 w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-300"></div>
-                <div class="absolute bottom-20 left-16 w-2.5 h-2.5 bg-blue-400 rounded-full animate-bounce delay-500"></div>
-            </div>
-        </div>
-    </template>
 
     <div class="max-w-3xl w-full relative z-10">
         <!-- Main Success Card -->
