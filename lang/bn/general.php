@@ -226,4 +226,6 @@ return [
     'resend_verification_email' => 'যাচাইকরণ ইমেইল পুনরায় পাঠান',
     'shop_now' => 'এখনই কিনুন',
     'please_correct_errors' => 'দয়া করে নিচের ভুলগুলো সংশোধন করুন:',
+    'delivery_method' => 'ডেলিভারি পদ্ধতি',
+    'tracking_number' => 'ট্র্যাকিং নম্বর',
 ];

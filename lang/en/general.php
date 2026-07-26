@@ -226,4 +226,6 @@ return [
     'resend_verification_email' => 'Resend Verification Email',
     'shop_now' => 'Shop Now',
     'please_correct_errors' => 'Please correct the errors below:',
+    'delivery_method' => 'Delivery Method',
+    'tracking_number' => 'Tracking Number',
 ];
