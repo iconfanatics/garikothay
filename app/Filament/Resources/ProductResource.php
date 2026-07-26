@@ -77,6 +77,7 @@ class ProductResource extends Resource
                         ->label('Slug')
                         ->required()
                         ->maxLength(255)
+                        ->dehydrateStateUsing(fn (?string $state) => \Illuminate\Support\Str::slug($state ?? ''))
                         ->unique(Product::class, 'slug', ignoreRecord: true),
                     Forms\Components\Textarea::make('translations.en.short_description')
                         ->label('Short Description (EN)')
