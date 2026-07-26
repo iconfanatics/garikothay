@@ -440,7 +440,7 @@ class ProductResource extends Resource
                         ->schema([
                             Forms\Components\Grid::make(2)->schema([
                                 Forms\Components\Grid::make(1)->schema([
-                                    Forms\Components\TextInput::make('name')->required()->label('Variant Name (e.g. Red / Large)'),
+                                    Forms\Components\TextInput::make('name')->required()->label('Variant (Color/Size/Capacity)'),
                                     Forms\Components\TextInput::make('sku')
                                         ->unique(ignoreRecord: true)
                                         ->label('SKU (Optional)')
@@ -463,12 +463,14 @@ class ProductResource extends Resource
                                     ->label('Price')
                                     ->prefix('৳')
                                     ->nullable()
+                                    ->live(onBlur: true)
                                     ->helperText('Overrides base price if set.'),
                                     
                                 Forms\Components\TextInput::make('compare_price')
                                     ->numeric()
                                     ->label('Compare Price')
                                     ->prefix('৳')
+                                    ->live(onBlur: true)
                                     ->nullable(),
                                     
                                 Forms\Components\TextInput::make('price_modifier')
@@ -476,6 +478,7 @@ class ProductResource extends Resource
                                     ->default(0)
                                     ->label('Price Modifier (+/-)')
                                     ->prefix('৳')
+                                    ->live(onBlur: true)
                                     ->helperText('Used if Price is empty.'),
                                     
                                 Forms\Components\Placeholder::make('discount')
@@ -493,9 +496,17 @@ class ProductResource extends Resource
                                     }),
                             ]),
 
-                            Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Grid::make(3)->schema([
                                 Forms\Components\TextInput::make('stock_quantity')->numeric()->default(0)->required()->label('Stock Quantity'),
-                                Forms\Components\Toggle::make('is_active')->default(true)->label('Active'),
+                                Forms\Components\Select::make('is_active')
+                                    ->options([
+                                        1 => 'In Stock',
+                                        0 => 'Out of Stock'
+                                    ])
+                                    ->default(1)
+                                    ->required()
+                                    ->label('Stock Status'),
+                                Forms\Components\TextInput::make('low_stock_threshold')->numeric()->default(5)->label('Low Stock Level'),
                             ]),
                         ])
                         ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
