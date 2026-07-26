@@ -594,7 +594,7 @@
                 <div class="gk-checkout-totals">
                     <div class="gk-checkout-total-row"><span>{{ __('general.subtotal') }}</span><span>৳{{ number_format($cart->subtotal, 0) }}</span></div>
                     @if($cart->coupon)
-                    <div class="gk-checkout-total-row text-green-600"><span>{{ __('general.coupon') }} ({{ $cart->coupon->code }})</span><span>-৳{{ number_format($cart->coupon->calculateDiscount($cart->subtotal), 0) }}</span></div>
+                    <div class="gk-checkout-total-row text-green-600"><span>{{ __('general.coupon') }} ({{ $cart->coupon->code }})</span><span>-৳{{ number_format($cart->coupon->calculateDiscount($cart), 0) }}</span></div>
                     @endif
                     <div class="gk-checkout-total-row">
                         <span>{{ __('general.shipping') }}</span>

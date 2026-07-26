@@ -542,7 +542,7 @@
                         @if($cart->coupon)
                             <div class="gk-cart-total-row is-discount">
                                 <span>{{ __('general.discount') }} ({{ $cart->coupon->code }})</span>
-                                <strong>-৳{{ number_format($cart->coupon->calculateDiscount($cart->subtotal), 0) }}</strong>
+                                <strong>-৳{{ number_format($cart->coupon->calculateDiscount($cart), 0) }}</strong>
                             </div>
                         @endif
 
