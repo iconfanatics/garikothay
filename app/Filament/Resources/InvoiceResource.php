@@ -76,6 +76,16 @@ class InvoiceResource extends Resource
                     ->options(\App\Enums\InvoiceStatus::class),
             ])
             ->actions([
+                Tables\Actions\Action::make('download')
+                    ->label('Download PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function (Invoice $record) {
+                        return response()->streamDownload(function () use ($record) {
+                            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $record->order]);
+                            echo $pdf->output();
+                        }, $record->invoice_number . '.pdf');
+                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
