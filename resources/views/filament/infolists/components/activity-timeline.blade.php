@@ -21,21 +21,9 @@
             ->get();
     @endphp
 
-    <div class="relative pl-4 space-y-6 before:absolute before:inset-0 before:ml-[0.9rem] before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+    <div class="space-y-4">
         @forelse($activities as $activity)
-            <div class="relative pl-8">
-                <!-- Icon -->
-                <div class="absolute left-0 top-2 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white bg-primary-500 text-slate-100 shadow shrink-0">
-                    @if($activity->event === 'login')
-                        <x-heroicon-o-arrow-right-on-rectangle class="w-4 h-4"/>
-                    @elseif($activity->event === 'created')
-                        <x-heroicon-o-plus class="w-4 h-4"/>
-                    @elseif($activity->event === 'updated')
-                        <x-heroicon-o-pencil class="w-4 h-4"/>
-                    @else
-                        <x-heroicon-o-bolt class="w-4 h-4"/>
-                    @endif
-                </div>
+            <div class="relative">
                 <!-- Card -->
                 <div class="w-full p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
