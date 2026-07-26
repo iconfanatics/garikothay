@@ -33,7 +33,7 @@ class PaymentsRelationManager extends RelationManager
                     ->label('Order Number')
                     ->searchable()
                     ->sortable()
-                    ->url(fn (\App\Models\Payment $record) => route('filament.admin.resources.orders.view', $record->order_id)),
+                    ->url(fn (\App\Models\Payment $record) => route('filament.admin.resources.orders.edit', $record->order_id)),
                 Tables\Columns\TextColumn::make('transaction_id')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('payment_method')
