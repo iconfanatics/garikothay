@@ -8,8 +8,8 @@ Thank you for your order! We've received it and will start processing it right a
 **Order Details:**
 - **Order ID:** {{ $order->order_number }}
 - **Date:** {{ $order->created_at->format('d M Y, h:i A') }}
-- **Status:** {{ ucfirst($order->status) }}
-- **Payment Method:** {{ ucfirst($order->payment_method) }}
+- **Status:** {{ $order->status->label() }}
+- **Payment Method:** {{ $order->payment_method->label() }}
 
 <x-mail::table>
 | Item       | Qty         | Price  |

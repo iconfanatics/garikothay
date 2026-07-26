@@ -7,7 +7,7 @@ A new order has been placed on {{ config('app.name') }}.
 - **Order ID:** {{ $order->order_number }}
 - **Customer:** {{ $order->user->name ?? 'Guest' }} ({{ $order->user->phone ?? 'N/A' }})
 - **Total Amount:** ৳{{ number_format($order->total, 2) }}
-- **Payment Method:** {{ ucfirst($order->payment_method) }}
+- **Payment Method:** {{ $order->payment_method->label() }}
 
 Please check the admin panel to process this order.
 
