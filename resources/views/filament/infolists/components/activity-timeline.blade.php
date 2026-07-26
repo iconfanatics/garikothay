@@ -38,9 +38,9 @@
                 </div>
                 <!-- Card -->
                 <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-sm">
-                    <div class="flex items-center justify-between space-x-2 mb-1">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
                         <div class="font-bold text-slate-900 dark:text-white">{{ $activity->description }}</div>
-                        <time class="font-caveat font-medium text-slate-500 dark:text-gray-400 text-xs">{{ $activity->created_at->diffForHumans() }}</time>
+                        <time class="font-medium text-slate-500 dark:text-gray-400 text-xs whitespace-nowrap">{{ $activity->created_at->diffForHumans() }}</time>
                     </div>
                     <div class="text-sm text-slate-500 dark:text-gray-400">
                         @if($activity->subject_type === \App\Models\Order::class)
