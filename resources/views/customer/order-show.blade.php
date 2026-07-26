@@ -88,10 +88,10 @@
         @if($order->delivery_method || $order->tracking_number)
         <div class="mt-3 grid gap-1 rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
             @if($order->delivery_method)
-                <div><span class="font-medium text-gray-800">{{ __('general.delivery_method', 'Delivery Method') }}:</span> {{ $order->delivery_method }}</div>
+                <div><span class="font-medium text-gray-800">{{ __('general.delivery_method') }}:</span> {{ $order->delivery_method }}</div>
             @endif
             @if($order->tracking_number)
-                <div><span class="font-medium text-gray-800">{{ __('general.tracking_number', 'Tracking Number') }}:</span> {{ $order->tracking_number }}</div>
+                <div><span class="font-medium text-gray-800">{{ __('general.tracking_number') }}:</span> {{ $order->tracking_number }}</div>
             @endif
         </div>
         @endif
