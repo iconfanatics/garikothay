@@ -21,11 +21,11 @@
             ->get();
     @endphp
 
-    <div class="relative pl-4 space-y-6 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+    <div class="relative pl-4 space-y-6 before:absolute before:inset-0 before:ml-[0.9rem] before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
         @forelse($activities as $activity)
-            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+            <div class="relative pl-8">
                 <!-- Icon -->
-                <div class="flex items-center justify-center w-8 h-8 rounded-full border border-white bg-primary-500 text-slate-100 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
+                <div class="absolute left-0 top-2 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white bg-primary-500 text-slate-100 shadow shrink-0">
                     @if($activity->event === 'login')
                         <x-heroicon-o-arrow-right-on-rectangle class="w-4 h-4"/>
                     @elseif($activity->event === 'created')
@@ -37,7 +37,7 @@
                     @endif
                 </div>
                 <!-- Card -->
-                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-sm">
+                <div class="w-full p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-sm">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
                         <div class="font-bold text-slate-900 dark:text-white">{{ $activity->description }}</div>
                         <time class="font-medium text-slate-500 dark:text-gray-400 text-xs whitespace-nowrap">{{ $activity->created_at->diffForHumans() }}</time>
