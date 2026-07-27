@@ -590,6 +590,7 @@ class ProductResource extends Resource
                     ->square(),
                 Tables\Columns\TextColumn::make('translations.name')
                     ->label('Name')
+                    ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sku')
