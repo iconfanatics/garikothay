@@ -12,6 +12,8 @@ class PaymentRevenueChart extends ChartWidget
     protected int | string | array $columnSpan = ['default' => 'full', 'md' => 1, 'xl' => 6];
 
     protected static ?string $heading = 'Revenue Overview (Last 30 Days)';
+
+    protected static ?string $maxHeight = '250px';
     
     // Disable lazy loading since this widget is required immediately
     protected static bool $isLazy = false;

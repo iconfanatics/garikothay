@@ -11,6 +11,8 @@ class PaymentMethodChart extends ChartWidget
     protected int | string | array $columnSpan = ['default' => 'full', 'md' => 1, 'xl' => 6];
 
     protected static ?string $heading = 'Transactions by Method';
+
+    protected static ?string $maxHeight = '250px';
     
     protected static bool $isLazy = false;
 
@@ -43,5 +45,19 @@ class PaymentMethodChart extends ChartWidget
     protected function getType(): string
     {
         return 'pie';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'x' => ['display' => false],
+                'y' => ['display' => false],
+            ],
+            'plugins' => [
+                'legend' => ['display' => true, 'position' => 'bottom'],
+            ],
+            'maintainAspectRatio' => false,
+        ];
     }
 }
