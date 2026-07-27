@@ -8,6 +8,8 @@ use App\Models\Blog;
 
 class BlogStatsOverview extends BaseWidget
 {
+    protected int | string | array $columnSpan = 'full';
+
     protected function getStats(): array
     {
         return [

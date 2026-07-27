@@ -8,6 +8,8 @@ use App\Models\Payment;
 
 class PaymentStatsOverview extends BaseWidget
 {
+    protected int | string | array $columnSpan = 'full';
+
     protected function getStats(): array
     {
         return [

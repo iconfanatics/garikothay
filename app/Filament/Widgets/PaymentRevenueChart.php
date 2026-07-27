@@ -9,6 +9,8 @@ use Flowframe\Trend\TrendValue;
 
 class PaymentRevenueChart extends ChartWidget
 {
+    protected int | string | array $columnSpan = 'full';
+
     protected static ?string $heading = 'Revenue Overview (Last 30 Days)';
     
     // Disable lazy loading since this widget is required immediately

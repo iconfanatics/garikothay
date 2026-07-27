@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class ReviewRatingChart extends ChartWidget
 {
+    protected int | string | array $columnSpan = 'full';
+
     protected static ?string $heading = 'Rating Breakdown';
     protected static ?string $maxHeight = '300px';
     protected static bool $isLazy = false;

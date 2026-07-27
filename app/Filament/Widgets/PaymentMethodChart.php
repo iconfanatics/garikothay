@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentMethodChart extends ChartWidget
 {
+    protected int | string | array $columnSpan = 'full';
+
     protected static ?string $heading = 'Transactions by Method';
     
     protected static bool $isLazy = false;
