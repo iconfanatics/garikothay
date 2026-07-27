@@ -692,12 +692,12 @@ class ProductResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\BulkAction::make('activate')
-                        ->label('Activate')
+                    Tables\Actions\BulkAction::make('publish')
+                        ->label('Publish')
                         ->icon('heroicon-o-check-circle')
                         ->action(fn ($records) => $records->each->update(['is_active' => true, 'publish_status' => 'Published'])),
-                    Tables\Actions\BulkAction::make('deactivate')
-                        ->label('Deactivate')
+                    Tables\Actions\BulkAction::make('unpublish')
+                        ->label('Unpublish')
                         ->icon('heroicon-o-x-circle')
                         ->action(fn ($records) => $records->each->update(['is_active' => false, 'publish_status' => 'Unpublished'])),
                     Tables\Actions\BulkAction::make('archive')
