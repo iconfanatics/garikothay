@@ -109,6 +109,131 @@
         font-weight: 800;
     }
 
+    .gk-filter-panel {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .gk-filter-panel + .gk-side-card {
+        margin-top: 1.5rem;
+    }
+
+    .gk-filter-heading {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        gap: 0.55rem;
+        background: #111827;
+        color: #ffffff;
+        padding: 0 0.9rem;
+        font-size: 0.8rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        border-radius: 7px 7px 0 0;
+    }
+
+    .gk-filter-content {
+        padding: 0.65rem;
+    }
+
+    .gk-category-list {
+        display: grid;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .gk-category-row {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .gk-category-row:last-child {
+        border-bottom: 0;
+    }
+
+    .gk-category-link {
+        display: flex;
+        min-height: 38px;
+        align-items: center;
+        gap: 0.55rem;
+        border-radius: 5px;
+        color: #374151;
+        padding: 0.45rem 0.55rem;
+        font-size: 0.82rem;
+        text-decoration: none;
+    }
+
+    .gk-category-row:hover .gk-category-link,
+    .gk-category-link.is-active {
+        background: #fff1f2;
+        color: #e11d48;
+        font-weight: 800;
+    }
+
+    .gk-category-arrow {
+        margin-left: auto;
+        color: #9ca3af;
+    }
+
+    .gk-subcategory-list {
+        display: none;
+        gap: 0.2rem;
+        border-left: 2px solid #ffe4e6;
+        margin: 0 0 0.55rem 1rem;
+        padding-left: 0.6rem;
+    }
+
+    .gk-category-row.is-open .gk-subcategory-list,
+    .gk-category-row:hover .gk-subcategory-list {
+        display: grid;
+    }
+
+    @media (min-width: 1024px) {
+        .gk-category-row {
+            position: relative;
+        }
+        .gk-subcategory-list {
+            position: absolute;
+            top: -1px;
+            left: 100%;
+            min-width: 220px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.08);
+            padding: 0.75rem;
+            z-index: 100;
+            margin: 0;
+            border-left: none;
+            margin-left: 2px;
+        }
+        .gk-subcategory-list::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -10px;
+            bottom: 0;
+            width: 10px;
+        }
+    }
+
+    .gk-subcategory-link {
+        display: block;
+        border-radius: 4px;
+        color: #6b7280;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+        text-decoration: none;
+    }
+
+    .gk-subcategory-link:hover,
+    .gk-subcategory-link.is-active {
+        background: #fff1f2;
+        color: #e11d48;
+        font-weight: 800;
+    }
+
     .gk-product-main-grid {
         display: grid;
         gap: 2rem;
@@ -515,18 +640,44 @@
 
     <div class="gk-product-container gk-product-shell">
         <aside class="gk-product-sidebar">
-            <div class="gk-side-card">
-                <h3 class="gk-side-title">☷ Categories</h3>
-                <ul class="gk-side-list">
-                    @foreach($categories ?? collect() as $category)
-                        <li>
-                            <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="{{ $category->id === $product->category_id ? 'is-active' : '' }}">
-                                <span>{{ $category->name }}</span>
-                                <span style="color:#9ca3af; font-size:0.75rem;">{{ $category->products_count ?? '' }}</span>
+            <div class="gk-filter-panel">
+                <h3 class="gk-filter-heading">☷ Categories</h3>
+                <div class="gk-filter-content">
+                    <ul class="gk-category-list">
+                        <li class="gk-category-row">
+                            <a href="{{ route('shop.index') }}" class="gk-category-link">
+                                <span style="color:#e11d48;">▦</span>
+                                <span>{{ __('general.all_products') }}</span>
                             </a>
                         </li>
-                    @endforeach
-                </ul>
+                        @foreach($categories ?? collect() as $category)
+                            @php
+                                $parentIsActive = $product->category?->id === $category->id
+                                    || $product->category?->parent_id === $category->id;
+                            @endphp
+                            <li class="gk-category-row">
+                                <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                                   class="gk-category-link {{ $parentIsActive ? 'is-active' : '' }}">
+                                    <span style="color:#e11d48;">{{ $category->icon ?? '⚙' }}</span>
+                                    <span>{{ $category->name }}</span>
+                                    @if($category->children->isNotEmpty())
+                                        <span class="gk-category-arrow">›</span>
+                                    @endif
+                                </a>
+                                @if($category->children->isNotEmpty())
+                                    <div class="gk-subcategory-list">
+                                        @foreach($category->children as $child)
+                                            <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
+                                               class="gk-subcategory-link {{ $product->category?->id === $child->id ? 'is-active' : '' }}">
+                                                {{ $child->name }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
 
             <div class="gk-side-card">
