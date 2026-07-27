@@ -686,6 +686,37 @@
                             @if($currentCategory)
                                 <input type="hidden" name="category" value="{{ $currentCategory->slug }}">
                             @endif
+                            
+                            @if($allBrands->isNotEmpty())
+                            <label class="gk-price-label" style="margin-top: 0.2rem;">Brand</label>
+                            <div style="margin-bottom: 1rem; max-height: 180px; overflow-y: auto;">
+                                @foreach($allBrands as $brand)
+                                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; margin-bottom:0.4rem; color:var(--shop-ink); cursor:pointer;">
+                                        <input type="checkbox" name="brands[]" value="{{ $brand }}" {{ in_array($brand, $filters['brands'] ?? []) ? 'checked' : '' }}>
+                                        <span>{{ $brand }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            @endif
+
+                            <label class="gk-price-label">Availability</label>
+                            <div style="margin-bottom: 1rem;">
+                                @foreach(['in_stock' => 'In Stock', 'pre_order' => 'Pre Order', 'upcoming' => 'Upcoming'] as $val => $label)
+                                    <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; margin-bottom:0.4rem; color:var(--shop-ink); cursor:pointer;">
+                                        <input type="checkbox" name="availability[]" value="{{ $val }}" {{ in_array($val, $filters['availability'] ?? []) ? 'checked' : '' }}>
+                                        <span>{{ $label }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            
+                            <label class="gk-price-label">Offers</label>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; margin-bottom:0.4rem; color:var(--shop-ink); cursor:pointer;">
+                                    <input type="checkbox" name="on_sale" value="1" {{ !empty($filters['on_sale']) ? 'checked' : '' }}>
+                                    <span>Discount / On Sale</span>
+                                </label>
+                            </div>
+
                             <label class="gk-price-label">{{ __('general.price_range') }}</label>
                             <div class="gk-price-grid">
                                 <input type="number" name="min_price" value="{{ $filters['min_price'] ?? '' }}"
@@ -722,6 +753,9 @@
                 <select name="sort" form="filter-form" onchange="document.getElementById('filter-form').submit()" class="gk-shop-sort">
                     <option value="">{{ __('general.default_sort') }}</option>
                     <option value="newest" {{ ($filters['sort'] ?? '') === 'newest' ? 'selected' : '' }}>{{ __('general.newest') }}</option>
+                    <option value="best_selling" {{ ($filters['sort'] ?? '') === 'best_selling' ? 'selected' : '' }}>Best Selling</option>
+                    <option value="a_z" {{ ($filters['sort'] ?? '') === 'a_z' ? 'selected' : '' }}>A–Z</option>
+                    <option value="z_a" {{ ($filters['sort'] ?? '') === 'z_a' ? 'selected' : '' }}>Z–A</option>
                     <option value="price_asc" {{ ($filters['sort'] ?? '') === 'price_asc' ? 'selected' : '' }}>{{ __('general.price_low_to_high') }}</option>
                     <option value="price_desc" {{ ($filters['sort'] ?? '') === 'price_desc' ? 'selected' : '' }}>{{ __('general.price_high_to_low') }}</option>
                 </select>

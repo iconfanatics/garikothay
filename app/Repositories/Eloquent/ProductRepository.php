@@ -101,21 +101,37 @@ class ProductRepository implements ProductRepositoryInterface
         if (!empty($filters['max_price'])) {
             $query->where('price', '<=', $filters['max_price']);
         }
-        if (!empty($filters['plant_type'])) {
-            $query->where('plant_type', $filters['plant_type']);
+        if (!empty($filters['brands']) && is_array($filters['brands'])) {
+            $query->whereIn('brand', $filters['brands']);
         }
-        if (!empty($filters['sunlight'])) {
-            $query->where('sunlight', $filters['sunlight']);
+        if (!empty($filters['availability']) && is_array($filters['availability'])) {
+            $query->where(function ($q) use ($filters) {
+                if (in_array('in_stock', $filters['availability'])) {
+                    $q->orWhere('stock_quantity', '>', 0);
+                }
+                if (in_array('pre_order', $filters['availability'])) {
+                    $q->orWhere('is_preorder', true);
+                }
+                if (in_array('upcoming', $filters['availability'])) {
+                    $q->orWhere(function ($subQ) {
+                        $subQ->where('stock_quantity', 0)->where('is_preorder', false);
+                    });
+                }
+            });
         }
-        if (!empty($filters['difficulty'])) {
-            $query->where('difficulty', $filters['difficulty']);
+        if (!empty($filters['on_sale'])) {
+            $query->whereColumn('compare_price', '>', 'price');
         }
+        
         if (!empty($filters['sort'])) {
             match($filters['sort']) {
                 'price_asc' => $query->orderBy('price'),
                 'price_desc' => $query->orderByDesc('price'),
                 'newest' => $query->latest(),
                 'oldest' => $query->oldest(),
+                'a_z' => $query->orderBy('slug', 'asc'),
+                'z_a' => $query->orderBy('slug', 'desc'),
+                'best_selling' => $query->withCount('orderItems')->orderByDesc('order_items_count'),
                 default => $query->latest(),
             };
         } else {

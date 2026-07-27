@@ -20,7 +20,7 @@ class ShopController extends Controller
 
     public function index(Request $request): View
     {
-        $filters = $request->only(['min_price', 'max_price', 'plant_type', 'sunlight', 'difficulty', 'sort']);
+        $filters = $request->only(['min_price', 'max_price', 'brands', 'availability', 'on_sale', 'sort']);
         $categorySlug = $request->get('category');
 
         $category = $categorySlug ? $this->categoryRepository->findBySlug($categorySlug) : null;
@@ -39,6 +39,8 @@ class ShopController extends Controller
             ? $category->children()->with('translations')->active()->orderBy('sort_order')->get()
             : collect();
 
+        $allBrands = \App\Models\Product::whereNotNull('brand')->where('brand', '!=', '')->active()->distinct()->pluck('brand');
+
         return view('shop.index', [
             'products'        => $products,
             'categories'      => $this->categoryRepository->getTree(),
@@ -46,6 +48,7 @@ class ShopController extends Controller
             'parentCategory'  => $parentCategory,
             'subcategories'   => $subcategories,
             'filters'         => $filters,
+            'allBrands'       => $allBrands,
         ]);
     }
 
