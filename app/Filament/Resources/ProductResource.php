@@ -625,6 +625,24 @@ class ProductResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('supplier_id')
+                    ->label('Supplier')
+                    ->relationship('supplier', 'name'),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Status (Active/Inactive)')
+                    ->boolean()
+                    ->trueLabel('Active')
+                    ->falseLabel('Inactive'),
+                Tables\Filters\TernaryFilter::make('is_discounted')
+                    ->label('Discounted Product')
+                    ->placeholder('All')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn (\Illuminate\Database\Eloquent\Builder $query) => $query->whereNotNull('discount_amount')->where('discount_amount', '>', 0),
+                        false: fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where(fn ($q) => $q->whereNull('discount_amount')->orWhere('discount_amount', '<=', 0)),
+                        blank: fn (\Illuminate\Database\Eloquent\Builder $query) => $query,
+                    ),
                 Tables\Filters\SelectFilter::make('category_id')
                     ->label('Category')
                     ->relationship('category', 'id')
