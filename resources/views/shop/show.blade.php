@@ -647,9 +647,9 @@
                             <button type="button" @click="quantity++">+</button>
                         </div>
 
-                        @if($product->isInStock())
+                        @if($product->isInStock() || $product->is_preorder)
                             <button type="button" @click="addToCart(false)" :disabled="adding" class="gk-product-btn gk-product-btn-primary">
-                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ __('general.add_to_cart') }}'"></span>
+                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ $product->is_preorder ? 'Pre-order' : __('general.add_to_cart') }}'"></span>
                             </button>
                         @else
                             <span class="gk-product-btn gk-product-btn-primary" style="background:#9ca3af;">{{ __('general.out_of_stock') }}</span>
@@ -668,9 +668,9 @@
                         @endauth
                     </div>
 
-                    @if($product->isInStock())
-                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">Buy Now</button>
-                    @endif
+                        @if($product->isInStock() || $product->is_preorder)
+                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ $product->is_preorder ? 'Pre-order Now' : 'Buy Now' }}</button>
+                        @endif
 
                     <div class="gk-trust-grid">
                         <div><span>🛡</span>100% Genuine</div>
