@@ -162,6 +162,12 @@ class ProductResource extends Resource
                         ->visibility('public')
                         ->dehydrated(false)
                         ->columnSpanFull(),
+                    Forms\Components\TextInput::make('video_url')
+                        ->label('Product Video URL')
+                        ->placeholder('e.g. YouTube or Vimeo link')
+                        ->url()
+                        ->maxLength(2048)
+                        ->columnSpanFull(),
                     Forms\Components\Grid::make(4)->schema([
                         Forms\Components\Toggle::make('is_active')->label('Active')->default(true),
                         Forms\Components\Toggle::make('is_featured')->label('Featured'),

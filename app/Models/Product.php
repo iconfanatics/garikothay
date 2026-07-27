@@ -64,7 +64,7 @@ class Product extends Model
         'discount_amount', 'discount_start_date', 'discount_end_date',
         'scheduled_price', 'price_effective_date', 'documents', 'faqs',
         'created_by_admin_id', 'updated_by_admin_id',
-        'product_type', 'features', 'custom_fields', 'collections', 'highlights', 'certifications',
+        'product_type', 'features', 'custom_fields', 'collections', 'highlights', 'certifications', 'video_url',
     ];
 
     protected function casts(): array
