@@ -107,24 +107,6 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AdminWelcome::class,
                 StatsOverview::class,
-                RevenueChart::class,
-                LatestOrdersTable::class,
-                LowStockAlert::class,
-                \App\Filament\Widgets\TopSellingProducts::class,
-                \App\Filament\Widgets\OutOfStockProducts::class,
-                \App\Filament\Widgets\TopSuppliers::class,
-                \App\Filament\Widgets\CouponPerformance::class,
-                \App\Filament\Widgets\CustomerAnalytics::class,
-                \App\Filament\Widgets\RevenueAnalytics::class,
-                \App\Filament\Widgets\RecentActivities::class,
-                \App\Filament\Widgets\PaymentStatsOverview::class,
-                \App\Filament\Widgets\PaymentRevenueChart::class,
-                \App\Filament\Widgets\PaymentMethodChart::class,
-                \App\Filament\Widgets\ReviewStatsOverview::class,
-                \App\Filament\Widgets\ReviewRatingChart::class,
-                \App\Filament\Widgets\BannerStatsOverview::class,
-                \App\Filament\Widgets\BlogStatsOverview::class,
-                \App\Filament\Widgets\InventoryStatsOverview::class,
             ])
             ->globalSearch(\App\Filament\GlobalSearchProvider::class)
             ->middleware([
