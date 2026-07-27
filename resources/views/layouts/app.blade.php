@@ -70,6 +70,13 @@
             font-family: 'Inter', system-ui, sans-serif !important;
         }
     </style>
+
+    @php
+        $globalScript = \App\Models\Setting::get('google_analytics_code');
+    @endphp
+    @if($globalScript)
+        {!! $globalScript !!}
+    @endif
 </head>
 
 <body class="antialiased">

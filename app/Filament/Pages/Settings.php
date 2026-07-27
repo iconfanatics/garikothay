@@ -41,7 +41,9 @@ class Settings extends Page
             'phone' => $settings->get('phone')?->value ?? '',
             'whatsapp' => $settings->get('whatsapp')?->value ?? '',
             'email' => $settings->get('email')?->value ?? '',
-            'address' => $settings->get('address')?->value ?? '',
+            'home_meta_title' => $settings->get('home_meta_title')?->value ?? '',
+            'home_meta_description' => $settings->get('home_meta_description')?->value ?? '',
+            'google_analytics_code' => $settings->get('google_analytics_code')?->value ?? '',
             'guest_checkout_enabled' => (bool) ($settings->get('guest_checkout_enabled')?->getCastedValue() ?? true),
             'cod_enabled' => (bool) ($settings->get('cod_enabled')?->getCastedValue() ?? true),
             'order_notes_enabled' => (bool) ($settings->get('order_notes_enabled')?->getCastedValue() ?? true),
@@ -57,6 +59,18 @@ class Settings extends Page
                     Forms\Components\TextInput::make('site_tagline')->label('Site Tagline'),
                     Forms\Components\FileUpload::make('site_logo')->label('Site Logo')->image()->directory('settings'),
                     Forms\Components\FileUpload::make('site_favicon')->label('Favicon')->image()->directory('settings'),
+                ])->columns(2),
+                Forms\Components\Section::make('SEO & Analytics')->schema([
+                    Forms\Components\TextInput::make('home_meta_title')
+                        ->label('Home Page Meta Title')
+                        ->helperText('Title for the home page (SEO)'),
+                    Forms\Components\Textarea::make('home_meta_description')
+                        ->label('Home Page Meta Description')
+                        ->helperText('Description for the home page (SEO)'),
+                    Forms\Components\Textarea::make('google_analytics_code')
+                        ->label('Global Header Scripts (Google Analytics, Meta Pixel, etc.)')
+                        ->helperText('This code will be injected into the <head> of every page.')
+                        ->columnSpanFull(),
                 ])->columns(2),
                 Forms\Components\Section::make('Logistics')->schema([
                     Forms\Components\TextInput::make('dhaka_city_shipping_charge')
@@ -131,6 +145,9 @@ class Settings extends Page
             'site_tagline' => ['group' => 'general', 'type' => SettingType::Text],
             'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
             'site_favicon' => ['group' => 'general', 'type' => SettingType::Image],
+            'home_meta_title' => ['group' => 'seo', 'type' => SettingType::Text],
+            'home_meta_description' => ['group' => 'seo', 'type' => SettingType::Textarea],
+            'google_analytics_code' => ['group' => 'seo', 'type' => SettingType::Textarea],
             'free_shipping_threshold' => ['group' => 'logistics', 'type' => SettingType::Number],
             'dhaka_city_shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],
             'outside_dhaka_shipping_charge' => ['group' => 'logistics', 'type' => SettingType::Number],

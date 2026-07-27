@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Gari Kothay - Auto Marketplace')
-@section('meta_description', 'Gari Kothay - car parts, garages, drivers, GPS tracker, car wash, fuel stations and automotive services in Bangladesh.')
+@section('title', \App\Models\Setting::get('home_meta_title') ?: 'Gari Kothay - Auto Marketplace')
+@section('meta_description', \App\Models\Setting::get('home_meta_description') ?: 'Gari Kothay - car parts, garages, drivers, GPS tracker, car wash, fuel stations and automotive services in Bangladesh.')
 
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
