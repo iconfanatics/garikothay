@@ -64,6 +64,7 @@ class Product extends Model
         'discount_amount', 'discount_start_date', 'discount_end_date',
         'scheduled_price', 'price_effective_date', 'documents', 'faqs',
         'created_by_admin_id', 'updated_by_admin_id',
+        'product_type', 'features', 'custom_fields', 'collections', 'highlights', 'certifications',
     ];
 
     protected function casts(): array
@@ -98,6 +99,11 @@ class Product extends Model
             'scheduled_price' => 'decimal:2',
             'documents' => 'array',
             'faqs' => 'array',
+            'features' => 'array',
+            'custom_fields' => 'array',
+            'collections' => 'array',
+            'highlights' => 'array',
+            'certifications' => 'array',
         ];
     }
 

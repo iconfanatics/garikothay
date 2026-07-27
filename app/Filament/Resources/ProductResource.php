@@ -69,24 +69,30 @@ class ProductResource extends Resource
                             ->searchable()
                             ->required(),
                     ]),
-                    Forms\Components\Select::make("brand_id")
-                        ->relationship("brand", "name")
-                        ->searchable()
-                        ->preload()
-                        ->label("Brand")
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make("name")->required(),
-                            Forms\Components\Toggle::make("is_active")->default(true)
-                        ]),
-                    Forms\Components\Select::make("unit_id")
-                        ->relationship("unit", "name")
-                        ->searchable()
-                        ->preload()
-                        ->label("Unit")
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make("name")->required(),
-                            Forms\Components\TextInput::make("short_name")
-                        ]),
+                    Forms\Components\Grid::make(3)->schema([
+                        Forms\Components\Select::make("brand_id")
+                            ->relationship("brand", "name")
+                            ->searchable()
+                            ->preload()
+                            ->label("Brand")
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make("name")->required(),
+                                Forms\Components\Toggle::make("is_active")->default(true)
+                            ]),
+                        Forms\Components\Select::make("unit_id")
+                            ->relationship("unit", "name")
+                            ->searchable()
+                            ->preload()
+                            ->label("Unit")
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make("name")->required(),
+                                Forms\Components\TextInput::make("short_name")
+                            ]),
+                        Forms\Components\TextInput::make('product_type')
+                            ->label('Product Type')
+                            ->placeholder('e.g. Parts, Accessories, Tool')
+                            ->maxLength(255),
+                    ]),
                     Forms\Components\Select::make("tags")
                         ->relationship("tags", "name")
                         ->multiple()
@@ -212,6 +218,49 @@ class ProductResource extends Resource
                                 ->label('Last Saved Time')
                                 ->content(fn ($record) => $record?->updated_at?->format('d M Y, h:i A') ?? '-'),
                         ]),
+                    ]),
+                ]),
+
+                Forms\Components\Tabs\Tab::make('Features & Attributes')->schema([
+                    Forms\Components\Repeater::make('features')
+                        ->label('Product Features')
+                        ->schema([
+                            Forms\Components\TextInput::make('feature')->required()->label('Feature (e.g. 100% Authentic)'),
+                        ])
+                        ->collapsible()
+                        ->addActionLabel('Add Feature')
+                        ->columnSpanFull(),
+
+                    Forms\Components\KeyValue::make('custom_fields')
+                        ->label('Custom Fields (Specifications)')
+                        ->keyLabel('Property (e.g. Model, Warranty)')
+                        ->valueLabel('Value (e.g. Corolla 2020, 1 Year)')
+                        ->columnSpanFull(),
+
+                    Forms\Components\TagsInput::make('collections')
+                        ->label('Collections')
+                        ->placeholder('e.g. Winter Sale, Trending')
+                        ->separator(',')
+                        ->columnSpanFull(),
+
+                    Forms\Components\Grid::make(2)->schema([
+                        Forms\Components\Repeater::make('highlights')
+                            ->label('Product Icons / Highlights')
+                            ->schema([
+                                Forms\Components\FileUpload::make('icon')->label('Icon Image')->image()->maxSize(512)->directory('products/icons'),
+                                Forms\Components\TextInput::make('text')->label('Highlight Text'),
+                            ])
+                            ->collapsible()
+                            ->addActionLabel('Add Highlight'),
+
+                        Forms\Components\Repeater::make('certifications')
+                            ->label('Certifications')
+                            ->schema([
+                                Forms\Components\FileUpload::make('image')->label('Certification Logo')->image()->maxSize(512)->directory('products/certifications'),
+                                Forms\Components\TextInput::make('name')->label('Certification Name'),
+                            ])
+                            ->collapsible()
+                            ->addActionLabel('Add Certification'),
                     ]),
                 ]),
 
