@@ -9,7 +9,7 @@ use Flowframe\Trend\TrendValue;
 
 class PaymentRevenueChart extends ChartWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    protected int | string | array $columnSpan = ['default' => 'full', 'md' => 1, 'xl' => 6];
 
     protected static ?string $heading = 'Revenue Overview (Last 30 Days)';
     

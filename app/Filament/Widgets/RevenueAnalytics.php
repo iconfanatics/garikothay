@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 class RevenueAnalytics extends BaseWidget
 {
     protected static ?int $sort = 3;
-    protected int|string|array $columnSpan = 'full';
+    protected int | string | array $columnSpan = ['default' => 'full', 'md' => 1, 'xl' => 6];
 
     protected function getStats(): array
     {
