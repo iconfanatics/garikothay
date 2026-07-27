@@ -323,14 +323,31 @@
     freeShippingThreshold: @js((float) $freeShippingThreshold),
     dhakaCityShippingCharge: @js((float) $dhakaCityShippingCharge),
     outsideDhakaShippingCharge: @js((float) $outsideDhakaShippingCharge),
+    locations: {
+        'Dhaka': ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+        'Chattogram': ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+        'Rajshahi': ['Bogra', 'Chapainawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
+        'Khulna': ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+        'Barishal': ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+        'Sylhet': ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+        'Rangpur': ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+        'Mymensingh': ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur']
+    },
     formData: {
         full_name: @js(old('full_name', auth()->user()?->name ?? '')),
         email: @js(old('email', auth()->user()?->email ?? '')),
         phone: @js(old('phone', auth()->user()?->phone ?? '')),
         address_line_1: @js(old('address_line_1')),
         address_line_2: @js(old('address_line_2')),
+        division: @js(old('division')),
         city: @js(old('city')),
         postal_code: @js(old('postal_code'))
+    },
+    get availableDistricts() {
+        return this.formData.division ? this.locations[this.formData.division] || [] : [];
+    },
+    onDivisionChange() {
+        this.formData.city = '';
     },
     couponCode: '',
     couponMsg: '',
@@ -370,6 +387,7 @@
             this.formData.phone = addr.phone;
             this.formData.address_line_1 = addr.address_line_1;
             this.formData.address_line_2 = addr.address_line_2 || '';
+            this.formData.division = addr.division;
             this.formData.city = addr.city;
             this.formData.postal_code = addr.postal_code || '';
         }
@@ -491,9 +509,24 @@
                             >
                     </div>
                     <div class="gk-checkout-field">
-                        <label>{{ __('general.city') }} *</label>
-                        <input type="text" name="city" x-model.trim="formData.city" required placeholder="Dhaka"
-                            >
+                        <label>Division *</label>
+                        <select name="division" x-model="formData.division" @change="onDivisionChange()" required class="@error('division') border-red-400 @enderror">
+                            <option value="">Select Division</option>
+                            <template x-for="(_, div) in locations" :key="div">
+                                <option :value="div" x-text="div"></option>
+                            </template>
+                        </select>
+                        @error('division') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
+                    </div>
+                    <div class="gk-checkout-field">
+                        <label>{{ __('general.city') }} (District) *</label>
+                        <select name="city" x-model="formData.city" required class="@error('city') border-red-400 @enderror" :disabled="!formData.division">
+                            <option value="">Select District</option>
+                            <template x-for="district in availableDistricts" :key="district">
+                                <option :value="district" x-text="district"></option>
+                            </template>
+                        </select>
+                        @error('city') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                         <p class="mt-1 text-xs text-gray-500" x-show="formData.city">
                             <span x-text="isDhakaCity ? 'Inside Dhaka city rate selected' : 'Outside Dhaka rate selected'"></span>
                         </p>
