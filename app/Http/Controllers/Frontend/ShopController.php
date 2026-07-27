@@ -51,7 +51,7 @@ class ShopController extends Controller
 
     public function show(string $slug): View
     {
-        $product = $this->productRepository->findBySlug($slug);
+        $product = $this->productRepository->findBySlug(trim($slug));
 
         abort_if(!$product || (!$product->is_active && !auth('admin')->check()), 404);
 

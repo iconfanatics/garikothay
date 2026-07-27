@@ -69,10 +69,33 @@ class ProductResource extends Resource
                             ->searchable()
                             ->required(),
                     ]),
-                    Forms\Components\TextInput::make('brand')
-                        ->label('Brand')
-                        ->nullable()
-                        ->maxLength(255),
+                    Forms\Components\Select::make("brand_id")
+                        ->relationship("brand", "name")
+                        ->searchable()
+                        ->preload()
+                        ->label("Brand")
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make("name")->required(),
+                            Forms\Components\Toggle::make("is_active")->default(true)
+                        ]),
+                    Forms\Components\Select::make("unit_id")
+                        ->relationship("unit", "name")
+                        ->searchable()
+                        ->preload()
+                        ->label("Unit")
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make("name")->required(),
+                            Forms\Components\TextInput::make("short_name")
+                        ]),
+                    Forms\Components\Select::make("tags")
+                        ->relationship("tags", "name")
+                        ->multiple()
+                        ->searchable()
+                        ->preload()
+                        ->label("Product Tags")
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make("name")->required(),
+                        ]),
                     Forms\Components\TextInput::make('slug')
                         ->label('Slug')
                         ->required()
@@ -246,13 +269,20 @@ class ProductResource extends Resource
                             ->content(function (Forms\Get $get): string {
                                 $supplierPrice = (float) ($get('cost_price') ?? 0);
                                 $sellingPrice = (float) ($get('price') ?? 0);
+                                $discountType = $get('discount_type');
+                                $discountAmount = (float) ($get('discount_amount') ?? 0);
 
                                 if ($sellingPrice <= 0 || $get('cost_price') === null || $get('cost_price') === '') {
                                     return 'Enter supplier and selling prices';
                                 }
 
+                                if ($discountAmount > 0 && $discountType) {
+                                    $discount = $discountType === 'Percentage' ? ($sellingPrice * ($discountAmount / 100)) : $discountAmount;
+                                    $sellingPrice = max(0, $sellingPrice - $discount);
+                                }
+
                                 $profit = $sellingPrice - $supplierPrice;
-                                $percentage = ($profit / $sellingPrice) * 100;
+                                $percentage = $sellingPrice > 0 ? ($profit / $sellingPrice) * 100 : 0;
 
                                 return '৳' . number_format($profit, 2) . ' (' . number_format($percentage, 2) . '%)';
                             }),
@@ -441,7 +471,25 @@ class ProductResource extends Resource
                         ->schema([
                             Forms\Components\Grid::make(2)->schema([
                                 Forms\Components\Grid::make(1)->schema([
-                                    Forms\Components\TextInput::make('name')->required()->label('Variant (Color/Size/Capacity)'),
+                                    Forms\Components\Select::make("variant_type_id")
+                                        ->relationship("variantType", "name")
+                                        ->searchable()
+                                        ->preload()
+                                        ->label("Variant Type")
+                                        ->createOptionForm([
+                                            Forms\Components\TextInput::make("name")->required()
+                                        ]),
+                                    Forms\Components\Select::make("variant_value_id")
+                                        ->relationship("variantValue", "name")
+                                        ->searchable()
+                                        ->preload()
+                                        ->label("Variant Value")
+                                        ->createOptionForm([
+                                            Forms\Components\Select::make("variant_type_id")
+                                                ->relationship("type", "name")
+                                                ->required(),
+                                            Forms\Components\TextInput::make("name")->required()
+                                        ]),
                                     Forms\Components\TextInput::make('sku')
                                         ->unique(ignoreRecord: true)
                                         ->label('SKU (Optional)')

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductVariant extends Model
 {
     protected $fillable = [
-        'product_id', 'name', 'sku', 
+        'product_id', 'variant_type_id', 'variant_value_id', 'name', 'sku', 
         'price', 'compare_price', 'price_modifier', 
         'stock_quantity', 'low_stock_threshold', 'image_gallery', 'is_active'
     ];
@@ -24,6 +24,16 @@ class ProductVariant extends Model
             'image_gallery' => 'array',
             'is_active' => 'boolean',
         ];
+    }
+
+public function variantType()
+    {
+        return $this->belongsTo(VariantType::class);
+    }
+
+    public function variantValue()
+    {
+        return $this->belongsTo(VariantValue::class);
     }
 
     public function product(): BelongsTo

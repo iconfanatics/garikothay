@@ -50,7 +50,7 @@ class Product extends Model
     }
 
     protected $fillable = [
-        'brand', 'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
+        'brand_id', 'unit_id', 'brand', 'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
         'cost_price', 'stock_quantity', 'reserved_stock', 'is_preorder', 'low_stock_threshold', 'weight_grams',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',
         'shipping_restriction', 'has_special_handling', 'handling_type', 'is_free_shipping_eligible',
@@ -109,6 +109,21 @@ class Product extends Model
     public function updatedByAdmin(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'updated_by_admin_id');
+    }
+
+public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(ProductTag::class, 'product_product_tag');
     }
 
     public function category(): BelongsTo
