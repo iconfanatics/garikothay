@@ -83,7 +83,8 @@ class StatsOverview extends BaseWidget
 
         $totalCategories = \App\Models\Category::count();
         $totalOrdersCount = Order::count();
-        $totalBrands = \App\Models\Supplier::count();
+        $totalBrands = \App\Models\Brand::count();
+        $totalSuppliers = \App\Models\Supplier::count();
 
         return [
             Stat::make("Today's Sales", '৳' . number_format((float) $todayRevenue, 2))
@@ -111,10 +112,15 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-tag')
                 ->color('primary'),
 
-            Stat::make("Total Brands/Suppliers", (string) $totalBrands)
-                ->description('Active brands')
-                ->descriptionIcon('heroicon-m-briefcase')
+            Stat::make("Total Brands", (string) $totalBrands)
+                ->description('Registered brands')
+                ->descriptionIcon('heroicon-m-tag')
                 ->color('primary'),
+
+            Stat::make("Total Suppliers", (string) $totalSuppliers)
+                ->description('Active suppliers')
+                ->descriptionIcon('heroicon-m-briefcase')
+                ->color('info'),
                 
             Stat::make("Total Products", (string) $totalProducts)
                 ->description("{$inStockProducts} In Stock, {$outOfStockProducts} Out of Stock")
