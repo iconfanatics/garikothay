@@ -39,6 +39,7 @@ class Settings extends Page
             'delivery_time' => $settings->get('delivery_time')?->value ?? '2-5 business days',
             'delivery_partner' => $settings->get('delivery_partner')?->value ?? 'Steadfast',
             'phone' => $settings->get('phone')?->value ?? '',
+            'whatsapp' => $settings->get('whatsapp')?->value ?? '',
             'email' => $settings->get('email')?->value ?? '',
             'address' => $settings->get('address')?->value ?? '',
             'guest_checkout_enabled' => (bool) ($settings->get('guest_checkout_enabled')?->getCastedValue() ?? true),
@@ -99,6 +100,7 @@ class Settings extends Page
                 ])->columns(2),
                 Forms\Components\Section::make('Contact')->schema([
                     Forms\Components\TextInput::make('phone')->label('Phone')->rule(new \App\Rules\BdPhone()),
+                    Forms\Components\TextInput::make('whatsapp')->label('WhatsApp Number')->rule(new \App\Rules\BdPhone()),
                     Forms\Components\TextInput::make('email')->label('Email')->email(),
                     Forms\Components\Textarea::make('address')->label('Address')->columnSpanFull(),
                 ])->columns(2),
@@ -135,6 +137,7 @@ class Settings extends Page
             'delivery_time' => ['group' => 'logistics', 'type' => SettingType::Text],
             'delivery_partner' => ['group' => 'logistics', 'type' => SettingType::Text],
             'phone' => ['group' => 'contact', 'type' => SettingType::Text],
+            'whatsapp' => ['group' => 'contact', 'type' => SettingType::Text],
             'email' => ['group' => 'contact', 'type' => SettingType::Text],
             'address' => ['group' => 'contact', 'type' => SettingType::Textarea],
             'guest_checkout_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
