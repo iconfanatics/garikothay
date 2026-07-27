@@ -28,7 +28,37 @@ class InvoiceResource extends Resource
                     ->relationship('order', 'order_number')
                     ->required()
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        if (blank($state)) {
+                            $set('billing_information', []);
+                            return;
+                        }
+
+                        $order = \App\Models\Order::find($state);
+                        if ($order) {
+                            $billing = $order->billing_address ?: $order->shipping_address ?: [];
+                            $name = $billing['full_name'] ?? $order->user?->name ?? '';
+                            $phone = $billing['phone'] ?? $order->user?->phone ?? '';
+                            $email = $billing['email'] ?? $order->user?->email ?? '';
+                            $address = implode(', ', array_filter([
+                                $billing['address_line_1'] ?? null,
+                                $billing['address_line_2'] ?? null,
+                                $billing['city'] ?? null,
+                                $billing['district'] ?? null,
+                                $billing['division'] ?? null,
+                                $billing['postal_code'] ?? null,
+                            ]));
+
+                            $set('billing_information', array_filter([
+                                'Name' => $name,
+                                'Email' => $email,
+                                'Phone' => $phone,
+                                'Address' => $address,
+                            ]));
+                        }
+                    }),
                 Forms\Components\TextInput::make('invoice_number')
                     ->required()
                     ->unique(ignoreRecord: true)
