@@ -70,6 +70,44 @@ class SupplierResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('mark_products_out_of_stock')
+                        ->label('Mark Products Out of Stock')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function ($records) {
+                            \App\Models\Product::whereIn('supplier_id', $records->pluck('id'))
+                                ->update([
+                                    'stock_quantity' => 0,
+                                    'supplier_stock_status' => 'out_of_stock'
+                                ]);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Products updated')
+                                ->success()
+                                ->send();
+                        }),
+                    Tables\Actions\BulkAction::make('update_products_stock')
+                        ->label('Update Products Stock')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->form([
+                            Forms\Components\TextInput::make('stock_quantity')
+                                ->label('Stock Quantity')
+                                ->numeric()
+                                ->required()
+                                ->default(100),
+                        ])
+                        ->action(function ($records, array $data) {
+                            \App\Models\Product::whereIn('supplier_id', $records->pluck('id'))
+                                ->update([
+                                    'stock_quantity' => $data['stock_quantity'],
+                                    'supplier_stock_status' => 'in_stock'
+                                ]);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Products updated')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
             ]);
     }
