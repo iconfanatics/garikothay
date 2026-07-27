@@ -90,7 +90,7 @@ $accountMiddleware = app()->environment('local') ? ['auth'] : ['auth', 'verified
 Route::prefix('account')->name('customer.')->middleware($accountMiddleware)->group(function () {
     Route::get('/', fn () => redirect()->route('customer.dashboard'))->name('index');
     Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
-    Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
+
     Route::get('/orders/{orderNumber}', [CustomerController::class, 'orderShow'])->name('order.show');
     Route::post('/services', [CustomerController::class, 'storeServiceBooking'])->name('services.store');
     Route::put('/services/{serviceBooking}/cancel', [CustomerController::class, 'cancelServiceBooking'])->name('services.cancel');

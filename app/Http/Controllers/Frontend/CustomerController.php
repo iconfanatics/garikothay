@@ -103,12 +103,7 @@ class CustomerController extends Controller
         return back()->with('success', 'Listing removed.');
     }
 
-    public function orders(): View
-    {
-        return view('customer.orders', [
-            'orders' => $this->orderRepository->getByUser(auth()->id()),
-        ]);
-    }
+
 
     public function orderShow(string $orderNumber): View
     {
