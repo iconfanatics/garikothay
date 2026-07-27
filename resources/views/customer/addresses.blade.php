@@ -10,14 +10,14 @@
     formMethod: 'POST',
     formData: {
         id: null, label: 'home', full_name: '', phone: '',
-        address_line_1: '', address_line_2: '', city: '',
+        address_line_1: '', upazila: '', city: '',
         district: '', division: '', postal_code: '', is_default: false
     },
     openAdd() {
         this.editMode = false;
         this.formAction = '{{ route('customer.addresses.store') }}';
         this.formMethod = 'POST';
-        this.formData = { label: 'home', full_name: '', phone: '', address_line_1: '', address_line_2: '', city: '', district: '', division: '', postal_code: '', is_default: false };
+        this.formData = { label: 'home', full_name: '', phone: '', address_line_1: '', upazila: '', city: '', district: '', division: '', postal_code: '', is_default: false };
         this.showModal = true;
     },
     openEdit(address) {
@@ -65,7 +65,7 @@
             </div>
             <p class="font-semibold text-gray-900">{{ $address->full_name }}</p>
             <p class="text-gray-500 text-sm mt-1">{{ $address->phone }}</p>
-            <p class="text-gray-500 text-sm">{{ $address->address_line_1 }}@if($address->address_line_2), {{ $address->address_line_2 }}@endif</p>
+            <p class="text-gray-500 text-sm">{{ $address->address_line_1 }}@if($address->upazila), {{ $address->upazila }}@endif</p>
             <p class="text-gray-500 text-sm">{{ $address->city }}, {{ $address->district }}, {{ $address->division }}</p>
             @if($address->postal_code)
             <p class="text-gray-400 text-sm">{{ $address->postal_code }}</p>
@@ -129,8 +129,8 @@
                                 <input type="text" name="address_line_1" x-model="formData.address_line_1" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
-                                <input type="text" name="address_line_2" x-model="formData.address_line_2" class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upazila / Thana *</label>
+                                <input type="text" name="upazila" x-model="formData.upazila" required class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                             </div>
                             <div class="col-span-2 sm:col-span-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">City</label>

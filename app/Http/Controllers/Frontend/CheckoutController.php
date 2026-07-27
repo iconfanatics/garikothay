@@ -71,7 +71,7 @@ class CheckoutController extends Controller
                     'full_name' => $data['full_name'],
                     'phone' => $data['phone'],
                     'address_line_1' => $data['address_line_1'],
-                    'address_line_2' => $data['address_line_2'] ?? null,
+                    'upazila' => $data['upazila'] ?? null,
                     'city' => $data['city'],
                     'district' => $data['district'],
                     'division' => $data['division'],

@@ -131,7 +131,7 @@ protected function casts(): array
         $addr = $this->shipping_address ?? [];
         return implode(', ', array_filter([
             $addr['address_line_1'] ?? null,
-            $addr['address_line_2'] ?? null,
+            $addr['upazila'] ?? null,
             $addr['city'] ?? null,
             $addr['district'] ?? null,
             $addr['division'] ?? null,

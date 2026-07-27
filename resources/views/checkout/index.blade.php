@@ -338,7 +338,7 @@
         email: @js(old('email', auth()->user()?->email ?? '')),
         phone: @js(old('phone', auth()->user()?->phone ?? '')),
         address_line_1: @js(old('address_line_1')),
-        address_line_2: @js(old('address_line_2')),
+        upazila: @js(old('upazila')),
         division: @js(old('division')),
         city: @js(old('city')),
         postal_code: @js(old('postal_code'))
@@ -386,7 +386,7 @@
             this.formData.full_name = addr.full_name;
             this.formData.phone = addr.phone;
             this.formData.address_line_1 = addr.address_line_1;
-            this.formData.address_line_2 = addr.address_line_2 || '';
+            this.formData.upazila = addr.upazila || '';
             this.formData.division = addr.division;
             this.formData.city = addr.city;
             this.formData.postal_code = addr.postal_code || '';
@@ -504,9 +504,9 @@
                             >
                     </div>
                     <div class="gk-checkout-field">
-                        <label>{{ __('general.address_line_2') }}</label>
-                        <input type="text" name="address_line_2" x-model="formData.address_line_2"
-                            >
+                        <label>Upazila / Thana *</label>
+                        <input type="text" name="upazila" x-model="formData.upazila" required class="@error('upazila') border-red-400 @enderror">
+                        @error('upazila') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                     </div>
                     <div class="gk-checkout-field">
                         <label>Division *</label>

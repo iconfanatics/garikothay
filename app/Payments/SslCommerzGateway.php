@@ -60,7 +60,7 @@ class SslCommerzGateway implements PaymentGateway
             'shipping_method' => 'Courier',
             'ship_name' => $order->shipping_address['full_name'] ?? $order->user->name,
             'ship_add1' => $order->shipping_address['address_line_1'] ?? '',
-            'ship_add2' => $order->shipping_address['address_line_2'] ?? '',
+            'ship_add2' => $order->shipping_address['upazila'] ?? '',
             'ship_city' => $order->shipping_address['city'] ?? 'Dhaka',
             'ship_state' => $order->shipping_address['division'] ?? 'Dhaka',
             'ship_postcode' => $order->shipping_address['postal_code'] ?? '1000',

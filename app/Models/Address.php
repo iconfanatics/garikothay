@@ -15,7 +15,7 @@ class Address extends Model
 
     protected $fillable = [
         'user_id', 'label', 'full_name', 'phone',
-        'address_line_1', 'address_line_2', 'city',
+        'address_line_1', 'upazila', 'city',
         'district', 'division', 'postal_code', 'is_default',
     ];
 
@@ -36,7 +36,7 @@ class Address extends Model
     {
         $parts = array_filter([
             $this->address_line_1,
-            $this->address_line_2,
+            $this->upazila,
             $this->city,
             $this->district,
             $this->division,

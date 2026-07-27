@@ -30,7 +30,7 @@ class CheckoutRequest extends FormRequest
             'email' => $emailRules,
             'phone' => ['required', 'string', new BdPhone()],
             'address_line_1' => ['required', 'string', 'max:255'],
-            'address_line_2' => ['nullable', 'string', 'max:255'],
+            'upazila' => ['required', 'string', 'max:100'],
             'city' => ['required', 'string', 'max:100'],
             'division' => ['required', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:10'],

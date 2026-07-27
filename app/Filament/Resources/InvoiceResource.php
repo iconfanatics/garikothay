@@ -44,7 +44,7 @@ class InvoiceResource extends Resource
                             $email = $billing['email'] ?? $order->user?->email ?? '';
                             $address = implode(', ', array_filter([
                                 $billing['address_line_1'] ?? null,
-                                $billing['address_line_2'] ?? null,
+                                $billing['upazila'] ?? null,
                                 $billing['city'] ?? null,
                                 $billing['district'] ?? null,
                                 $billing['division'] ?? null,
