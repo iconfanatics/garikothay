@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\User;
+use App\Models\Admin;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -13,7 +13,7 @@ class RolePolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Admin $user): bool
     {
         return $user->can('view_any_role');
     }
@@ -21,7 +21,7 @@ class RolePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Role $role): bool
+    public function view(Admin $user, Role $role): bool
     {
         return $user->can('view_role');
     }
@@ -29,7 +29,7 @@ class RolePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Admin $user): bool
     {
         return $user->can('create_role');
     }
@@ -37,7 +37,7 @@ class RolePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Role $role): bool
+    public function update(Admin $user, Role $role): bool
     {
         return $user->can('update_role');
     }
@@ -45,7 +45,7 @@ class RolePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Role $role): bool
+    public function delete(Admin $user, Role $role): bool
     {
         return $user->can('delete_role');
     }
@@ -53,7 +53,7 @@ class RolePolicy
     /**
      * Determine whether the user can bulk delete.
      */
-    public function deleteAny(User $user): bool
+    public function deleteAny(Admin $user): bool
     {
         return $user->can('delete_any_role');
     }
@@ -61,7 +61,7 @@ class RolePolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Role $role): bool
+    public function forceDelete(Admin $user, Role $role): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -69,7 +69,7 @@ class RolePolicy
     /**
      * Determine whether the user can permanently bulk delete.
      */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(Admin $user): bool
     {
         return $user->can('{{ ForceDeleteAny }}');
     }
@@ -77,7 +77,7 @@ class RolePolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Role $role): bool
+    public function restore(Admin $user, Role $role): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -85,7 +85,7 @@ class RolePolicy
     /**
      * Determine whether the user can bulk restore.
      */
-    public function restoreAny(User $user): bool
+    public function restoreAny(Admin $user): bool
     {
         return $user->can('{{ RestoreAny }}');
     }
@@ -93,7 +93,7 @@ class RolePolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Role $role): bool
+    public function replicate(Admin $user, Role $role): bool
     {
         return $user->can('{{ Replicate }}');
     }
@@ -101,7 +101,7 @@ class RolePolicy
     /**
      * Determine whether the user can reorder.
      */
-    public function reorder(User $user): bool
+    public function reorder(Admin $user): bool
     {
         return $user->can('{{ Reorder }}');
     }

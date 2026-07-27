@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\User;
+use App\Models\Admin;
 use App\Models\Payment;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -13,7 +13,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Admin $user): bool
     {
         return $user->can('view_any_payment');
     }
@@ -21,7 +21,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Payment $payment): bool
+    public function view(Admin $user, Payment $payment): bool
     {
         return $user->can('view_payment');
     }
@@ -29,7 +29,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Admin $user): bool
     {
         return $user->can('create_payment');
     }
@@ -37,7 +37,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Payment $payment): bool
+    public function update(Admin $user, Payment $payment): bool
     {
         return $user->can('update_payment');
     }
@@ -45,7 +45,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Payment $payment): bool
+    public function delete(Admin $user, Payment $payment): bool
     {
         return $user->can('delete_payment');
     }
@@ -53,7 +53,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can bulk delete.
      */
-    public function deleteAny(User $user): bool
+    public function deleteAny(Admin $user): bool
     {
         return $user->can('delete_any_payment');
     }
@@ -61,7 +61,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Payment $payment): bool
+    public function forceDelete(Admin $user, Payment $payment): bool
     {
         return $user->can('force_delete_payment');
     }
@@ -69,7 +69,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can permanently bulk delete.
      */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(Admin $user): bool
     {
         return $user->can('force_delete_any_payment');
     }
@@ -77,7 +77,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Payment $payment): bool
+    public function restore(Admin $user, Payment $payment): bool
     {
         return $user->can('restore_payment');
     }
@@ -85,7 +85,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can bulk restore.
      */
-    public function restoreAny(User $user): bool
+    public function restoreAny(Admin $user): bool
     {
         return $user->can('restore_any_payment');
     }
@@ -93,7 +93,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Payment $payment): bool
+    public function replicate(Admin $user, Payment $payment): bool
     {
         return $user->can('replicate_payment');
     }
@@ -101,7 +101,7 @@ class PaymentPolicy
     /**
      * Determine whether the user can reorder.
      */
-    public function reorder(User $user): bool
+    public function reorder(Admin $user): bool
     {
         return $user->can('reorder_payment');
     }

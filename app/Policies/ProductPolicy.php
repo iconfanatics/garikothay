@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\User;
+use App\Models\Admin;
 use App\Models\Product;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -13,7 +13,7 @@ class ProductPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(Admin $user): bool
     {
         return $user->can('view_any_product');
     }
@@ -21,7 +21,7 @@ class ProductPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Product $product): bool
+    public function view(Admin $user, Product $product): bool
     {
         return $user->can('view_product');
     }
@@ -29,7 +29,7 @@ class ProductPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(Admin $user): bool
     {
         return $user->can('create_product');
     }
@@ -37,7 +37,7 @@ class ProductPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Product $product): bool
+    public function update(Admin $user, Product $product): bool
     {
         return $user->can('update_product');
     }
@@ -45,7 +45,7 @@ class ProductPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Product $product): bool
+    public function delete(Admin $user, Product $product): bool
     {
         return $user->can('delete_product');
     }
@@ -53,7 +53,7 @@ class ProductPolicy
     /**
      * Determine whether the user can bulk delete.
      */
-    public function deleteAny(User $user): bool
+    public function deleteAny(Admin $user): bool
     {
         return $user->can('delete_any_product');
     }
@@ -61,7 +61,7 @@ class ProductPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Product $product): bool
+    public function forceDelete(Admin $user, Product $product): bool
     {
         return $user->can('force_delete_product');
     }
@@ -69,7 +69,7 @@ class ProductPolicy
     /**
      * Determine whether the user can permanently bulk delete.
      */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(Admin $user): bool
     {
         return $user->can('force_delete_any_product');
     }
@@ -77,7 +77,7 @@ class ProductPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Product $product): bool
+    public function restore(Admin $user, Product $product): bool
     {
         return $user->can('restore_product');
     }
@@ -85,7 +85,7 @@ class ProductPolicy
     /**
      * Determine whether the user can bulk restore.
      */
-    public function restoreAny(User $user): bool
+    public function restoreAny(Admin $user): bool
     {
         return $user->can('restore_any_product');
     }
@@ -93,7 +93,7 @@ class ProductPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Product $product): bool
+    public function replicate(Admin $user, Product $product): bool
     {
         return $user->can('replicate_product');
     }
@@ -101,7 +101,7 @@ class ProductPolicy
     /**
      * Determine whether the user can reorder.
      */
-    public function reorder(User $user): bool
+    public function reorder(Admin $user): bool
     {
         return $user->can('reorder_product');
     }
