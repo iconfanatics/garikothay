@@ -85,7 +85,7 @@ Route::get('/privacy', [PageController::class, 'privacy'])->name('page.privacy')
 Route::get('/return-policy', [PageController::class, 'returnPolicy'])->name('page.return-policy');
 
 // Customer Dashboard
-$accountMiddleware = app()->environment('local') ? ['auth'] : ['auth', 'verified'];
+$accountMiddleware = ['auth', 'verified'];
 
 Route::prefix('account')->name('customer.')->middleware($accountMiddleware)->group(function () {
     Route::get('/', fn () => redirect()->route('customer.dashboard'))->name('index');
