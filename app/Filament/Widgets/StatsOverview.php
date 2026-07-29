@@ -136,24 +136,23 @@ class StatsOverview extends BaseWidget
                 ->description('Cancelled by admin/customer')
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger'),
-                
-            Stat::make("Returned Orders", (string) $returnedOrders)
+                            Stat::make("Returned Orders", (string) $returnedOrders)
                 ->description('Returned products')
                 ->descriptionIcon('heroicon-m-arrow-uturn-left')
                 ->color('warning')
-                ->url(route('filament.admin.resources.orders.index', ['tableFilters' => ['status' => ['value' => OrderStatus::Returned->value]]])),
+                ->url(\App\Filament\Resources\OrderResource::getUrl('index', ['tableFilters' => ['status' => ['value' => OrderStatus::Returned->value]]])),
                 
             Stat::make("Low Stock Products", (string) $lowStockProducts)
                 ->description('Running out soon')
                 ->descriptionIcon('heroicon-m-exclamation-triangle')
                 ->color('warning')
-                ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'low_stock']]])),
+                ->url(\App\Filament\Resources\ProductResource::getUrl('index', ['tableFilters' => ['stock_level' => ['value' => 'low_stock']]])),
                 
             Stat::make("Out of Stock Products", (string) $outOfStockProducts)
                 ->description('Currently unavailable')
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color('danger')
-                ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'out_of_stock']]])),
+                ->url(\App\Filament\Resources\ProductResource::getUrl('index', ['tableFilters' => ['stock_level' => ['value' => 'out_of_stock']]])),
         ];
     }
 }

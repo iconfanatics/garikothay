@@ -15,6 +15,8 @@ class Admin extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable, \Spatie\Permission\Traits\HasRoles;
 
+    protected string $guard_name = 'admin';
+
     protected $fillable = [
         'name',
         'email',
