@@ -1,10 +1,9 @@
-@inject('seoService', 'App\Services\SeoService')
-@php
-    $meta = $seoService->getMetaData();
-    $siteName = $meta['siteName'];
-@endphp
-
 <div class="w-full">
+    @inject('seoService', 'App\Services\SeoService')
+    @php
+        $meta = $seoService->getMetaData();
+        $siteName = $meta['siteName'];
+    @endphp
     @push('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
