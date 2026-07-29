@@ -219,7 +219,7 @@ class OrderResource extends Resource
                         Forms\Components\Grid::make(5)->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label('Product')
-                                ->relationship('product', 'name')
+                                ->options(fn () => \App\Models\Product::with('translations')->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->preload()
                                 ->required()
