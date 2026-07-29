@@ -584,17 +584,44 @@ class ProductResource extends Resource
                                     ->prefix('৳')
                                     ->live(onBlur: true)
                                     ->helperText('Used if Price is empty.'),
-                                    
-                                Forms\Components\Placeholder::make('discount')
-                                    ->label('Discount')
-                                    ->content(function (Forms\Get $get): string {
+                            ]),
+                            Forms\Components\Grid::make(4)->schema([
+                                Forms\Components\Select::make('discount_type')
+                                    ->label('Discount Type')
+                                    ->options([
+                                        'Fixed' => 'Fixed Amount',
+                                        'Percentage' => 'Percentage (%)',
+                                    ])
+                                    ->live(),
+                                Forms\Components\TextInput::make('discount_amount')
+                                    ->label('Discount Amount')
+                                    ->numeric()
+                                    ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
+                                    ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
+                                    ->live(onBlur: true),
+                                Forms\Components\DateTimePicker::make('discount_start_date')->label('Discount Start Date'),
+                                Forms\Components\DateTimePicker::make('discount_end_date')->label('Discount End Date'),
+                            ]),
+                            Forms\Components\Grid::make(1)->schema([
+                                Forms\Components\Placeholder::make('discount_preview')
+                                    ->label('Final Price Preview')
+                                    ->content(function (Forms\Get $get) {
                                         $price = (float) ($get('price') ?? 0);
+                                        $modifier = (float) ($get('price_modifier') ?? 0);
+                                        $base = $price > 0 ? $price : $modifier; // We can't easily get parent product price here without full model context, but we can try
                                         $compare = (float) ($get('compare_price') ?? 0);
-                                        
+                                        $discountType = $get('discount_type');
+                                        $discountAmount = (float) ($get('discount_amount') ?? 0);
+
+                                        if ($discountAmount > 0 && $discountType) {
+                                            $discount = $discountType === 'Percentage' ? ($base * ($discountAmount / 100)) : $discountAmount;
+                                            return '৳' . number_format(max(0, $base - $discount), 2) . ' (Base: ৳' . number_format($base, 2) . ')';
+                                        }
+
                                         if ($price > 0 && $compare > $price) {
                                             $discount = $compare - $price;
                                             $percentage = ($discount / $compare) * 100;
-                                            return '৳' . number_format($discount, 2) . ' (' . number_format($percentage, 0) . '%)';
+                                            return '৳' . number_format($price, 2) . ' (Discount: ' . number_format($percentage, 0) . '%)';
                                         }
                                         return '-';
                                     }),

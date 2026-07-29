@@ -179,7 +179,14 @@ public function brand()
 
     public function scopeActive($query): void
     {
-        $query->where('is_active', true);
+        $query->where('is_active', true)
+            ->where(function ($q) {
+                $q->where('publish_status', 'Published')
+                  ->orWhere(function ($q2) {
+                      $q2->where('publish_status', 'Scheduled')
+                         ->where('published_at', '<=', now());
+                  });
+            });
     }
 
     public function scopeFeatured($query): void

@@ -27,13 +27,7 @@ class CartRepository implements CartRepositoryInterface
 
         if ($variantId) {
             $variant = $product->variants()->findOrFail($variantId);
-            if ($variant->price > 0) {
-                // If variant has an absolute override price, use it
-                $price = $variant->price;
-            } else {
-                // Otherwise apply modifier to product's discounted price
-                $price = $price + $variant->price_modifier;
-            }
+            $price = $variant->selling_price;
         }
 
         $existing = $cart->items()
