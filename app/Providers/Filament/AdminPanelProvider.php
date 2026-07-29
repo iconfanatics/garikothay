@@ -49,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id("admin")
             ->path("admin")
-            ->login()
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->colors(["primary" => Color::hex("#2D6A4F")])
             ->brandName(\App\Models\Setting::get('site_name', 'Garikothay') . ' Admin')
             ->authGuard("admin")

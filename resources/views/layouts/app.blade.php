@@ -108,6 +108,7 @@
     <!-- Main Content -->
     <main>
         @yield('content')
+        {{ $slot ?? '' }}
     </main>
 
 
