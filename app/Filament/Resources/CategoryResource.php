@@ -259,7 +259,7 @@ class CategoryResource extends Resource
                 Tables\Actions\Action::make('preview')
                     ->label('Live Preview')
                     ->icon('heroicon-o-eye')
-                    ->url(fn (Category $record): string => url('/category/' . $record->slug))
+                    ->url(fn (Category $record): string => url('/shop?category=' . $record->slug))
                     ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()

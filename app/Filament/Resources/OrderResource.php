@@ -119,18 +119,28 @@ class OrderResource extends Resource
                     Forms\Components\Select::make('status')
                         ->label('Order Status')
                         ->options(\App\Enums\OrderStatus::class)
+                        ->default(\App\Enums\OrderStatus::Pending->value)
                         ->required(),
                     Forms\Components\Select::make('payment_status')
                         ->label('Payment Status')
                         ->options(\App\Enums\PaymentStatus::class)
+                        ->default(\App\Enums\PaymentStatus::Unpaid->value)
                         ->required(),
-                    Forms\Components\TextInput::make('payment_method')
+                    Forms\Components\Select::make('payment_method')
                         ->label('Payment Method')
-                        ->formatStateUsing(fn ($state) => $state instanceof \App\Enums\PaymentMethod ? $state->label() : (is_string($state) ? \App\Enums\PaymentMethod::tryFrom($state)?->label() ?? strtoupper($state) : 'N/A'))
-                        ->disabled(),
+                        ->options([
+                            'cod' => 'Cash on Delivery',
+                            'sslcommerz' => 'SSLCommerz',
+                            'stripe' => 'Stripe',
+                            'bkash' => 'bKash',
+                        ])
+                        ->default('cod')
+                        ->required(),
                     Forms\Components\TextInput::make('order_number')
                         ->label('Order Number')
-                        ->disabled(),
+                        ->default(fn () => 'GNG-' . date('Ymd') . '-' . mt_rand(1000, 9999))
+                        ->required()
+                        ->unique(Order::class, 'order_number', ignoreRecord: true),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\Select::make('assigned_staff_id')
@@ -145,11 +155,12 @@ class OrderResource extends Resource
                             'WhatsApp' => 'WhatsApp',
                             'Call' => 'Call',
                         ])
-                        ->default('Website'),
+                        ->default('Call'),
                     Forms\Components\Select::make('customer_type')
                         ->label('Customer Type')
                         ->options([
                             'Retail' => 'Retail',
+                            'Wholesale' => 'Wholesale',
                         ])
                         ->default('Retail'),
                 ]),
@@ -166,9 +177,10 @@ class OrderResource extends Resource
                             'SA Paribahan' => 'SA Paribahan',
                             'Sundarban' => 'Sundarban',
                             'Own Delivery' => 'Own Delivery',
-                        ]),
+                        ])
+                        ->default('Steadfast'),
                     Forms\Components\TextInput::make('tracking_number')
-                        ->label('Tracking Number'),
+                        ->label('Tracking Number (Optional)'),
                 ]),
                 Forms\Components\Textarea::make('notes')
                     ->label('Admin Notes')
@@ -176,53 +188,109 @@ class OrderResource extends Resource
             ]),
             Forms\Components\Section::make('Customer & Shipping Info')->schema([
                 Forms\Components\Grid::make(2)->schema([
-                    Forms\Components\Placeholder::make('customer_name')
+                    Forms\Components\Select::make('user_id')
+                        ->label('Registered Customer (Optional)')
+                        ->relationship('user', 'name')
+                        ->searchable()
+                        ->preload(),
+                    Forms\Components\TextInput::make('shipping_address.full_name')
                         ->label('Customer Name')
-                        ->content(fn ($record) => $record?->user?->name ?? 'N/A'),
-                    Forms\Components\Placeholder::make('phone')
+                        ->required(),
+                    Forms\Components\TextInput::make('shipping_address.phone')
                         ->label('Phone Number')
-                        ->content(fn ($record) => $record?->shipping_phone ?? $record?->user?->phone ?? 'N/A'),
-                    Forms\Components\Placeholder::make('email')
-                        ->label('Email Address')
-                        ->content(fn ($record) => $record?->user?->email ?? 'N/A'),
-                    Forms\Components\Placeholder::make('address')
+                        ->required(),
+                    Forms\Components\TextInput::make('shipping_address.address_line_1')
                         ->label('Full Address')
-                        ->content(fn ($record) => $record?->shipping_full_address ?? 'N/A'),
+                        ->required(),
+                ]),
+                Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\TextInput::make('shipping_address.upazila')
+                        ->label('Upazila/Area'),
+                    Forms\Components\TextInput::make('shipping_address.city')
+                        ->label('City'),
+                    Forms\Components\TextInput::make('shipping_address.district')
+                        ->label('District'),
                 ]),
             ]),
             Forms\Components\Section::make('Order Items')->schema([
                 Forms\Components\Repeater::make('items')
                     ->relationship()
                     ->schema([
-                        Forms\Components\Grid::make(4)->schema([
-                            Forms\Components\TextInput::make('product_name')->label('Product')->disabled(),
-                            Forms\Components\Placeholder::make('variant_name')
-                                ->label('Variant')
-                                ->content(fn ($record) => $record?->variant?->name ?? 'N/A'),
-                            Forms\Components\TextInput::make('quantity')->label('Qty')->disabled(),
-                            Forms\Components\TextInput::make('total_price')->label('Total')->prefix('৳')->disabled(),
+                        Forms\Components\Grid::make(5)->schema([
+                            Forms\Components\Select::make('product_id')
+                                ->label('Product')
+                                ->relationship('product', 'name')
+                                ->searchable()
+                                ->preload()
+                                ->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                    if ($state) {
+                                        $product = \App\Models\Product::find($state);
+                                        if ($product) {
+                                            $set('product_name', $product->name);
+                                            $set('product_sku', $product->sku);
+                                            $set('unit_price', $product->selling_price);
+                                        }
+                                    }
+                                }),
+                            Forms\Components\Hidden::make('product_name'),
+                            Forms\Components\Hidden::make('product_sku'),
+                            Forms\Components\Select::make('variant_id')
+                                ->label('Variant (Optional)')
+                                ->options(function (Forms\Get $get) {
+                                    $productId = $get('product_id');
+                                    if (! $productId) return [];
+                                    return \App\Models\ProductVariant::where('product_id', $productId)->pluck('name', 'id');
+                                })
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                    if ($state) {
+                                        $variant = \App\Models\ProductVariant::find($state);
+                                        $product = \App\Models\Product::find($get('product_id'));
+                                        if ($variant && $product) {
+                                            $price = $variant->price > 0 ? $variant->price : $product->selling_price + $variant->price_modifier;
+                                            $set('unit_price', $price);
+                                        }
+                                    }
+                                }),
+                            Forms\Components\TextInput::make('quantity')
+                                ->label('Qty')
+                                ->numeric()
+                                ->default(1)
+                                ->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn ($state, Forms\Set $set, Forms\Get $get) => $set('total_price', (float) $state * (float) $get('unit_price'))),
+                            Forms\Components\TextInput::make('unit_price')
+                                ->label('Unit Price')
+                                ->numeric()
+                                ->required()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn ($state, Forms\Set $set, Forms\Get $get) => $set('total_price', (float) $state * (float) $get('quantity'))),
+                            Forms\Components\TextInput::make('total_price')
+                                ->label('Total')
+                                ->numeric()
+                                ->required()
+                                ->readOnly(),
                         ]),
                         Forms\Components\Textarea::make('internal_note')
                             ->label('Internal Note (For this item)')
-                            ->rows(2)
+                            ->rows(1)
                             ->columnSpanFull(),
                     ])
-                    ->disableItemCreation()
-                    ->disableItemDeletion()
-                    ->disableItemMovement()
+                    ->defaultItems(1)
                     ->columns(1)
             ]),
             Forms\Components\Section::make('Financials')->schema([
                 Forms\Components\Grid::make(4)->schema([
-                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->prefix('৳')->disabled(),
-                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->prefix('৳')->disabled(),
-                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->prefix('৳')->disabled(),
-                    Forms\Components\TextInput::make('total')->label('Total')->prefix('৳')->disabled(),
+                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required(),
+                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required(),
+                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required(),
+                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required(),
                 ]),
-                Forms\Components\TextInput::make('coupon.code')
-                    ->label('Coupon Used')
-                    ->default('None')
-                    ->disabled(),
+                Forms\Components\TextInput::make('coupon_code')
+                    ->label('Coupon Code (Optional)')
+                    ->nullable(),
             ]),
         ]);
     }
