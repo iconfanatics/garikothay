@@ -12,7 +12,7 @@ use Exception;
 
 class SteadfastCourierService
 {
-    protected string $baseUrl = 'https://portal.steadfast.com.bd/api/v1';
+    protected string $baseUrl = 'https://portal.packzy.com/api/v1';
 
     protected function getHeaders(): array
     {
