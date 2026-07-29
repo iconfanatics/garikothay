@@ -55,7 +55,7 @@ class SteadfastCourierService
 
             $data = $response->json();
 
-            if ($response->successful() && isset($data['status']) && $data['status'] == 200) {
+            if ($response->successful() && is_array($data) && isset($data['status']) && $data['status'] == 200) {
                 return [
                     'consignment_id' => $data['consignment']['consignment_id'] ?? null,
                     'tracking_code' => $data['consignment']['tracking_code'] ?? null,
@@ -63,8 +63,16 @@ class SteadfastCourierService
                 ];
             }
 
-            $errorMessage = $data['message'] ?? $data['error'] ?? 'Unknown error from Steadfast API';
-            Log::error('Steadfast API Error: ' . json_encode($data));
+            if (is_array($data)) {
+                $errorMessage = $data['message'] ?? $data['error'] ?? 'Unknown error from Steadfast API';
+                if (isset($data['errors'])) {
+                    $errorMessage .= ' - ' . json_encode($data['errors']);
+                }
+            } else {
+                $errorMessage = 'Invalid response from Steadfast API: ' . $response->body();
+            }
+
+            Log::error('Steadfast API Error: ' . $response->body());
             throw new Exception("Steadfast Error: " . $errorMessage);
 
         } catch (\Exception $e) {
