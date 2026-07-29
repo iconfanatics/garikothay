@@ -63,6 +63,14 @@ class OrderResource extends Resource
                         \Filament\Infolists\Components\TextEntry::make('is_fraud')->label('Fraud Flag')->badge()->color(fn ($state) => $state ? 'danger' : 'success')->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
                         \Filament\Infolists\Components\TextEntry::make('delivery_method')->label('Delivery Method')->default('N/A'),
                         \Filament\Infolists\Components\TextEntry::make('tracking_number')->label('Tracking Number')->default('N/A'),
+                        \Filament\Infolists\Components\TextEntry::make('steadfast_tracking_code')
+                            ->label('Steadfast Tracking Code')
+                            ->hidden(fn ($record) => blank($record->steadfast_tracking_code))
+                            ->copyable(),
+                        \Filament\Infolists\Components\TextEntry::make('steadfast_status')
+                            ->label('Steadfast Status')
+                            ->hidden(fn ($record) => blank($record->steadfast_status))
+                            ->badge(),
                     ])
                 ]),
                 \Filament\Infolists\Components\Section::make('Customer & Shipping Details')->schema([
@@ -383,6 +391,66 @@ class OrderResource extends Resource
                         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vendor-slip', ['order' => $record]);
                         return response()->streamDownload(fn () => print($pdf->output()), 'vendor-slip-' . $record->order_number . '.pdf');
                     }),
+                Tables\Actions\Action::make('send_to_steadfast')
+                    ->label('Send to Steadfast')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('info')
+                    ->hidden(fn (Order $record) => $record->steadfast_consignment_id !== null)
+                    ->action(function (Order $record) {
+                        try {
+                            $service = new \App\Services\SteadfastCourierService();
+                            $result = $service->createOrder($record);
+                            
+                            $record->update([
+                                'steadfast_consignment_id' => $result['consignment_id'],
+                                'steadfast_tracking_code' => $result['tracking_code'],
+                                'steadfast_status' => $result['status'],
+                                'delivery_method' => 'Steadfast',
+                            ]);
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title('Sent to Steadfast Courier')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Failed to send to Steadfast')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+                Tables\Actions\Action::make('check_steadfast_status')
+                    ->label('Check Delivery Status')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('secondary')
+                    ->hidden(fn (Order $record) => $record->steadfast_consignment_id === null)
+                    ->action(function (Order $record) {
+                        try {
+                            $service = new \App\Services\SteadfastCourierService();
+                            $result = $service->checkDeliveryStatus((string)$record->steadfast_consignment_id);
+                            
+                            if ($result['delivery_status'] !== 'error' && $result['delivery_status'] !== 'unknown') {
+                                $record->update(['steadfast_status' => $result['delivery_status']]);
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Status updated: ' . ucfirst($result['delivery_status']))
+                                    ->success()
+                                    ->send();
+                            } else {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Could not fetch status')
+                                    ->body($result['message'] ?? 'Unknown error')
+                                    ->warning()
+                                    ->send();
+                            }
+                        } catch (\Exception $e) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Error checking status')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -392,6 +460,49 @@ class OrderResource extends Resource
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['status' => OrderStatus::Confirmed]))
                         ->requiresConfirmation(),
+                    Tables\Actions\BulkAction::make('bulk_send_to_steadfast')
+                        ->label('Send to Steadfast Courier')
+                        ->icon('heroicon-o-paper-airplane')
+                        ->color('info')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $service = new \App\Services\SteadfastCourierService();
+                            $successCount = 0;
+                            $failCount = 0;
+                            
+                            foreach ($records as $record) {
+                                if ($record->steadfast_consignment_id) {
+                                    continue;
+                                }
+                                
+                                try {
+                                    $result = $service->createOrder($record);
+                                    $record->update([
+                                        'steadfast_consignment_id' => $result['consignment_id'],
+                                        'steadfast_tracking_code' => $result['tracking_code'],
+                                        'steadfast_status' => $result['status'],
+                                        'delivery_method' => 'Steadfast',
+                                    ]);
+                                    $successCount++;
+                                } catch (\Exception $e) {
+                                    $failCount++;
+                                }
+                            }
+                            
+                            if ($successCount > 0) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title("{$successCount} orders sent to Steadfast")
+                                    ->success()
+                                    ->send();
+                            }
+                            if ($failCount > 0) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title("{$failCount} orders failed to send to Steadfast")
+                                    ->danger()
+                                    ->send();
+                            }
+                        })
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

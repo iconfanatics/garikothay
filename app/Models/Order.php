@@ -25,6 +25,7 @@ class Order extends Model
         'subtotal', 'discount_amount', 'shipping_amount', 'tax_amount', 'total', 'is_fraud', 'shipping_method_id',
         'coupon_id', 'shipping_address', 'billing_address', 'notes',
         'shipped_at', 'delivered_at', 'cancelled_at',
+        'steadfast_consignment_id', 'steadfast_tracking_code', 'steadfast_status',
     ];
 
         public function getActivitylogOptions(): LogOptions

@@ -47,6 +47,8 @@ class Settings extends Page
             'guest_checkout_enabled' => (bool) ($settings->get('guest_checkout_enabled')?->getCastedValue() ?? true),
             'cod_enabled' => (bool) ($settings->get('cod_enabled')?->getCastedValue() ?? true),
             'order_notes_enabled' => (bool) ($settings->get('order_notes_enabled')?->getCastedValue() ?? true),
+            'steadfast_api_key' => $settings->get('steadfast_api_key')?->value ?? '',
+            'steadfast_secret_key' => $settings->get('steadfast_secret_key')?->value ?? '',
         ]);
     }
 
@@ -112,6 +114,14 @@ class Settings extends Page
                         ->searchable()
                         ->required(),
                 ])->columns(2),
+                Forms\Components\Section::make('Steadfast Courier API')->schema([
+                    Forms\Components\TextInput::make('steadfast_api_key')
+                        ->label('API Key')
+                        ->helperText('Get this from Steadfast Merchant Portal'),
+                    Forms\Components\TextInput::make('steadfast_secret_key')
+                        ->label('Secret Key')
+                        ->helperText('Get this from Steadfast Merchant Portal'),
+                ])->columns(2),
                 Forms\Components\Section::make('Contact')->schema([
                     Forms\Components\TextInput::make('phone')->label('Phone')->rule(new \App\Rules\BdPhone()),
                     Forms\Components\TextInput::make('whatsapp')->label('WhatsApp Number')->rule(new \App\Rules\BdPhone()),
@@ -160,6 +170,8 @@ class Settings extends Page
             'guest_checkout_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
             'cod_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
             'order_notes_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
+            'steadfast_api_key' => ['group' => 'logistics', 'type' => SettingType::Text],
+            'steadfast_secret_key' => ['group' => 'logistics', 'type' => SettingType::Text],
         ];
 
         foreach ($data as $key => $value) {
