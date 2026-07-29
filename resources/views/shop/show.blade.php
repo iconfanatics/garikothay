@@ -762,9 +762,9 @@
                     </div>
 
                     <div class="gk-price-box">
-                        <span class="gk-price">৳{{ number_format($product->price, 0) }}</span>
-                        @if($product->compare_price)
-                            <span class="gk-old-price">৳{{ number_format($product->compare_price, 0) }}</span>
+                        <span class="gk-price">৳{{ number_format($product->selling_price, 0) }}</span>
+                        @if($product->original_price > $product->selling_price)
+                            <span class="gk-old-price">৳{{ number_format($product->original_price, 0) }}</span>
                             <span class="gk-save">SAVE {{ $product->discount_percentage }}%</span>
                         @endif
                     </div>

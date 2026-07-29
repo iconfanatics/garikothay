@@ -62,9 +62,9 @@
 
         <!-- Price -->
         <div class="mt-2 flex items-baseline gap-2">
-                <span class="text-lg font-bold text-rose-600">৳{{ number_format($product->price, 0) }}</span>
-                @if($product->compare_price)
-                <span class="text-xs text-gray-400 line-through">৳{{ number_format($product->compare_price, 0) }}</span>
+                <span class="text-lg font-bold text-rose-600">৳{{ number_format($product->selling_price, 0) }}</span>
+                @if($product->original_price > $product->selling_price)
+                <span class="text-xs text-gray-400 line-through">৳{{ number_format($product->original_price, 0) }}</span>
                 @endif
         </div>
 

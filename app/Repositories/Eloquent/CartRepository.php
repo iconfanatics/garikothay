@@ -23,11 +23,17 @@ class CartRepository implements CartRepositoryInterface
     public function addItem(Cart $cart, int $productId, int $quantity, ?int $variantId = null): CartItem
     {
         $product = Product::findOrFail($productId);
-        $price = $product->price;
+        $price = $product->selling_price;
 
         if ($variantId) {
             $variant = $product->variants()->findOrFail($variantId);
-            $price = $product->price + $variant->price_modifier;
+            if ($variant->price > 0) {
+                // If variant has an absolute override price, use it
+                $price = $variant->price;
+            } else {
+                // Otherwise apply modifier to product's discounted price
+                $price = $price + $variant->price_modifier;
+            }
         }
 
         $existing = $cart->items()

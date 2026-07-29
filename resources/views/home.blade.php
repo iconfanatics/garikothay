@@ -985,7 +985,7 @@
     $dbPromos = \App\Models\Setting::get('theme1_promo_banners');
     $promos = empty($dbPromos) ? $fallbackPromos : collect($dbPromos);
 
-    $saleProducts = $featured->filter(fn ($product) => (float) ($product->compare_price ?? 0) > (float) ($product->price ?? 0))->take(5);
+    $saleProducts = $featured->filter(fn ($product) => $product->original_price > $product->selling_price)->take(5);
     if ($saleProducts->isEmpty()) {
         $saleProducts = $featured->take(5);
     }

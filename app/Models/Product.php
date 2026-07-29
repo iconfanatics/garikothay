@@ -233,18 +233,62 @@ public function brand()
         return $this->images->firstWhere('is_primary', true) ?? $this->images->first();
     }
 
+    public function getActiveDiscountAmount(): float
+    {
+        if (!$this->discount_amount || !$this->discount_type) {
+            return 0;
+        }
+
+        // Check dates
+        if ($this->discount_start_date && $this->discount_start_date > now()) {
+            return 0;
+        }
+        if ($this->discount_end_date && $this->discount_end_date < now()) {
+            return 0;
+        }
+
+        if ($this->discount_type === 'Percentage') {
+            return (float) $this->attributes['price'] * ($this->discount_amount / 100);
+        }
+
+        return (float) $this->discount_amount;
+    }
+
+    public function getSellingPriceAttribute(): float
+    {
+        $price = (float) $this->attributes['price'];
+        return max(0, $price - $this->getActiveDiscountAmount());
+    }
+
+    public function getOriginalPriceAttribute(): float
+    {
+        $price = (float) $this->attributes['price'];
+        $comparePrice = (float) ($this->attributes['compare_price'] ?? 0);
+        
+        // If there's an active discount, the original price is the DB price (or compare_price if higher).
+        // If no active discount, original price is compare_price (if set).
+        if ($this->getActiveDiscountAmount() > 0) {
+            return $comparePrice > $price ? $comparePrice : $price;
+        }
+        
+        return $comparePrice > $price ? $comparePrice : $price;
+    }
+
     public function getFormattedPriceAttribute(): string
     {
-        return '৳' . number_format((float) $this->price, 2);
+        return '৳' . number_format($this->selling_price, 2);
     }
 
     public function getDiscountPercentageAttribute(): int
     {
-        if (!$this->compare_price || $this->compare_price <= $this->price) {
+        $original = $this->original_price;
+        $selling = $this->selling_price;
+
+        if ($original <= 0 || $original <= $selling) {
             return 0;
         }
 
-        return (int) round((($this->compare_price - $this->price) / $this->compare_price) * 100);
+        return (int) round((($original - $selling) / $original) * 100);
     }
 
     public function getProfitMarginAttribute(): ?float

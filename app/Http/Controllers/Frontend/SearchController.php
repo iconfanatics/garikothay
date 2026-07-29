@@ -26,7 +26,10 @@ class SearchController extends Controller
         if (mb_strlen($query) >= 2) {
             $productQuery = Product::with(['translations', 'images', 'category.translations'])
                 ->active()
-                ->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$query}%"));
+                ->where(function($q) use ($query) {
+                    $q->whereHas('translations', fn ($tq) => $tq->where('name', 'like', "%{$query}%"))
+                      ->orWhere('sku', 'like', "%{$query}%");
+                });
 
             if ($selectedCategory) {
                 $categoryIds = $selectedCategory->children
