@@ -472,6 +472,7 @@ class OrderResource extends Resource
                             $record->update([
                                 'steadfast_consignment_id' => $result['consignment_id'],
                                 'steadfast_tracking_code' => $result['tracking_code'],
+                                'tracking_number' => $result['tracking_code'],
                                 'steadfast_status' => $result['status'],
                                 'delivery_method' => 'Steadfast',
                             ]);
@@ -547,6 +548,7 @@ class OrderResource extends Resource
                                     $record->update([
                                         'steadfast_consignment_id' => $result['consignment_id'],
                                         'steadfast_tracking_code' => $result['tracking_code'],
+                                        'tracking_number' => $result['tracking_code'],
                                         'steadfast_status' => $result['status'],
                                         'delivery_method' => 'Steadfast',
                                     ]);
