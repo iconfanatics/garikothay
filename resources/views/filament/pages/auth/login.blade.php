@@ -4,6 +4,7 @@
         $meta = $seoService->getMetaData();
         $siteName = $meta['siteName'];
     @endphp
+
     @push('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -22,10 +23,6 @@
         .fi-simple-layout {
             background-color: #f8fafc;
         }
-    </style>
-    @push('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-    <style>
         .gk-login {
             min-height: calc(100vh - 180px);
             background: #f8fafc;
@@ -290,7 +287,9 @@
         }
     </style>
     @endpush
+
     <x-navbar :site-name="$siteName" />
+
     <div class="gk-login">
         <nav class="gk-login-breadcrumb">
             <div class="gk-login-container gk-login-breadcrumb-inner">
@@ -353,5 +352,6 @@
             </div>
         </div>
     </div>
+
     <x-footer />
 </div>
