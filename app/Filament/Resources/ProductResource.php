@@ -44,7 +44,7 @@ class ProductResource extends Resource
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\Select::make('parent_category_id')
                             ->label('Parent Category')
-                            ->options(fn () => Category::whereNull('parent_id')->with('translations')->get()->pluck('name', 'id'))
+                            ->options(fn () => Category::whereNull('parent_id')->with('translations')->get()->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)]))
                             ->live()
                             ->dehydrated(false)
                             ->afterStateUpdated(fn (Forms\Set $set) => $set('category_id', null))
@@ -58,13 +58,13 @@ class ProductResource extends Resource
                             ->options(function (Forms\Get $get) {
                                 $parentId = $get('parent_category_id');
                                 if (! $parentId) {
-                                    return Category::with('translations')->get()->pluck('name', 'id');
+                                    return Category::with('translations')->get()->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)]);
                                 }
                                 return Category::where('parent_id', $parentId)
                                     ->orWhere('id', $parentId)
                                     ->with('translations')
                                     ->get()
-                                    ->pluck('name', 'id');
+                                    ->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)]);
                             })
                             ->searchable()
                             ->required(),
@@ -811,7 +811,7 @@ class ProductResource extends Resource
                         ->form([
                             Forms\Components\Select::make('category_id')
                                 ->label('New Category')
-                                ->options(Category::with('translations')->get()->pluck('name', 'id'))
+                                ->options(Category::with('translations')->get()->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)]))
                                 ->required(),
                         ])
                         ->action(fn ($records, array $data) => $records->each->update(['category_id' => $data['category_id']])),

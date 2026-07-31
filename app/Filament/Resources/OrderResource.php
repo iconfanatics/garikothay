@@ -219,7 +219,7 @@ class OrderResource extends Resource
                         Forms\Components\Grid::make(5)->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label('Product')
-                                ->options(fn () => \App\Models\Product::with('translations')->get()->pluck('name', 'id'))
+                                ->options(fn () => \App\Models\Product::with('translations')->get()->mapWithKeys(fn ($p) => [$p->id => (string) ($p->name ?? 'Product #'.$p->id)]))
                                 ->searchable()
                                 ->preload()
                                 ->required()
@@ -241,7 +241,7 @@ class OrderResource extends Resource
                                 ->options(function (Forms\Get $get) {
                                     $productId = $get('product_id');
                                     if (! $productId) return [];
-                                    return \App\Models\ProductVariant::where('product_id', $productId)->pluck('name', 'id');
+                                    return \App\Models\ProductVariant::where('product_id', $productId)->get()->mapWithKeys(fn ($v) => [$v->id => (string) ($v->name ?? 'Variant #'.$v->id)]);
                                 })
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {

@@ -111,7 +111,7 @@ class ReviewResource extends Resource
                     ->options(
                         Product::with('translations')
                             ->get()
-                            ->pluck('name', 'id')
+                            ->mapWithKeys(fn($p) => [$p->id => (string) ($p->name ?? 'Product #'.$p->id)])
                     )
                     ->searchable(),
             ])

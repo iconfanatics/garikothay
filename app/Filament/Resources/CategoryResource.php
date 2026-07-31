@@ -61,10 +61,10 @@ class CategoryResource extends Resource
                     Forms\Components\Select::make('parent_id')
                         ->label('Parent Category')
                         ->options(
-                            Category::with('translations')
-                                ->whereNull('parent_id')
+                            Category::whereNull('parent_id')
+                                ->with('translations')
                                 ->get()
-                                ->pluck('name', 'id')
+                                ->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)])
                         )
                         ->searchable()
                         ->nullable()
@@ -248,7 +248,7 @@ class CategoryResource extends Resource
                         Category::with('translations')
                             ->whereNull('parent_id')
                             ->get()
-                            ->pluck('name', 'id')
+                            ->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)])
                     ),
                 Tables\Filters\Filter::make('empty_categories')
                     ->label('Empty Categories (No Products)')
