@@ -31,15 +31,24 @@ class PaymentResource extends Resource
                         ->relationship('order', 'order_number')
                         ->searchable()
                         ->required(),
-                    Forms\Components\TextInput::make('transaction_id')
+                    Forms\Components\Placeholder::make('customer')
+                        ->label('Customer')
+                        ->content(fn ($record) => $record?->order?->user?->name ?? $record?->order?->customer_name ?? 'N/A'),
+                    Forms\Components\TextInput::make('payment_method')
+                        ->label('Payment Gateway')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('payment_method')
+                    Forms\Components\TextInput::make('transaction_id')
+                        ->label('Gateway Transaction ID')
                         ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('payment_reference')
+                        ->label('Payment Reference')
                         ->maxLength(255),
                     Forms\Components\TextInput::make('amount')
                         ->required()
-                        ->numeric(),
+                        ->numeric()
+                        ->prefix('৳'),
                     Forms\Components\TextInput::make('currency')
                         ->required()
                         ->default('BDT')
@@ -55,10 +64,48 @@ class PaymentResource extends Resource
                         ->default('pending'),
                     Forms\Components\DateTimePicker::make('paid_at'),
                 ])->columns(2),
+                
                 Forms\Components\Section::make('Gateway Response')->schema([
+                    Forms\Components\TextInput::make('gateway_response_code')
+                        ->label('Gateway Response Code')
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('gateway_response_message')
+                        ->label('Gateway Response Message')
+                        ->rows(2)
+                        ->columnSpanFull(),
                     Forms\Components\KeyValue::make('gateway_response')
-                        ->label('Raw Gateway Data'),
-                ])
+                        ->label('Raw Gateway Data')
+                        ->columnSpanFull(),
+                ])->columns(2),
+
+                Forms\Components\Section::make('Refund Information')->schema([
+                    Forms\Components\TextInput::make('refund_amount')
+                        ->label('Refund Amount')
+                        ->numeric()
+                        ->prefix('৳'),
+                    Forms\Components\DateTimePicker::make('refund_date')
+                        ->label('Refund Date'),
+                    Forms\Components\TextInput::make('refund_transaction_id')
+                        ->label('Refund Transaction ID')
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('refund_reason')
+                        ->label('Refund Reason')
+                        ->rows(2)
+                        ->columnSpanFull(),
+                ])->columns(2),
+
+                Forms\Components\Section::make('Additional Information')->schema([
+                    Forms\Components\Textarea::make('remarks')
+                        ->label('Remarks / Admin Notes')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Placeholder::make('created_by')
+                        ->label('Created By')
+                        ->content(fn ($record) => $record?->createdByAdmin?->name ?? 'System'),
+                    Forms\Components\Placeholder::make('created_at')
+                        ->label('Created At')
+                        ->content(fn ($record) => $record?->created_at?->format('d M Y, h:i A') ?? '-'),
+                ])->columns(2),
             ]);
     }
 
@@ -150,18 +197,27 @@ class PaymentResource extends Resource
                         
                         return response()->streamDownload(function () use ($query) {
                             $handle = fopen('php://output', 'w');
-                            fputcsv($handle, ['ID', 'Order Number', 'Transaction ID', 'Method', 'Amount', 'Currency', 'Status', 'Paid At', 'Created At']);
+                            fputcsv($handle, ['ID', 'Order Number', 'Customer', 'Gateway', 'Transaction ID', 'Payment Reference', 'Amount', 'Currency', 'Status', 'Gateway Response Code', 'Refund Amount', 'Refund Date', 'Refund Transaction ID', 'Refund Reason', 'Remarks', 'Paid At', 'Created By', 'Created At']);
                             
                             foreach ($query->cursor() as $payment) {
                                 fputcsv($handle, [
                                     $payment->id,
                                     $payment->order->order_number ?? '',
-                                    $payment->transaction_id,
+                                    $payment->order->user->name ?? $payment->order->customer_name ?? 'N/A',
                                     $payment->payment_method,
+                                    $payment->transaction_id,
+                                    $payment->payment_reference,
                                     $payment->amount,
                                     $payment->currency,
                                     $payment->status,
+                                    $payment->gateway_response_code,
+                                    $payment->refund_amount,
+                                    $payment->refund_date,
+                                    $payment->refund_transaction_id,
+                                    $payment->refund_reason,
+                                    $payment->remarks,
                                     $payment->paid_at,
+                                    $payment->createdByAdmin->name ?? 'System',
                                     $payment->created_at,
                                 ]);
                             }
