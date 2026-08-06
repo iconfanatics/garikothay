@@ -41,20 +41,49 @@ class BlogCategoryResource extends Resource
                         ->label('Name (বাংলা)')
                         ->maxLength(255),
                 ]),
+                Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Textarea::make('translations.en.description')
+                        ->label('Description (English)')
+                        ->rows(3),
+                    Forms\Components\Textarea::make('translations.bn.description')
+                        ->label('Description (বাংলা)')
+                        ->rows(3),
+                ]),
                 Forms\Components\TextInput::make('slug')
                     ->label('Slug')
                     ->required()
                     ->maxLength(255)
                     ->unique(BlogCategory::class, 'slug', ignoreRecord: true),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('Active')
-                    ->default(true),
                 Forms\Components\FileUpload::make('image')
                     ->label('Featured Image / Icon')
                     ->image()
                     ->directory('blog_categories')
                     ->columnSpanFull(),
+                Forms\Components\TextInput::make('meta_title')
+                    ->label('Meta Title')
+                    ->maxLength(255)
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('meta_description')
+                    ->label('Meta Description')
+                    ->rows(2)
+                    ->columnSpanFull(),
             ]),
+            
+            Forms\Components\Section::make('Display Settings')->schema([
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Active')
+                    ->default(true),
+                Forms\Components\Toggle::make('is_featured')
+                    ->label('Featured Category')
+                    ->default(false),
+                Forms\Components\Toggle::make('show_on_homepage')
+                    ->label('Show on Homepage')
+                    ->default(false),
+                Forms\Components\TextInput::make('sort_order')
+                    ->label('Sort Order')
+                    ->numeric()
+                    ->default(0),
+            ])->columns(2),
         ]);
     }
 
@@ -76,7 +105,15 @@ class BlogCategoryResource extends Resource
                     ->circular(false)
                     ->size(40),
                 Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextInputColumn::make('sort_order')
+                    ->label('Sort')
+                    ->sortable(),
+                Tables\Columns\ToggleColumn::make('is_featured')
+                    ->label('Featured'),
+                Tables\Columns\ToggleColumn::make('show_on_homepage')
+                    ->label('On Homepage'),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Active'),
                 Tables\Columns\TextColumn::make('blogs_count')
@@ -86,9 +123,11 @@ class BlogCategoryResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->date('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('sort_order', 'asc')
+            ->reorderable('sort_order')
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()

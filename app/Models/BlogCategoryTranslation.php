@@ -11,7 +11,7 @@ class BlogCategoryTranslation extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['blog_category_id', 'locale', 'name'];
+    protected $fillable = ['blog_category_id', 'locale', 'name', 'description'];
 
     public function blogCategory(): BelongsTo
     {

@@ -12,7 +12,10 @@ class BlogCategory extends Model
 {
     use HasTranslations;
 
-    protected $fillable = ['slug', 'is_active', 'image'];
+    protected $fillable = [
+        'slug', 'is_active', 'image',
+        'meta_title', 'meta_description', 'sort_order', 'is_featured', 'show_on_homepage'
+    ];
 
     public function translations(): HasMany
     {
@@ -27,5 +30,10 @@ class BlogCategory extends Model
     public function getNameAttribute(): ?string
     {
         return $this->getTranslation('name');
+    }
+
+    public function getDescriptionAttribute(): ?string
+    {
+        return $this->getTranslation('description');
     }
 }
