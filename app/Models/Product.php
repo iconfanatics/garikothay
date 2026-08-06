@@ -186,6 +186,12 @@ public function brand()
                       $q2->where('publish_status', 'Scheduled')
                          ->where('published_at', '<=', now());
                   });
+            })
+            ->where(function ($q) {
+                $q->whereNull('supplier_id')
+                  ->orWhereHas('supplier', function ($q2) {
+                      $q2->where('is_active', true);
+                  });
             });
     }
 

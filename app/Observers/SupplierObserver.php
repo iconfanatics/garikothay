@@ -19,13 +19,7 @@ class SupplierObserver
      */
     public function updated(Supplier $supplier): void
     {
-        if ($supplier->isDirty('is_active') && ! $supplier->is_active) {
-            $supplier->products()->update([
-                'stock_quantity' => 0,
-                'publish_status' => 'Unpublished',
-                'is_active' => false,
-            ]);
-        }
+        // Product visibility is now handled dynamically in Product::scopeActive()
     }
 
     /**
