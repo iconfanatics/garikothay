@@ -236,12 +236,21 @@ class CategoryResource extends Resource
                     ->label('Active Status')
                     ->trueLabel('Active Only')
                     ->falseLabel('Inactive Only'),
-                Tables\Filters\Filter::make('root_only')
-                    ->label('Top-Level Only')
-                    ->query(fn ($query) => $query->whereNull('parent_id')),
-                Tables\Filters\Filter::make('sub_only')
-                    ->label('Subcategories Only')
-                    ->query(fn ($query) => $query->whereNotNull('parent_id')),
+                Tables\Filters\SelectFilter::make('level')
+                    ->label('Category Level')
+                    ->options([
+                        'root' => 'Top-Level Only',
+                        'sub' => 'Subcategories Only',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if ($data['value'] === 'root') {
+                            return $query->whereNull('parent_id');
+                        }
+                        if ($data['value'] === 'sub') {
+                            return $query->whereNotNull('parent_id');
+                        }
+                        return $query;
+                    }),
                 Tables\Filters\SelectFilter::make('parent_id')
                     ->label('Under Parent')
                     ->options(
