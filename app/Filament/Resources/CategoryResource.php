@@ -243,10 +243,11 @@ class CategoryResource extends Resource
                         'sub' => 'Subcategories Only',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
-                        if ($data['value'] === 'root') {
+                        $value = $data['value'] ?? null;
+                        if ($value === 'root') {
                             return $query->whereNull('parent_id');
                         }
-                        if ($data['value'] === 'sub') {
+                        if ($value === 'sub') {
                             return $query->whereNotNull('parent_id');
                         }
                         return $query;
