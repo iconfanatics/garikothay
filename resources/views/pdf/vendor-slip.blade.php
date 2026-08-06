@@ -53,29 +53,49 @@
             </tr>
         </table>
 
-        <table class="items-table">
-            <thead>
-                <tr>
-                    <th style="width: 10%;" class="text-center">#</th>
-                    <th style="width: 70%;">Product Details</th>
-                    <th style="width: 20%;" class="text-center">Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($order->items as $index => $item)
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>
-                        <strong>{{ $item->product_name }}</strong>
-                        @if($item->variant_name)
-                            <br><small>Variant: {{ $item->variant_name }}</small>
-                        @endif
-                    </td>
-                    <td class="text-center" style="font-size: 16px; font-weight: bold;">{{ $item->quantity }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        @php
+            $itemsBySupplier = $order->items->groupBy(function($item) {
+                return $item->product?->supplier_id ?? 'none';
+            });
+        @endphp
+
+        @foreach($itemsBySupplier as $supplierId => $items)
+            @php
+                $supplier = $supplierId !== 'none' ? \App\Models\Supplier::find($supplierId) : null;
+            @endphp
+            
+            <div style="margin-bottom: 10px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ddd;">
+                <strong style="font-size: 16px;">Vendor: {{ $supplier ? $supplier->name : 'In-House / Own Stock' }}</strong><br>
+                @if($supplier)
+                    <strong>Contact:</strong> {{ $supplier->contact_person ? $supplier->contact_person . ' (' . $supplier->contact_number . ')' : $supplier->contact_number }} <br>
+                    <strong>Address:</strong> {{ $supplier->address }}
+                @endif
+            </div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;" class="text-center">#</th>
+                        <th style="width: 70%;">Product Details</th>
+                        <th style="width: 20%;" class="text-center">Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($items as $index => $item)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>
+                            <strong>{{ $item->product_name }}</strong>
+                            @if($item->variant_name)
+                                <br><small>Variant: {{ $item->variant_name }}</small>
+                            @endif
+                        </td>
+                        <td class="text-center" style="font-size: 16px; font-weight: bold;">{{ $item->quantity }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endforeach
 
         <div class="cod-box">
             <h3>COLLECT FROM CUSTOMER (COD)</h3>
