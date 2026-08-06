@@ -536,6 +536,15 @@ class OrderResource extends Resource
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['status' => OrderStatus::Confirmed]))
                         ->requiresConfirmation(),
+                    Tables\Actions\BulkAction::make('bulk_download_vendor_slip')
+                        ->label('Download Vendor Slip (Consolidated)')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('warning')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.bulk-vendor-slip', ['orders' => $records]);
+                            return response()->streamDownload(fn () => print($pdf->output()), 'bulk-vendor-slip-' . now()->format('YmdHi') . '.pdf');
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     Tables\Actions\BulkAction::make('bulk_send_to_steadfast')
                         ->label('Send to Steadfast Courier')
                         ->icon('heroicon-o-paper-airplane')
