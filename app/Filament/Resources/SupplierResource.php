@@ -45,6 +45,14 @@ class SupplierResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('products_count')
+                    ->counts('products')
+                    ->label('Products')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('order_items_count')
+                    ->counts('orderItems')
+                    ->label('Times Ordered')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('contact_person')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact_number')

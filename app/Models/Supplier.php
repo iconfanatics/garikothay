@@ -20,4 +20,9 @@ class Supplier extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function orderItems()
+    {
+        return $this->hasManyThrough(OrderItem::class, Product::class);
+    }
 }
