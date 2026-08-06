@@ -174,7 +174,7 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('Category ID')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('id')->label('Category ID')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Thumbnail')
                     ->disk('public')
@@ -217,11 +217,13 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created Date')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Last Updated')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort_order')
             ->groups([
