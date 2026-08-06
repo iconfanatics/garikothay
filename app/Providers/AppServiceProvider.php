@@ -36,8 +36,17 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(UserRegistered::class, SendWelcomeEmail::class);
         Event::listen(\Illuminate\Auth\Events\Login::class, \App\Listeners\UpdateLastLogin::class);
 
-        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability, $arguments = []) {
             if ($user instanceof \App\Models\Admin && $user->is_super_admin) {
+                if (in_array($ability, ['delete', 'forceDelete']) && isset($arguments[0])) {
+                    $model = $arguments[0];
+                    if ($model instanceof \Spatie\Permission\Models\Role && $model->name === 'super_admin') {
+                        return null;
+                    }
+                    if ($model instanceof \App\Models\Admin && $model->id === 1) {
+                        return null;
+                    }
+                }
                 return true;
             }
         });
