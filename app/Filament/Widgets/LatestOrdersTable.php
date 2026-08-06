@@ -23,11 +23,9 @@ class LatestOrdersTable extends BaseWidget
     {
         return $table
             ->query(
-                Order::query()
-                    ->with(['user'])
-                    ->latest()
-                    ->limit(10)
+                Order::query()->with(['user'])
             )
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Order #')
@@ -59,6 +57,7 @@ class LatestOrdersTable extends BaseWidget
                     ->icon('heroicon-o-pencil-square')
                     ->url(fn (Order $record): string => OrderResource::getUrl('edit', ['record' => $record])),
             ])
-            ->paginated(false);
+            ->defaultPaginationPageOption(10)
+            ->paginated([10, 25, 50]);
     }
 }
