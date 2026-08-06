@@ -108,8 +108,20 @@
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">{{ __('general.contact') }}
             </h4>
             <ul class="space-y-2 text-sm text-gray-400">
-                <li>📞 {{ \App\Models\Setting::get('phone', '+880 1700-000000') }}</li>
-                <li>✉ {{ \App\Models\Setting::get('email', 'support@garikothay.com') }}</li>
+                @php
+                    $phone1 = \App\Models\Setting::get('phone', '+880 1700-000000');
+                    $phone2 = \App\Models\Setting::get('phone_2');
+                    $phone3 = \App\Models\Setting::get('phone_3');
+                    $email = \App\Models\Setting::get('email', 'support@garikothay.com');
+                @endphp
+                <li>📞 <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone1) }}" class="hover:text-rose-400 transition">{{ $phone1 }}</a></li>
+                @if($phone2)
+                <li>📞 <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone2) }}" class="hover:text-rose-400 transition">{{ $phone2 }}</a></li>
+                @endif
+                @if($phone3)
+                <li>📞 <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone3) }}" class="hover:text-rose-400 transition">{{ $phone3 }}</a></li>
+                @endif
+                <li>✉ <a href="mailto:{{ $email }}" class="hover:text-rose-400 transition">{{ $email }}</a></li>
                 <li>📍 {{ \App\Models\Setting::get('address', 'House 24, Road 7, Banani, Dhaka 1213, Bangladesh') }}</li>
             </ul>
             <div x-data="{ email: '', msg: '' }" class="gk-footer-newsletter">
