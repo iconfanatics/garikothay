@@ -135,6 +135,8 @@ class PaymentResource extends Resource
                     }),
             ])
             ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
+            ->defaultPaginationPageOption(30)
+            ->paginationPageOptions([10, 30, 50, 100, 'all'])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
