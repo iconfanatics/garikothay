@@ -48,11 +48,13 @@ class SupplierResource extends Resource
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
                     ->label('Products')
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn (\App\Models\Supplier $record): string => \App\Filament\Resources\ProductResource::getUrl('index', ['tableFilters' => ['supplier_id' => ['value' => $record->id]]])),
                 Tables\Columns\TextColumn::make('order_items_count')
                     ->counts('orderItems')
                     ->label('Times Ordered')
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn (\App\Models\Supplier $record): string => \App\Filament\Resources\OrderResource::getUrl('index', ['tableFilters' => ['supplier_id' => ['value' => $record->id]]])),
                 Tables\Columns\TextColumn::make('contact_person')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact_number')

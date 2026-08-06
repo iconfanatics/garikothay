@@ -439,6 +439,13 @@ class OrderResource extends Resource
                 Tables\Filters\SelectFilter::make('assigned_staff_id')
                     ->label('Assigned Staff')
                     ->relationship('assignedStaff', 'name'),
+                Tables\Filters\SelectFilter::make('supplier_id')
+                    ->label('Supplier')
+                    ->options(fn () => \App\Models\Supplier::pluck('name', 'id')->toArray())
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['value'])) return $query;
+                        return $query->whereHas('items.product', fn($q) => $q->where('supplier_id', $data['value']));
+                    }),
             ])
             ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
