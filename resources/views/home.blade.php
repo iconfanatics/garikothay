@@ -1032,13 +1032,15 @@
 
     $displayCategories = $fallbackCategories->concat($categories)->unique('slug')->take(12);
 
-    $stats = [
+    $fallbackStats = [
         ['value' => '500+', 'label' => 'Total Products'],
         ['value' => '10+', 'label' => 'Service Types'],
         ['value' => '64', 'label' => 'District Reach'],
         ['value' => '24/7', 'label' => 'Support'],
         ['value' => '10K+', 'label' => 'Happy Customers'],
     ];
+    $dbStats = \App\Models\Setting::get('theme1_stats');
+    $stats = empty($dbStats) ? $fallbackStats : collect($dbStats);
 
     $deliveryPartners = ['🚲 Pathao', '✈ Paperfly', '🚚 RedX', '▣ Sundarban', '📦 SA Paribahan', '🚀 Steadfast', '➤ eCourier', '⛴ Janani'];
     $partnerLoop = array_merge($deliveryPartners, $deliveryPartners);

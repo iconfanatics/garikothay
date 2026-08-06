@@ -37,6 +37,17 @@ class ThemeSettings extends Page
             ];
         }
 
+        $stats = $settings->get('theme1_stats')?->getCastedValue();
+        if (empty($stats)) {
+            $stats = [
+                ['value' => '500+', 'label' => 'Total Products'],
+                ['value' => '10+', 'label' => 'Service Types'],
+                ['value' => '64', 'label' => 'District Reach'],
+                ['value' => '24/7', 'label' => 'Support'],
+                ['value' => '10K+', 'label' => 'Happy Customers'],
+            ];
+        }
+
         $this->form->fill([
             'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
@@ -44,6 +55,7 @@ class ThemeSettings extends Page
             'theme1_hero_slides' => $settings->get('theme1_hero_slides')?->getCastedValue() ?? [],
             'theme1_promo_banners' => $settings->get('theme1_promo_banners')?->getCastedValue() ?? [],
             'theme1_trust_features' => $trustFeatures,
+            'theme1_stats' => $stats,
         ]);
     }
 
@@ -179,7 +191,26 @@ class ThemeSettings extends Page
                             ->defaultItems(0)
                             ->maxItems(4)
                     ])
-            ])
+            ]),
+            Forms\Components\Section::make('Stats Counter')
+                ->description('Customize the statistics numbers shown on the homepage.')
+                ->schema([
+                    Forms\Components\Repeater::make('theme1_stats')
+                        ->label('Stats')
+                        ->schema([
+                            Forms\Components\TextInput::make('value')
+                                ->label('Value (e.g. 500+)')
+                                ->required(),
+                            Forms\Components\TextInput::make('label')
+                                ->label('Label')
+                                ->required(),
+                        ])
+                        ->columns(2)
+                        ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                        ->collapsible()
+                        ->defaultItems(0)
+                        ->maxItems(5)
+                ])
             ->statePath('data');
     }
 
@@ -194,6 +225,7 @@ class ThemeSettings extends Page
             'theme1_hero_slides' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_promo_banners' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_trust_features' => ['group' => 'theme', 'type' => SettingType::Json],
+            'theme1_stats' => ['group' => 'theme', 'type' => SettingType::Json],
         ];
 
         foreach ($data as $key => $value) {
