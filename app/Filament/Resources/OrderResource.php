@@ -111,8 +111,19 @@ class OrderResource extends Resource
             ]);
     }
 
-        public static function form(Form $form): Form
+    public static function form(Form $form): Form
     {
+        $locations = [
+            'Dhaka' => ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+            'Chattogram' => ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+            'Rajshahi' => ['Bogra', 'Chapainawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
+            'Khulna' => ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+            'Barishal' => ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+            'Sylhet' => ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+            'Rangpur' => ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+            'Mymensingh' => ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur']
+        ];
+
         return $form->schema([
             Forms\Components\Section::make('Manage Order')->schema([
                 Forms\Components\Grid::make(4)->schema([
@@ -180,7 +191,8 @@ class OrderResource extends Resource
                         ])
                         ->default('Steadfast'),
                     Forms\Components\TextInput::make('tracking_number')
-                        ->label('Tracking Number (Optional)'),
+                        ->label('Tracking Number (Optional)')
+                        ->default(fn () => 'TRK-' . date('Ymd') . '-' . mt_rand(100, 999)),
                 ]),
                 Forms\Components\Textarea::make('notes')
                     ->label('Admin Notes')
@@ -204,23 +216,41 @@ class OrderResource extends Resource
                         ->required(),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Select::make('shipping_address.division')
+                        ->label('Division')
+                        ->options(array_combine(array_keys($locations), array_keys($locations)))
+                        ->live(),
+                    Forms\Components\Select::make('shipping_address.city')
+                        ->label('City (District)')
+                        ->options(fn (Forms\Get $get): array => 
+                            $get('shipping_address.division') ? array_combine($locations[$get('shipping_address.division')] ?? [], $locations[$get('shipping_address.division')] ?? []) : []
+                        ),
                     Forms\Components\TextInput::make('shipping_address.upazila')
                         ->label('Upazila/Area'),
-                    Forms\Components\TextInput::make('shipping_address.city')
-                        ->label('City'),
-                    Forms\Components\TextInput::make('shipping_address.district')
-                        ->label('District'),
                 ]),
             ]),
             Forms\Components\Section::make('Order Items')->schema([
                 Forms\Components\Repeater::make('items')
                     ->relationship()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                        $items = $get('items') ?? [];
+                        $subtotal = 0;
+                        foreach ($items as $item) {
+                            $subtotal += (float) ($item['total_price'] ?? 0);
+                        }
+                        $set('subtotal', $subtotal);
+                        $discount = (float) $get('discount_amount');
+                        $shipping = (float) $get('shipping_amount');
+                        $set('total', $subtotal - $discount + $shipping);
+                    })
                     ->schema([
                         Forms\Components\Grid::make(5)->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label('Product')
-                                ->options(fn () => \App\Models\Product::with('translations')->get()->mapWithKeys(fn ($p) => [$p->id => (string) ($p->name ?? 'Product #'.$p->id)]))
                                 ->searchable()
+                                ->getSearchResultsUsing(fn (string $search): array => \App\Models\Product::where('sku', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%")->limit(50)->get()->mapWithKeys(fn ($p) => [$p->id => $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '')])->toArray())
+                                ->getOptionLabelUsing(fn ($value): ?string => ($p = \App\Models\Product::find($value)) ? $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '') : null)
                                 ->preload()
                                 ->required()
                                 ->live(onBlur: true)
@@ -284,14 +314,28 @@ class OrderResource extends Resource
             Forms\Components\Section::make('Financials')->schema([
                 Forms\Components\Grid::make(4)->schema([
                     Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required(),
-                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required(),
-                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required(),
+                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required()
+                        ->live(onBlur: true)->afterStateUpdated(fn(Forms\Get $get, Forms\Set $set, $state) => $set('total', (float) $get('subtotal') - (float) $state + (float) $get('shipping_amount'))),
+                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required()
+                        ->live(onBlur: true)->afterStateUpdated(fn(Forms\Get $get, Forms\Set $set, $state) => $set('total', (float) $get('subtotal') - (float) $get('discount_amount') + (float) $state)),
                     Forms\Components\TextInput::make('total')->label('Total')->numeric()->required(),
                 ]),
-                Forms\Components\TextInput::make('coupon_code')
-                    ->label('Coupon Code (Optional)')
+                Forms\Components\Select::make('coupon_id')
+                    ->label('Coupon (Optional)')
+                    ->relationship('coupon', 'code')
+                    ->searchable()
+                    ->preload()
                     ->nullable(),
             ]),
+            Forms\Components\Section::make('Payment Info (Optional)')->schema([
+                Forms\Components\TextInput::make('manual_payment_amount')
+                    ->label('Amount Paid')
+                    ->numeric()
+                    ->placeholder('e.g. 500'),
+                Forms\Components\TextInput::make('manual_payment_reference')
+                    ->label('Transaction ID / Reference')
+                    ->placeholder('e.g. TrxID...'),
+            ])->hiddenOn('edit'),
         ]);
     }
 
