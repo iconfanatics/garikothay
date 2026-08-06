@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vendor Slip - {{ $order->order_number }}</title>
+    <title>Bulk Vendor Slip - {{ now()->format('Y-m-d') }}</title>
     <style>
         body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px; color: #333; }
         .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px dashed #aaa; }
