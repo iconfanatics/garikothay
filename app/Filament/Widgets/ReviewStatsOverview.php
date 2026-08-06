@@ -16,15 +16,18 @@ class ReviewStatsOverview extends BaseWidget
             Stat::make('Total Reviews', Review::count())
                 ->description('All time reviews')
                 ->descriptionIcon('heroicon-m-chat-bubble-left-ellipsis')
-                ->color('primary'),
+                ->color('primary')
+                ->url(route('filament.admin.resources.reviews.index')),
             Stat::make('Pending Reviews', Review::where('is_approved', false)->count())
                 ->description('Needs moderation')
                 ->descriptionIcon('heroicon-m-clock')
-                ->color('warning'),
+                ->color('warning')
+                ->url(route('filament.admin.resources.reviews.index', ['tableFilters' => ['is_approved' => ['value' => '0']]])),
             Stat::make('Approved Reviews', Review::where('is_approved', true)->count())
                 ->description('Visible on site')
                 ->descriptionIcon('heroicon-m-check-badge')
-                ->color('success'),
+                ->color('success')
+                ->url(route('filament.admin.resources.reviews.index', ['tableFilters' => ['is_approved' => ['value' => '1']]])),
         ];
     }
 }

@@ -86,6 +86,9 @@ class StatsOverview extends BaseWidget
         $totalBrands = \App\Models\Brand::count();
         $totalSuppliers = \App\Models\Supplier::count();
 
+        $activeSuppliers = \App\Models\Supplier::where('is_active', true)->count();
+        $inactiveSuppliers = \App\Models\Supplier::where('is_active', false)->count();
+
         return [
             Stat::make("Today's Sales", '৳' . number_format((float) $todayRevenue, 2))
                 ->description("{$todayOrdersCount} orders today")
@@ -122,7 +125,7 @@ class StatsOverview extends BaseWidget
                 ->url(\App\Filament\Resources\BrandResource::getUrl('index')),
 
             Stat::make("Total Suppliers", (string) $totalSuppliers)
-                ->description('Active suppliers')
+                ->description("{$activeSuppliers} Active, {$inactiveSuppliers} Inactive")
                 ->descriptionIcon('heroicon-m-briefcase')
                 ->color('info')
                 ->url(\App\Filament\Resources\SupplierResource::getUrl('index')),
