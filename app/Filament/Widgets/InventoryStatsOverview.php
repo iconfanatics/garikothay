@@ -36,13 +36,13 @@ class InventoryStatsOverview extends BaseWidget
                 ->color('primary')
                 ->url(route('filament.admin.resources.products.index')),
                 
-            Stat::make("Total Stock", number_format($totalStock))
-                ->description('Total physical items in warehouse')
+            Stat::make("Total Stock", number_format($totalStock) . ' Items')
+                ->description($inStockCount . ' Products in stock')
                 ->descriptionIcon('heroicon-m-inbox-stack')
                 ->color('info')
-                ->url(route('filament.admin.resources.products.index')),
+                ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'in_stock']]])),
                 
-            Stat::make("Available Stock", number_format($availableStock))
+            Stat::make("Available Stock", number_format($availableStock) . ' Items')
                 ->description('Ready for new orders')
                 ->descriptionIcon('heroicon-m-check-badge')
                 ->color('success')
