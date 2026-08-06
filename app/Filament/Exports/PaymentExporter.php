@@ -14,7 +14,15 @@ class PaymentExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            //
+            ExportColumn::make('id')->label('ID'),
+            ExportColumn::make('order.order_number')->label('Order Number'),
+            ExportColumn::make('transaction_id')->label('Transaction ID'),
+            ExportColumn::make('payment_method')->label('Method'),
+            ExportColumn::make('amount')->label('Amount'),
+            ExportColumn::make('currency')->label('Currency'),
+            ExportColumn::make('status')->label('Status'),
+            ExportColumn::make('paid_at')->label('Paid At'),
+            ExportColumn::make('created_at')->label('Created At'),
         ];
     }
 
