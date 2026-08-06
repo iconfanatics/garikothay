@@ -132,8 +132,29 @@ class BannerResource extends Resource
                 Tables\Filters\SelectFilter::make('type')
                     ->label('Banner Type')
                     ->options(BannerType::options()),
-                Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active Status'),
+                Tables\Filters\SelectFilter::make('banner_status')
+                    ->label('Banner Status')
+                    ->options([
+                        'active' => 'Active (Showing)',
+                        'scheduled' => 'Scheduled (Upcoming)',
+                        'inactive' => 'Inactive / Expired',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+                        if ($value === 'active') {
+                            return $query->where('is_active', true)
+                                ->where(fn ($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', now()))
+                                ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>=', now()));
+                        }
+                        if ($value === 'scheduled') {
+                            return $query->where('is_active', true)
+                                ->whereNotNull('starts_at')->where('starts_at', '>', now());
+                        }
+                        if ($value === 'inactive') {
+                            return $query->where(fn($q) => $q->where('is_active', false)->orWhere(fn ($q2) => $q2->whereNotNull('expires_at')->where('expires_at', '<', now())));
+                        }
+                        return $query;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

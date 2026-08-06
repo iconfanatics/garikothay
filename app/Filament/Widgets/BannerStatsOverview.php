@@ -17,17 +17,17 @@ class BannerStatsOverview extends BaseWidget
                 ->description('Currently showing')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success')
-                ->url(route('filament.admin.resources.banners.index')),
+                ->url(route('filament.admin.resources.banners.index', ['tableFilters' => ['banner_status' => ['value' => 'active']]])),
             Stat::make('Scheduled Banners', Banner::where('is_active', true)->whereNotNull('starts_at')->where('starts_at', '>', now())->count())
                 ->description('Upcoming')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('info')
-                ->url(route('filament.admin.resources.banners.index')),
+                ->url(route('filament.admin.resources.banners.index', ['tableFilters' => ['banner_status' => ['value' => 'scheduled']]])),
             Stat::make('Inactive/Expired Banners', Banner::where('is_active', false)->orWhere(fn ($q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now()))->count())
                 ->description('Needs attention')
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger')
-                ->url(route('filament.admin.resources.banners.index')),
+                ->url(route('filament.admin.resources.banners.index', ['tableFilters' => ['banner_status' => ['value' => 'inactive']]])),
         ];
     }
 }
