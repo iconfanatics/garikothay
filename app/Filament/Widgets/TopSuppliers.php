@@ -24,7 +24,6 @@ class TopSuppliers extends BaseWidget
                     ->selectRaw('SUM(order_items.total_price) as total_sales')
                     ->groupBy('suppliers.id', 'suppliers.name')
                     ->orderByDesc('total_sales')
-                    ->limit(5)
             )
             ->heading('Top Suppliers')
             ->columns([
@@ -39,6 +38,7 @@ class TopSuppliers extends BaseWidget
                     ->money('BDT')
                     ->sortable(),
             ])
-            ->paginated(false);
+            ->defaultPaginationPageOption(5)
+            ->paginated([5, 10, 25]);
     }
 }

@@ -21,7 +21,6 @@ class TopSellingProducts extends BaseWidget
                     ->withSum('orderItems', 'quantity')
                     ->having('order_items_sum_quantity', '>', 0)
                     ->orderByDesc('order_items_sum_quantity')
-                    ->limit(5)
             )
             ->heading('Top Selling Products')
             ->columns([
@@ -35,6 +34,7 @@ class TopSellingProducts extends BaseWidget
                     ->badge()
                     ->color('success'),
             ])
-            ->paginated(false);
+            ->defaultPaginationPageOption(5)
+            ->paginated([5, 10, 25]);
     }
 }
