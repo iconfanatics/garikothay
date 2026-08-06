@@ -33,6 +33,7 @@ class ThemeSettings extends Page
             'theme1_top_ticker' => $settings->get('theme1_top_ticker')?->getCastedValue() ?? [],
             'theme1_hero_slides' => $settings->get('theme1_hero_slides')?->getCastedValue() ?? [],
             'theme1_promo_banners' => $settings->get('theme1_promo_banners')?->getCastedValue() ?? [],
+            'theme1_trust_features' => $settings->get('theme1_trust_features')?->getCastedValue() ?? [],
         ]);
     }
 
@@ -142,6 +143,31 @@ class ThemeSettings extends Page
                             ->collapsible()
                             ->maxItems(2)
                             ->defaultItems(0)
+                    ]),
+                    
+                Forms\Components\Section::make('Trust Features')
+                    ->description('Customize the trust features (e.g. Free Delivery, Genuine Products) shown below the hero section.')
+                    ->schema([
+                        Forms\Components\Repeater::make('theme1_trust_features')
+                            ->label('Features')
+                            ->schema([
+                                Forms\Components\TextInput::make('icon')
+                                    ->label('Icon (Emoji or SVG)')
+                                    ->required()
+                                    ->placeholder('e.g. 🚚 or SVG code'),
+                                Forms\Components\TextInput::make('title')
+                                    ->label('Title')
+                                    ->required()
+                                    ->placeholder('e.g. Free Delivery'),
+                                Forms\Components\TextInput::make('subtitle')
+                                    ->label('Subtitle')
+                                    ->placeholder('e.g. Orders over ৳5,000'),
+                            ])
+                            ->columns(3)
+                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                            ->collapsible()
+                            ->defaultItems(0)
+                            ->maxItems(4)
                     ])
             ])
             ->statePath('data');
@@ -157,6 +183,7 @@ class ThemeSettings extends Page
             'theme1_top_ticker' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_hero_slides' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_promo_banners' => ['group' => 'theme', 'type' => SettingType::Json],
+            'theme1_trust_features' => ['group' => 'theme', 'type' => SettingType::Json],
         ];
 
         foreach ($data as $key => $value) {

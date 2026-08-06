@@ -985,6 +985,15 @@
     $dbPromos = \App\Models\Setting::get('theme1_promo_banners');
     $promos = empty($dbPromos) ? $fallbackPromos : collect($dbPromos);
 
+    $fallbackTrustFeatures = collect([
+        ['icon' => '🚚', 'title' => 'Free Delivery', 'subtitle' => 'Orders over ৳5,000'],
+        ['icon' => '🛡', 'title' => 'Genuine Products', 'subtitle' => '100% authentic items'],
+        ['icon' => '↻', 'title' => 'Easy Returns', 'subtitle' => '7-day return policy'],
+        ['icon' => '☎', 'title' => '24/7 Support', 'subtitle' => 'Call us anytime'],
+    ]);
+    $dbTrustFeatures = \App\Models\Setting::get('theme1_trust_features');
+    $trustFeatures = empty($dbTrustFeatures) ? $fallbackTrustFeatures : collect($dbTrustFeatures);
+
     $saleProducts = $featured->filter(fn ($product) => $product->original_price > $product->selling_price)->take(5);
     if ($saleProducts->isEmpty()) {
         $saleProducts = $featured->take(5);
@@ -1102,34 +1111,15 @@
 
     <section class="gk-trust">
         <div class="gk-container gk-trust-grid">
-            <div class="gk-trust-item">
-                <div class="gk-trust-icon">🚚</div>
-                <div>
-                    <div class="gk-trust-title">Free Delivery</div>
-                    <div class="gk-trust-text">Orders over ৳5,000</div>
+            @foreach($trustFeatures as $feature)
+                <div class="gk-trust-item">
+                    <div class="gk-trust-icon">{!! $feature['icon'] !!}</div>
+                    <div>
+                        <div class="gk-trust-title">{{ $feature['title'] }}</div>
+                        <div class="gk-trust-text">{{ $feature['subtitle'] ?? '' }}</div>
+                    </div>
                 </div>
-            </div>
-            <div class="gk-trust-item">
-                <div class="gk-trust-icon">🛡</div>
-                <div>
-                    <div class="gk-trust-title">Genuine Products</div>
-                    <div class="gk-trust-text">100% authentic items</div>
-                </div>
-            </div>
-            <div class="gk-trust-item">
-                <div class="gk-trust-icon">↻</div>
-                <div>
-                    <div class="gk-trust-title">Easy Returns</div>
-                    <div class="gk-trust-text">7-day return policy</div>
-                </div>
-            </div>
-            <div class="gk-trust-item">
-                <div class="gk-trust-icon">☎</div>
-                <div>
-                    <div class="gk-trust-title">24/7 Support</div>
-                    <div class="gk-trust-text">Call us anytime</div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </section>
 
