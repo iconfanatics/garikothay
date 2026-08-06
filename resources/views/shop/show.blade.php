@@ -610,6 +610,40 @@
             justify-content: space-between;
         }
     }
+
+    .gk-share-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+    }
+    .gk-share-label {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #374151;
+        margin-right: 0.25rem;
+    }
+    .gk-share-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
+        color: #ffffff;
+        font-size: 1rem;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .gk-share-btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+    .gk-share-wa { background: #25d366; }
+    .gk-share-fb { background: #1877f2; }
+    .gk-share-copy { background: #4b5563; }
 </style>
 @endpush
 
@@ -822,6 +856,22 @@
                         @if($product->isInStock() || $product->is_preorder)
                         <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ $product->is_preorder ? 'Pre-order Now' : 'Buy Now' }}</button>
                         @endif
+
+                    <div class="gk-share-actions">
+                        <span class="gk-share-label">Share:</span>
+                        <a href="https://wa.me/?text={{ urlencode($product->name . ' - ' . route('shop.show', $product->slug)) }}" target="_blank" rel="noopener" class="gk-share-btn gk-share-wa" title="Share on WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('shop.show', $product->slug)) }}" target="_blank" rel="noopener" class="gk-share-btn gk-share-fb" title="Share on Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>
+                        </a>
+                        <button type="button" class="gk-share-btn gk-share-copy" title="Copy Link" @click="
+                            navigator.clipboard.writeText('{{ route('shop.show', $product->slug) }}')
+                            .then(() => $dispatch('toast', { message: 'Link copied to clipboard!' }));
+                        ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/></svg>
+                        </button>
+                    </div>
 
                     <div class="gk-trust-grid">
                         <div><span>🛡</span>100% Genuine</div>
