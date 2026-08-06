@@ -11,8 +11,15 @@ class BlogComment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'blog_id', 'name', 'email', 'comment', 'is_approved',
+        'blog_id', 'name', 'email', 'comment', 'is_approved', 'status', 'admin_note'
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (BlogComment $comment) {
+            $comment->is_approved = ($comment->status === 'Approved');
+        });
+    }
 
     protected function casts(): array
     {
