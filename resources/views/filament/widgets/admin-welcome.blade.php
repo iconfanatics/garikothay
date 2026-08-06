@@ -17,24 +17,6 @@
                         Monitor orders, revenue, customers, inventory, and store activity from one calm and focused workspace.
                     </p>
 
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        <x-filament::button
-                            tag="a"
-                            href="{{ \App\Filament\Resources\OrderResource::getUrl('index') }}"
-                            icon="heroicon-o-shopping-bag"
-                        >
-                            View Orders
-                        </x-filament::button>
-
-                        <x-filament::button
-                            tag="a"
-                            href="{{ \App\Filament\Resources\ProductResource::getUrl('create') }}"
-                            icon="heroicon-o-plus-circle"
-                            color="gray"
-                        >
-                            Add Product
-                        </x-filament::button>
-                    </div>
                 </div>
             </div>
         </x-filament::section>
