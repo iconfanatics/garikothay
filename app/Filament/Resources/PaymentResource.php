@@ -140,11 +140,35 @@ class PaymentResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
-                Tables\Actions\ExportAction::make()->exporter(\App\Filament\Exports\PaymentExporter::class),
+                Tables\Actions\Action::make('export_csv')
+                    ->label('Export')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($livewire) {
+                        $query = clone $livewire->getFilteredTableQuery();
+                        
+                        return response()->streamDownload(function () use ($query) {
+                            $handle = fopen('php://output', 'w');
+                            fputcsv($handle, ['ID', 'Order Number', 'Transaction ID', 'Method', 'Amount', 'Currency', 'Status', 'Paid At', 'Created At']);
+                            
+                            foreach ($query->cursor() as $payment) {
+                                fputcsv($handle, [
+                                    $payment->id,
+                                    $payment->order->order_number ?? '',
+                                    $payment->transaction_id,
+                                    $payment->payment_method,
+                                    $payment->amount,
+                                    $payment->currency,
+                                    $payment->status,
+                                    $payment->paid_at,
+                                    $payment->created_at,
+                                ]);
+                            }
+                            fclose($handle);
+                        }, 'transactions-' . now()->format('Y-m-d') . '.csv');
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\ExportBulkAction::make()->exporter(\App\Filament\Exports\PaymentExporter::class),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
