@@ -40,6 +40,7 @@ class Settings extends Page
             'delivery_partner' => $settings->get('delivery_partner')?->value ?? 'Steadfast',
             'phone' => $settings->get('phone')?->value ?? '',
             'whatsapp' => $settings->get('whatsapp')?->value ?? '',
+            'whatsapp_message' => $settings->get('whatsapp_message')?->value ?? '',
             'email' => $settings->get('email')?->value ?? '',
             'home_meta_title' => $settings->get('home_meta_title')?->value ?? '',
             'home_meta_description' => $settings->get('home_meta_description')?->value ?? '',
@@ -125,6 +126,7 @@ class Settings extends Page
                 Forms\Components\Section::make('Contact')->schema([
                     Forms\Components\TextInput::make('phone')->label('Phone')->rule(new \App\Rules\BdPhone()),
                     Forms\Components\TextInput::make('whatsapp')->label('WhatsApp Number')->rule(new \App\Rules\BdPhone()),
+                    Forms\Components\TextInput::make('whatsapp_message')->label('WhatsApp Default Message')->placeholder('e.g. Hi, I need help from Garikothay'),
                     Forms\Components\TextInput::make('email')->label('Email')->email(),
                     Forms\Components\Textarea::make('address')->label('Address')->columnSpanFull(),
                 ])->columns(2),
@@ -165,6 +167,7 @@ class Settings extends Page
             'delivery_partner' => ['group' => 'logistics', 'type' => SettingType::Text],
             'phone' => ['group' => 'contact', 'type' => SettingType::Text],
             'whatsapp' => ['group' => 'contact', 'type' => SettingType::Text],
+            'whatsapp_message' => ['group' => 'contact', 'type' => SettingType::Text],
             'email' => ['group' => 'contact', 'type' => SettingType::Text],
             'address' => ['group' => 'contact', 'type' => SettingType::Textarea],
             'guest_checkout_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
