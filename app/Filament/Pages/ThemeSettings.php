@@ -27,13 +27,23 @@ class ThemeSettings extends Page
     {
         $settings = Setting::all()->keyBy('key');
 
+        $trustFeatures = $settings->get('theme1_trust_features')?->getCastedValue();
+        if (empty($trustFeatures)) {
+            $trustFeatures = [
+                ['icon' => '🚚', 'title' => 'Free Delivery', 'subtitle' => 'Orders over ৳5,000'],
+                ['icon' => '🛡', 'title' => 'Genuine Products', 'subtitle' => '100% authentic items'],
+                ['icon' => '↻', 'title' => 'Easy Returns', 'subtitle' => '7-day return policy'],
+                ['icon' => '☎', 'title' => '24/7 Support', 'subtitle' => 'Call us anytime'],
+            ];
+        }
+
         $this->form->fill([
             'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
             'theme1_top_ticker' => $settings->get('theme1_top_ticker')?->getCastedValue() ?? [],
             'theme1_hero_slides' => $settings->get('theme1_hero_slides')?->getCastedValue() ?? [],
             'theme1_promo_banners' => $settings->get('theme1_promo_banners')?->getCastedValue() ?? [],
-            'theme1_trust_features' => $settings->get('theme1_trust_features')?->getCastedValue() ?? [],
+            'theme1_trust_features' => $trustFeatures,
         ]);
     }
 
