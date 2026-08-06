@@ -46,6 +46,10 @@ class AdminPolicy
      */
     public function delete(Admin $user, Admin $admin): bool
     {
+        if ($admin->id === 1) {
+            return false;
+        }
+        
         return $user->can('delete_staff');
     }
 
@@ -62,6 +66,9 @@ class AdminPolicy
      */
     public function forceDelete(Admin $user, Admin $admin): bool
     {
+        if ($admin->id === 1) {
+            return false;
+        }
         return $user->can('force_delete_staff');
     }
 

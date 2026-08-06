@@ -47,6 +47,10 @@ class RolePolicy
      */
     public function delete(Admin $user, Role $role): bool
     {
+        if ($role->name === 'super_admin') {
+            return false;
+        }
+        
         return $user->can('delete_role');
     }
 
@@ -63,6 +67,9 @@ class RolePolicy
      */
     public function forceDelete(Admin $user, Role $role): bool
     {
+        if ($role->name === 'super_admin') {
+            return false;
+        }
         return $user->can('{{ ForceDelete }}');
     }
 
