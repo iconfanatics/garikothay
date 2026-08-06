@@ -48,6 +48,21 @@ class ThemeSettings extends Page
             ];
         }
 
+        $serviceCards = $settings->get('theme1_service_cards')?->getCastedValue();
+        if (empty($serviceCards)) {
+            $serviceCards = [
+                ['icon' => '🔧', 'name' => 'Garage Kothay', 'desc' => 'Find trusted garages near you with booking support.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#ef4444,#be123c)'],
+                ['icon' => '💦', 'name' => 'CarWash Kothay', 'desc' => 'Book car wash and detailing packages online.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#0ea5e9,#2563eb)'],
+                ['icon' => '⛽', 'name' => 'Fuel Kothay', 'desc' => 'Discover nearby fuel stations and route support.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#f59e0b,#ea580c)'],
+                ['icon' => '👤', 'name' => 'Driver Kothay', 'desc' => 'Hire verified drivers by the hour, day or month.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#10b981,#16a34a)'],
+                ['icon' => '📍', 'name' => 'GPS Tracker', 'desc' => 'Devices, installation and live monitoring plans.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#06b6d4,#0f766e)'],
+                ['icon' => '🎫', 'name' => 'Ticket Kothay', 'desc' => 'Bus, train and launch ticket support in one place.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#6366f1,#2563eb)'],
+                ['icon' => '🏫', 'name' => 'Driving School', 'desc' => 'Compare driving schools, courses and reviews.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#8b5cf6,#7c3aed)'],
+                ['icon' => '🧮', 'name' => 'Fare Calculator', 'desc' => 'Estimate distance, fuel cost and fare quickly.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#eab308,#d97706)'],
+                ['icon' => '🛒', 'name' => 'Auto Shop', 'desc' => 'Shop parts, accessories, oils, lights and tools.', 'href' => '/shop', 'bg' => 'linear-gradient(135deg,#ec4899,#be123c)'],
+            ];
+        }
+
         $this->form->fill([
             'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
@@ -56,6 +71,7 @@ class ThemeSettings extends Page
             'theme1_promo_banners' => $settings->get('theme1_promo_banners')?->getCastedValue() ?? [],
             'theme1_trust_features' => $trustFeatures,
             'theme1_stats' => $stats,
+            'theme1_service_cards' => $serviceCards,
         ]);
     }
 
@@ -209,6 +225,37 @@ class ThemeSettings extends Page
                             ->collapsible()
                             ->defaultItems(0)
                             ->maxItems(5)
+                    ]),
+                Forms\Components\Section::make('Automotive Services')
+                    ->description('Customize the service cards shown on the homepage.')
+                    ->schema([
+                        Forms\Components\Repeater::make('theme1_service_cards')
+                            ->label('Service Cards')
+                            ->schema([
+                                Forms\Components\TextInput::make('icon')
+                                    ->label('Icon (Emoji or SVG)')
+                                    ->required()
+                                    ->placeholder('e.g. 🔧'),
+                                Forms\Components\TextInput::make('bg')
+                                    ->label('Icon Background (CSS gradient or color)')
+                                    ->required()
+                                    ->placeholder('e.g. linear-gradient(135deg,#ef4444,#be123c)'),
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Service Name')
+                                    ->required()
+                                    ->placeholder('e.g. Garage Kothay'),
+                                Forms\Components\Textarea::make('desc')
+                                    ->label('Description')
+                                    ->required(),
+                                Forms\Components\TextInput::make('href')
+                                    ->label('URL')
+                                    ->required()
+                                    ->placeholder('e.g. /garages'),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->collapsible()
+                            ->defaultItems(0)
                     ])
             ])
             ->statePath('data');
@@ -226,6 +273,7 @@ class ThemeSettings extends Page
             'theme1_promo_banners' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_trust_features' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_stats' => ['group' => 'theme', 'type' => SettingType::Json],
+            'theme1_service_cards' => ['group' => 'theme', 'type' => SettingType::Json],
         ];
 
         foreach ($data as $key => $value) {

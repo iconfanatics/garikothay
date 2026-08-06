@@ -1003,7 +1003,7 @@
         $bestSellers = $newArrivals->take(5);
     }
 
-    $serviceCards = [
+    $fallbackServiceCards = [
         ['icon' => '🔧', 'name' => 'Garage Kothay', 'desc' => 'Find trusted garages near you with booking support.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#ef4444,#be123c)'],
         ['icon' => '💦', 'name' => 'CarWash Kothay', 'desc' => 'Book car wash and detailing packages online.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#0ea5e9,#2563eb)'],
         ['icon' => '⛽', 'name' => 'Fuel Kothay', 'desc' => 'Discover nearby fuel stations and route support.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#f59e0b,#ea580c)'],
@@ -1014,6 +1014,8 @@
         ['icon' => '🧮', 'name' => 'Fare Calculator', 'desc' => 'Estimate distance, fuel cost and fare quickly.', 'href' => '#', 'bg' => 'linear-gradient(135deg,#eab308,#d97706)'],
         ['icon' => '🛒', 'name' => 'Auto Shop', 'desc' => 'Shop parts, accessories, oils, lights and tools.', 'href' => route('shop.index'), 'bg' => 'linear-gradient(135deg,#ec4899,#be123c)'],
     ];
+    $dbServiceCards = \App\Models\Setting::get('theme1_service_cards');
+    $serviceCards = empty($dbServiceCards) ? $fallbackServiceCards : $dbServiceCards;
 
     $fallbackCategories = collect([
         (object) ['name' => 'Engine Parts', 'slug' => 'engine-parts', 'icon' => '⚙', 'image' => null, 'products_count' => 248],
