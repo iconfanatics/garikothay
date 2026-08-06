@@ -100,42 +100,50 @@ class StatsOverview extends BaseWidget
             Stat::make("Total Order", (string) $totalOrdersCount)
                 ->description('Total orders placed')
                 ->descriptionIcon('heroicon-m-shopping-bag')
-                ->color('info'),
+                ->color('info')
+                ->url(\App\Filament\Resources\OrderResource::getUrl('index')),
                 
             Stat::make("Total Customer", (string) $totalCustomers)
                 ->description("{$newCustomersThisMonth} new this month")
                 ->descriptionIcon('heroicon-m-users')
-                ->color('info'),
+                ->color('info')
+                ->url(\App\Filament\Resources\CustomerResource::getUrl('index')),
 
             Stat::make("Total Categories", (string) $totalCategories)
                 ->description('Product categories')
                 ->descriptionIcon('heroicon-m-tag')
-                ->color('primary'),
+                ->color('primary')
+                ->url(\App\Filament\Resources\CategoryResource::getUrl('index')),
 
             Stat::make("Total Brands", (string) $totalBrands)
                 ->description('Registered brands')
                 ->descriptionIcon('heroicon-m-tag')
-                ->color('primary'),
+                ->color('primary')
+                ->url(\App\Filament\Resources\BrandResource::getUrl('index')),
 
             Stat::make("Total Suppliers", (string) $totalSuppliers)
                 ->description('Active suppliers')
                 ->descriptionIcon('heroicon-m-briefcase')
-                ->color('info'),
+                ->color('info')
+                ->url(\App\Filament\Resources\SupplierResource::getUrl('index')),
                 
             Stat::make("Total Products", (string) $totalProducts)
                 ->description("{$inStockProducts} In Stock, {$outOfStockProducts} Out of Stock")
                 ->descriptionIcon('heroicon-m-archive-box')
-                ->color('info'),
+                ->color('info')
+                ->url(\App\Filament\Resources\ProductResource::getUrl('index')),
                 
             Stat::make("Completed Orders", (string) $completedOrders)
                 ->description('Successfully delivered')
                 ->descriptionIcon('heroicon-m-check-circle')
-                ->color('success'),
+                ->color('success')
+                ->url(\App\Filament\Resources\OrderResource::getUrl('index', ['tableFilters' => ['status' => ['value' => \App\Enums\OrderStatus::Delivered->value]]])),
                 
             Stat::make("Cancelled Orders", (string) $cancelledOrders)
                 ->description('Cancelled by admin/customer')
                 ->descriptionIcon('heroicon-m-x-circle')
-                ->color('danger'),
+                ->color('danger')
+                ->url(\App\Filament\Resources\OrderResource::getUrl('index', ['tableFilters' => ['status' => ['value' => \App\Enums\OrderStatus::Cancelled->value]]])),
                             Stat::make("Returned Orders", (string) $returnedOrders)
                 ->description('Returned products')
                 ->descriptionIcon('heroicon-m-arrow-uturn-left')
