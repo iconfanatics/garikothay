@@ -190,27 +190,27 @@ class ThemeSettings extends Page
                             ->collapsible()
                             ->defaultItems(0)
                             ->maxItems(4)
+                    ]),
+                Forms\Components\Section::make('Stats Counter')
+                    ->description('Customize the statistics numbers shown on the homepage.')
+                    ->schema([
+                        Forms\Components\Repeater::make('theme1_stats')
+                            ->label('Stats')
+                            ->schema([
+                                Forms\Components\TextInput::make('value')
+                                    ->label('Value (e.g. 500+)')
+                                    ->required(),
+                                Forms\Components\TextInput::make('label')
+                                    ->label('Label')
+                                    ->required(),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                            ->collapsible()
+                            ->defaultItems(0)
+                            ->maxItems(5)
                     ])
-            ]),
-            Forms\Components\Section::make('Stats Counter')
-                ->description('Customize the statistics numbers shown on the homepage.')
-                ->schema([
-                    Forms\Components\Repeater::make('theme1_stats')
-                        ->label('Stats')
-                        ->schema([
-                            Forms\Components\TextInput::make('value')
-                                ->label('Value (e.g. 500+)')
-                                ->required(),
-                            Forms\Components\TextInput::make('label')
-                                ->label('Label')
-                                ->required(),
-                        ])
-                        ->columns(2)
-                        ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
-                        ->collapsible()
-                        ->defaultItems(0)
-                        ->maxItems(5)
-                ])
+            ])
             ->statePath('data');
     }
 
