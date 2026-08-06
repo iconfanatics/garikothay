@@ -10,7 +10,7 @@
         .header h1 { margin: 0; font-size: 24px; color: #111; letter-spacing: 2px; text-transform: uppercase; }
         .invoice-details { width: 100%; margin-bottom: 30px; border-collapse: collapse; }
         .invoice-details td { padding: 5px; vertical-align: top; }
-        .status-badge { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; text-transform: uppercase; background-color: #eee; }
+        .status-badge { font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; background-color: #eee; border: 1px solid #ddd; }
         
         .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
         .items-table th, .items-table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
@@ -43,12 +43,14 @@
                 </td>
                 <td style="width: 50%; text-align: right;">
                     <strong>Order #:</strong> {{ $order->order_number }}<br>
-                    <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}<br>
-                    @php
-                        $pm = $order->payment_method;
-                        $pmStr = $pm instanceof \App\Enums\PaymentMethod ? $pm->label() : (is_string($pm) ? $pm : 'N/A');
-                    @endphp
-                    <strong>Payment Method:</strong> <span class="status-badge">{{ strtoupper($pmStr) }}</span>
+                    <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}
+                    <div style="margin-top: 8px;">
+                        @php
+                            $pm = $order->payment_method;
+                            $pmStr = $pm instanceof \App\Enums\PaymentMethod ? $pm->label() : (is_string($pm) ? $pm : 'N/A');
+                        @endphp
+                        <strong>Payment Method:</strong> <span class="status-badge">{{ strtoupper($pmStr) }}</span>
+                    </div>
                 </td>
             </tr>
         </table>
