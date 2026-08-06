@@ -63,6 +63,20 @@ class ThemeSettings extends Page
             ];
         }
 
+        $deliveryPartners = $settings->get('theme1_delivery_partners')?->getCastedValue();
+        if (empty($deliveryPartners)) {
+            $deliveryPartners = [
+                ['name' => '🚲 Pathao'],
+                ['name' => '✈ Paperfly'],
+                ['name' => '🚚 RedX'],
+                ['name' => '▣ Sundarban'],
+                ['name' => '📦 SA Paribahan'],
+                ['name' => '🚀 Steadfast'],
+                ['name' => '➤ eCourier'],
+                ['name' => '⛴ Janani'],
+            ];
+        }
+
         $this->form->fill([
             'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
@@ -72,6 +86,7 @@ class ThemeSettings extends Page
             'theme1_trust_features' => $trustFeatures,
             'theme1_stats' => $stats,
             'theme1_service_cards' => $serviceCards,
+            'theme1_delivery_partners' => $deliveryPartners,
         ]);
     }
 
@@ -256,6 +271,21 @@ class ThemeSettings extends Page
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->collapsible()
                             ->defaultItems(0)
+                    ]),
+                Forms\Components\Section::make('Delivery Partners')
+                    ->description('Customize the scrolling delivery partners list.')
+                    ->schema([
+                        Forms\Components\Repeater::make('theme1_delivery_partners')
+                            ->label('Partners')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Name (with icon)')
+                                    ->required()
+                                    ->placeholder('e.g. 🚀 Steadfast'),
+                            ])
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->collapsible()
+                            ->defaultItems(0)
                     ])
             ])
             ->statePath('data');
@@ -274,6 +304,7 @@ class ThemeSettings extends Page
             'theme1_trust_features' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_stats' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_service_cards' => ['group' => 'theme', 'type' => SettingType::Json],
+            'theme1_delivery_partners' => ['group' => 'theme', 'type' => SettingType::Json],
         ];
 
         foreach ($data as $key => $value) {

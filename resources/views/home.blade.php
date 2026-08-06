@@ -1044,7 +1044,9 @@
     $dbStats = \App\Models\Setting::get('theme1_stats');
     $stats = empty($dbStats) ? $fallbackStats : collect($dbStats);
 
-    $deliveryPartners = ['🚲 Pathao', '✈ Paperfly', '🚚 RedX', '▣ Sundarban', '📦 SA Paribahan', '🚀 Steadfast', '➤ eCourier', '⛴ Janani'];
+    $fallbackDeliveryPartners = ['🚲 Pathao', '✈ Paperfly', '🚚 RedX', '▣ Sundarban', '📦 SA Paribahan', '🚀 Steadfast', '➤ eCourier', '⛴ Janani'];
+    $dbDeliveryPartners = collect(\App\Models\Setting::get('theme1_delivery_partners'))->pluck('name')->filter()->toArray();
+    $deliveryPartners = empty($dbDeliveryPartners) ? $fallbackDeliveryPartners : $dbDeliveryPartners;
     $partnerLoop = array_merge($deliveryPartners, $deliveryPartners);
 @endphp
 
