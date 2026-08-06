@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CouponPerformance extends BaseWidget
 {
-    protected int | string | array $columnSpan = ['default' => 'full', 'md' => 1, 'xl' => 6];
+    protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 9;
 
     public function table(Table $table): Table

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class CustomerAnalytics extends BaseWidget
 {
     protected static ?int $sort = 2;
-    protected int | string | array $columnSpan = ['default' => 'full', 'md' => 1, 'xl' => 6];
+    protected int | string | array $columnSpan = 'full';
 
     protected function getStats(): array
     {
