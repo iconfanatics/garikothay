@@ -96,6 +96,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\BlogCommentResource::class,
                 \App\Filament\Resources\ActivityResource::class,
                 \App\Filament\Resources\StaffResource::class,
+                \App\Filament\Resources\BrandResource::class,
             ])
             ->pages([
                 Dashboard::class, 
