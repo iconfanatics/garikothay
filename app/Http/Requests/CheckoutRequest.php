@@ -21,7 +21,6 @@ class CheckoutRequest extends FormRequest
         $emailRules = ['nullable', 'email', 'max:255'];
         
         if (! auth()->check()) {
-            $emailRules[] = 'required';
             $emailRules[] = Rule::unique('users', 'email')->whereNull('deleted_at');
         }
 

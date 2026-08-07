@@ -122,8 +122,10 @@ class CheckoutController extends Controller
 
     private function resolveGuestUser(array $data): User
     {
+        $email = $data['email'] ?? ($data['phone'] . '@guest.garikothay.com');
+
         $user = User::withTrashed()->firstOrCreate(
-            ['email' => $data['email']],
+            ['email' => $email],
             [
                 'name' => $data['full_name'],
                 'phone' => User::where('phone', $data['phone'])->doesntExist() ? $data['phone'] : null,

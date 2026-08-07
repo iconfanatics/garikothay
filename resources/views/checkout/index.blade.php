@@ -492,8 +492,8 @@
                     </div>
                     @guest
                     <div class="gk-checkout-field">
-                        <label>{{ __('general.email') }} *</label>
-                        <input type="email" name="email" x-model="formData.email" required
+                        <label>{{ __('general.email') }} (Optional)</label>
+                        <input type="email" name="email" x-model="formData.email"
                             class="@error('email') border-red-400 @enderror">
                         @error('email') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                     </div>
