@@ -98,23 +98,7 @@
                 @endif
                 <li>📍 {{ \App\Models\Setting::get('address', 'House 24, Road 7, Banani, Dhaka 1213, Bangladesh') }}</li>
             </ul>
-            <div x-data="{ email: '', msg: '' }" class="gk-footer-newsletter">
-                <div class="gk-footer-newsletter-form">
-                    <input type="email" x-model="email" placeholder="{{ __('general.newsletter_placeholder') }}"
-                        class="gk-footer-newsletter-input">
-                    <button @click="
-                            if (!email) return;
-                            fetch('{{ route('newsletter.subscribe') }}', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                                body: JSON.stringify({email: email})
-                            }).then(r => r.json()).then(d => { msg = d.message; email = ''; }).catch(() => { msg = '{{ __('general.something_went_wrong') }}'; });
-                        " class="gk-footer-newsletter-button">
-                        {{ __('general.subscribe') }}
-                    </button>
-                </div>
-                <p x-show="msg" x-text="msg" class="text-sm text-green-400 mt-2"></p>
-            </div>
+
         </div>
 
         <div>
