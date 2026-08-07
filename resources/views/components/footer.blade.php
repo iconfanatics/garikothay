@@ -59,8 +59,8 @@
 
 <!-- Footer -->
 <footer class="bg-gray-900 text-gray-300 mt-16 py-12">
-    <div class="gk-footer-inner grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-10">
-        <div class="sm:col-span-2 lg:col-span-4 xl:col-span-2">
+    <div class="gk-footer-inner grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 lg:gap-8">
+        <div class="sm:col-span-2 md:col-span-4 lg:col-span-2">
             <h3 class="text-white text-lg font-bold mb-4">
                 @php $logo = \App\Models\Setting::get('theme1_footer_logo'); @endphp
                 @if($logo)
