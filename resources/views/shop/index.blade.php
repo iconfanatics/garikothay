@@ -193,16 +193,22 @@
     .gk-mobile-filter {
         display: flex;
         width: 100%;
-        min-height: 44px;
+        min-height: 40px;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
+        gap: 0.45rem;
         border: 1px solid var(--shop-line);
         border-radius: 6px;
         background: #ffffff;
-        padding: 0 0.85rem;
         color: var(--shop-ink);
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 800;
+        cursor: pointer;
+    }
+
+    .gk-mobile-filter:hover {
+        border-color: var(--shop-red);
+        color: var(--shop-red);
     }
 
     @media (min-width: 1024px) {
@@ -211,18 +217,58 @@
         }
     }
 
-    .gk-filter-stack {
-        display: none;
-        gap: 1rem;
+    .gk-toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
 
-    .gk-filter-stack.is-open {
-        display: grid;
+    .gk-filter-overlay {
+        display: none;
+    }
+
+    @media (max-width: 1023px) {
+        .gk-filter-overlay {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .gk-filter-overlay.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .gk-filter-stack {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 85vw;
+            max-width: 320px;
+            background: var(--shop-soft);
+            z-index: 999;
+            padding: 1.25rem;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .gk-filter-stack.is-open {
+            transform: translateX(0);
+        }
     }
 
     @media (min-width: 1024px) {
         .gk-filter-stack {
             display: grid;
+            gap: 1rem;
         }
     }
 
@@ -553,6 +599,13 @@
             flex-direction: column;
         }
 
+        .gk-toolbar-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
         .gk-shop-sort {
             width: 100%;
         }
@@ -576,6 +629,8 @@
 
 @section('content')
 <div class="gk-shop" x-data="{ filtersOpen: false }">
+    <div class="gk-filter-overlay" :class="{ 'is-open': filtersOpen }" @click="filtersOpen = false"></div>
+
     <nav class="gk-shop-breadcrumb">
         <div class="gk-shop-container gk-shop-breadcrumb-inner">
             <a href="{{ route('home') }}">{{ __('general.home') }}</a>
@@ -633,12 +688,11 @@
 
     <div class="gk-shop-container gk-shop-body">
         <aside style="position: relative; z-index: 40;">
-            <button type="button" class="gk-mobile-filter" @click="filtersOpen = !filtersOpen">
-                <span>☷ {{ __('general.categories') }} & {{ __('general.filters') }}</span>
-                <span x-text="filtersOpen ? '−' : '+'"></span>
-            </button>
-
             <div class="gk-filter-stack" :class="{ 'is-open': filtersOpen }">
+                <div class="flex justify-between items-center lg:hidden mb-2">
+                    <h2 style="font-size:1.1rem; font-weight:900; margin:0;">Filters</h2>
+                    <button type="button" @click="filtersOpen = false" style="font-size:1.5rem; line-height:1; color:var(--shop-muted); background:transparent; border:none; cursor:pointer;">&times;</button>
+                </div>
                 <section class="gk-filter-panel">
                     <h2 class="gk-filter-heading">☷ {{ __('general.categories') }}</h2>
                     <div class="gk-filter-content">
@@ -750,15 +804,21 @@
                     <h2 class="gk-results-title">{{ $currentCategory?->name ?? __('general.all_products') }}</h2>
                     <p class="gk-results-count">{{ $products->total() }} {{ __('general.products_found') }}</p>
                 </div>
-                <select name="sort" form="filter-form" onchange="document.getElementById('filter-form').submit()" class="gk-shop-sort">
-                    <option value="">{{ __('general.default_sort') }}</option>
-                    <option value="newest" {{ ($filters['sort'] ?? '') === 'newest' ? 'selected' : '' }}>{{ __('general.newest') }}</option>
-                    <option value="best_selling" {{ ($filters['sort'] ?? '') === 'best_selling' ? 'selected' : '' }}>Best Selling</option>
-                    <option value="a_z" {{ ($filters['sort'] ?? '') === 'a_z' ? 'selected' : '' }}>A–Z</option>
-                    <option value="z_a" {{ ($filters['sort'] ?? '') === 'z_a' ? 'selected' : '' }}>Z–A</option>
-                    <option value="price_asc" {{ ($filters['sort'] ?? '') === 'price_asc' ? 'selected' : '' }}>{{ __('general.price_low_to_high') }}</option>
-                    <option value="price_desc" {{ ($filters['sort'] ?? '') === 'price_desc' ? 'selected' : '' }}>{{ __('general.price_high_to_low') }}</option>
-                </select>
+                <div class="gk-toolbar-actions">
+                    <button type="button" class="gk-mobile-filter" @click="filtersOpen = true">
+                        <span style="font-size:1.1rem;">☷</span>
+                        <span>{{ __('general.filters') }}</span>
+                    </button>
+                    <select name="sort" form="filter-form" onchange="document.getElementById('filter-form').submit()" class="gk-shop-sort">
+                        <option value="">{{ __('general.default_sort') }}</option>
+                        <option value="newest" {{ ($filters['sort'] ?? '') === 'newest' ? 'selected' : '' }}>{{ __('general.newest') }}</option>
+                        <option value="best_selling" {{ ($filters['sort'] ?? '') === 'best_selling' ? 'selected' : '' }}>Best Selling</option>
+                        <option value="a_z" {{ ($filters['sort'] ?? '') === 'a_z' ? 'selected' : '' }}>A–Z</option>
+                        <option value="z_a" {{ ($filters['sort'] ?? '') === 'z_a' ? 'selected' : '' }}>Z–A</option>
+                        <option value="price_asc" {{ ($filters['sort'] ?? '') === 'price_asc' ? 'selected' : '' }}>{{ __('general.price_low_to_high') }}</option>
+                        <option value="price_desc" {{ ($filters['sort'] ?? '') === 'price_desc' ? 'selected' : '' }}>{{ __('general.price_high_to_low') }}</option>
+                    </select>
+                </div>
             </div>
 
             @if($products->isEmpty())
