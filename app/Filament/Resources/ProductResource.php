@@ -676,7 +676,15 @@ class ProductResource extends Resource
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            \App\Models\ProductTranslation::select('name')
+                                ->whereColumn('product_translations.product_id', 'products.id')
+                                ->where('locale', 'en')
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
                     ->searchable()

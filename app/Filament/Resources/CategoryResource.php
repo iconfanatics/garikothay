@@ -189,7 +189,15 @@ class CategoryResource extends Resource
                     ->searchable(query: function ($query, string $search): void {
                         $query->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$search}%"));
                     })
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            \App\Models\CategoryTranslation::select('name')
+                                ->whereColumn('category_translations.category_id', 'categories.id')
+                                ->where('locale', 'en')
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
                 Tables\Columns\TextColumn::make('parent.name')
                     ->label('Parent Category')
                     ->placeholder('— (Top Level)')

@@ -205,11 +205,18 @@ class BlogResource extends Resource
                         },
                     )
                     ->limit(50)
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            \App\Models\BlogTranslation::select('title')
+                                ->whereColumn('blog_translations.blog_id', 'blogs.id')
+                                ->where('locale', 'en')
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
                 Tables\Columns\TextColumn::make("category.name")
                     ->label("Category")
-                    ->default("—")
-                    ->sortable(),
+                    ->default("—"),
                 Tables\Columns\TextColumn::make("slug")
                     ->label("Slug")
                     ->searchable()

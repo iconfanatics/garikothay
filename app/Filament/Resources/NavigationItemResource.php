@@ -81,7 +81,15 @@ class NavigationItemResource extends Resource
                 Tables\Columns\TextColumn::make('label')
                     ->label('Label')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            \App\Models\NavigationItemTranslation::select('label')
+                                ->whereColumn('navigation_item_translations.navigation_item_id', 'navigation_items.id')
+                                ->where('locale', 'en')
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
                 Tables\Columns\TextColumn::make('group')
                     ->badge()
                     ->sortable(),

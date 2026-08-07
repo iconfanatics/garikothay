@@ -115,7 +115,15 @@ class PageResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label('Title')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderBy(
+                            \App\Models\PageTranslation::select('title')
+                                ->whereColumn('page_translations.page_id', 'pages.id')
+                                ->where('locale', 'en')
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')
