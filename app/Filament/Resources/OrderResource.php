@@ -128,7 +128,7 @@ class OrderResource extends Resource
             if ($couponId) {
                 $coupon = \App\Models\Coupon::find($couponId);
                 if ($coupon) {
-                    if (strtolower((string) $coupon->type) === 'percentage') {
+                    if ($coupon->type === \App\Enums\CouponType::Percentage || $coupon->type->value === 'percentage') {
                         $discount = $subtotal * ((float) $coupon->value / 100);
                         if ($coupon->max_discount_amount) {
                             $discount = min($discount, (float) $coupon->max_discount_amount);
@@ -158,7 +158,7 @@ class OrderResource extends Resource
             if ($couponId) {
                 $coupon = \App\Models\Coupon::find($couponId);
                 if ($coupon) {
-                    if (strtolower((string) $coupon->type) === 'percentage') {
+                    if ($coupon->type === \App\Enums\CouponType::Percentage || $coupon->type->value === 'percentage') {
                         $discount = $subtotal * ((float) $coupon->value / 100);
                         if ($coupon->max_discount_amount) {
                             $discount = min($discount, (float) $coupon->max_discount_amount);
