@@ -64,7 +64,10 @@ class ReviewResource extends Resource
                 Tables\Columns\TextColumn::make('product.name')
                     ->label('Product')
                     ->searchable(query: function ($query, string $search): void {
-                        $query->whereHas('product.translations', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+                        $query->whereHas('product', function ($q) use ($search) {
+                            $q->where('sku', 'like', "%{$search}%")
+                              ->orWhereHas('translations', fn ($t) => $t->where('name', 'like', "%{$search}%"));
+                        });
                     })
                     ->sortable()
                     ->limit(30),
@@ -111,7 +114,7 @@ class ReviewResource extends Resource
                     ->options(
                         Product::with('translations')
                             ->get()
-                            ->mapWithKeys(fn($p) => [$p->id => (string) ($p->name ?? 'Product #'.$p->id)])
+                            ->mapWithKeys(fn($p) => [$p->id => (string) (($p->name ?? 'Product #'.$p->id) . ' - ' . $p->sku)])
                     )
                     ->searchable(),
             ])
