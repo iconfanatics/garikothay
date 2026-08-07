@@ -249,7 +249,7 @@ class OrderResource extends Resource
                             Forms\Components\Select::make('product_id')
                                 ->label('Product')
                                 ->searchable()
-                                ->getSearchResultsUsing(fn (string $search): array => \App\Models\Product::where('sku', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%")->limit(50)->get()->mapWithKeys(fn ($p) => [$p->id => $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '')])->toArray())
+                                ->getSearchResultsUsing(fn (string $search): array => \App\Models\Product::where('sku', 'like', "%{$search}%")->orWhereHas('translations', fn ($q) => $q->where('name', 'like', "%{$search}%"))->limit(50)->get()->mapWithKeys(fn ($p) => [$p->id => $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '')])->toArray())
                                 ->getOptionLabelUsing(fn ($value): ?string => ($p = \App\Models\Product::find($value)) ? $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '') : null)
                                 ->preload()
                                 ->required()
