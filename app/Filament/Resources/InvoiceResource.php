@@ -113,6 +113,15 @@ class InvoiceResource extends Resource
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
                     ->action(function (Invoice $record) {
+                        if (!$record->order) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Error')
+                                ->body('The linked order is missing or hard-deleted.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
                         return response()->streamDownload(function () use ($record) {
                             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $record->order]);
                             echo $pdf->output();

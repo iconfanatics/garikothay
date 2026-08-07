@@ -19,6 +19,15 @@ class EditInvoice extends EditRecord
                 ->color('success')
                 ->action(function () {
                     $invoice = $this->getRecord();
+                    if (!$invoice->order) {
+                        \Filament\Notifications\Notification::make()
+                            ->title('Error')
+                            ->body('The linked order is missing or hard-deleted.')
+                            ->danger()
+                            ->send();
+                        return;
+                    }
+
                     return response()->streamDownload(function () use ($invoice) {
                         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $invoice->order]);
                         echo $pdf->output();
