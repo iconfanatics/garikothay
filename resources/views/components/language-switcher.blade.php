@@ -1,4 +1,5 @@
-<div x-data="{ open: false }" class="relative">
+@props(['mobile' => false])
+<div x-data="{ open: false }" class="relative w-full">
     <button @click="open = !open"
         class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-rose-600 transition font-medium">
         @if(app()->getLocale() === 'bn')
@@ -13,7 +14,7 @@
         </svg>
     </button>
     <div x-show="open" x-cloak @click.away="open = false" x-transition
-        class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+        class="{{ $mobile ? 'mt-2 w-full relative' : 'absolute right-0 mt-2 w-36' }} bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden z-50">
         <a href="{{ route('language.switch', 'bn') }}"
             class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-gray-50 transition
                    {{ app()->getLocale() === 'bn' ? 'text-rose-600 font-semibold bg-rose-50' : 'text-gray-700' }}">

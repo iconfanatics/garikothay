@@ -2,7 +2,8 @@
 
 @php
     $topMenuItems = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
-        ? \App\Models\NavigationItem::where('group', 'top_nav')
+        ? \App\Models\NavigationItem::with('translations')
+            ->where('group', 'top_nav')
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get()
@@ -270,7 +271,7 @@
     </div>
     @endif
 
-<nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }">
+<nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }" x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''">
     <!-- Desktop Header Row -->
     <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:grid">
 
@@ -552,7 +553,7 @@
                 </div>
 
                 <div class="px-2 mt-4">
-                    <x-language-switcher />
+                    <x-language-switcher :mobile="true" />
                 </div>
             </div>
 
