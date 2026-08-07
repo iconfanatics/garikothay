@@ -24,11 +24,11 @@ class StatsOverview extends BaseWidget
         $todayOrdersCount = Order::whereDate('created_at', $today)->count();
 
         $todayRevenue = Order::whereDate('created_at', $today)
-            ->where('payment_status', PaymentStatus::Paid)
+            ->whereNotIn('status', [OrderStatus::Cancelled, OrderStatus::Returned])
             ->sum('total');
 
         $yesterdayRevenue = Order::whereDate('created_at', $today->copy()->subDay())
-            ->where('payment_status', PaymentStatus::Paid)
+            ->whereNotIn('status', [OrderStatus::Cancelled, OrderStatus::Returned])
             ->sum('total');
 
         $revenueChange = $yesterdayRevenue > 0
@@ -70,7 +70,7 @@ class StatsOverview extends BaseWidget
             
         $totalProfit = $totalRevenueNet - $totalCogs;
 
-        $totalRevenue = Order::where('payment_status', PaymentStatus::Paid)->sum('total');
+        $totalRevenue = Order::whereNotIn('status', [OrderStatus::Cancelled, OrderStatus::Returned])->sum('total');
 
         $totalProducts = \App\Models\Product::count();
         $inStockProducts = \App\Models\Product::where('stock_quantity', '>', 0)->count();
