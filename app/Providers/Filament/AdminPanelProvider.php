@@ -106,12 +106,12 @@ class AdminPanelProvider extends PanelProvider
                     .fi-ta-table td::before {
                         box-shadow: none !important;
                     }
-                    /* Make header sticky cell background solid to match the header and hide scrolling content */
+                    /* Match header cell color perfectly */
                     .fi-ta-table th.sticky {
                         background-color: #f9fafb !important;
                     }
                     .dark .fi-ta-table th.sticky {
-                        background-color: #1d2432 !important;
+                        background-color: #27272a !important; /* Zinc 800 which closely matches white/5 over Zinc 900 */
                     }
                     .fi-ta-table th.sticky::before {
                         display: none !important;
