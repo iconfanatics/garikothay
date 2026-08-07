@@ -57,11 +57,11 @@ class AdminPanelProvider extends PanelProvider
                 MenuItem::make()
                     ->label("English")
                     ->icon("heroicon-o-language")
-                    ->url("/language/en"),
+                    ->url("/language/en?context=admin"),
                 MenuItem::make()
                     ->label("বাংলা")
                     ->icon("heroicon-o-language")
-                    ->url("/language/bn"),
+                    ->url("/language/bn?context=admin"),
             ])
             ->navigationGroups([
                 NavigationGroup::make("Catalog"),

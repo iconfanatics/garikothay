@@ -16,37 +16,35 @@ class SetLocale
 
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $this->resolveLocale($request);
+        $isAdmin = $request->is('admin*');
+        $sessionKey = $isAdmin ? 'admin_locale' : 'locale';
+
+        $locale = $this->resolveLocale($request, $sessionKey, $isAdmin);
         App::setLocale($locale);
-        Session::put('locale', $locale);
+        Session::put($sessionKey, $locale);
 
         return $next($request);
     }
 
-    private function resolveLocale(Request $request): string
+    private function resolveLocale(Request $request, string $sessionKey, bool $isAdmin): string
     {
-        // 1. URL segment (/en/ or /bn/)
+        // 1. Session
+        if (Session::has($sessionKey) && in_array(Session::get($sessionKey), $this->supportedLocales)) {
+            return Session::get($sessionKey);
+        }
+
+        // 2. URL segment for frontend (if they use it)
         $urlLocale = $request->segment(1);
-        if (in_array($urlLocale, $this->supportedLocales)) {
+        if (!$isAdmin && in_array($urlLocale, $this->supportedLocales)) {
             return $urlLocale;
         }
 
-        // 2. Session
-        if (Session::has('locale') && in_array(Session::get('locale'), $this->supportedLocales)) {
-            return Session::get('locale');
-        }
-
         // 3. Authenticated user preference
-        if ($user = $request->user()) {
+        if (!$isAdmin && $user = $request->user()) {
             return in_array($user->locale, $this->supportedLocales) ? $user->locale : 'bn';
         }
 
-        // 4. Browser Accept-Language
-        $browserLocale = substr($request->getPreferredLanguage($this->supportedLocales) ?? 'bn', 0, 2);
-        if (in_array($browserLocale, $this->supportedLocales)) {
-            return $browserLocale;
-        }
-
-        return 'bn';
+        // Default: Admin defaults to English, frontend to Bangla
+        return $isAdmin ? 'en' : 'bn';
     }
 }

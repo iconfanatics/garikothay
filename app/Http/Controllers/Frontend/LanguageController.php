@@ -19,10 +19,19 @@ class LanguageController extends Controller
             abort(400);
         }
 
-        Session::put('locale', $locale);
+        if ($request->query('context') === 'admin') {
+            Session::put('admin_locale', $locale);
+            
+            // Optional: update admin user locale if they have one (admins might be a different model)
+            // if (auth('admin')->check()) {
+            //     auth('admin')->user()->update(['locale' => $locale]);
+            // }
+        } else {
+            Session::put('locale', $locale);
 
-        if (auth()->check()) {
-            auth()->user()->update(['locale' => $locale]);
+            if (auth()->check()) {
+                auth()->user()->update(['locale' => $locale]);
+            }
         }
 
         return back()->withHeaders(['Vary' => 'Accept-Language']);
