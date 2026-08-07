@@ -113,6 +113,8 @@ class OrderResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $isWebsiteOrder = fn (?Order $record) => $record !== null && $record->order_source === 'Website';
+
         $updateParentTotals = function (Forms\Get $get, Forms\Set $set) {
             $items = $get('../../items') ?? [];
             $subtotal = 0;
@@ -211,6 +213,7 @@ class OrderResource extends Resource
                         ->label('Order Number')
                         ->default(fn () => 'GNG-' . date('Ymd') . '-' . mt_rand(1000, 9999))
                         ->required()
+                        ->disabled($isWebsiteOrder)
                         ->unique(Order::class, 'order_number', ignoreRecord: true),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
@@ -226,6 +229,7 @@ class OrderResource extends Resource
                             'WhatsApp' => 'WhatsApp',
                             'Call' => 'Call',
                         ])
+                        ->disabled($isWebsiteOrder)
                         ->default('Call'),
                     Forms\Components\Select::make('customer_type')
                         ->label('Customer Type')
@@ -233,6 +237,7 @@ class OrderResource extends Resource
                             'Retail' => 'Retail',
                             'Wholesale' => 'Wholesale',
                         ])
+                        ->disabled($isWebsiteOrder)
                         ->default('Retail'),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
@@ -264,34 +269,42 @@ class OrderResource extends Resource
                         ->label('Registered Customer (Optional)')
                         ->relationship('user', 'name')
                         ->searchable()
-                        ->preload(),
+                        ->preload()
+                        ->disabled($isWebsiteOrder),
                     Forms\Components\TextInput::make('shipping_address.full_name')
                         ->label('Customer Name')
-                        ->required(),
+                        ->required()
+                        ->disabled($isWebsiteOrder),
                     Forms\Components\TextInput::make('shipping_address.phone')
                         ->label('Phone Number')
-                        ->required(),
+                        ->required()
+                        ->disabled($isWebsiteOrder),
                     Forms\Components\TextInput::make('shipping_address.address_line_1')
                         ->label('Full Address')
-                        ->required(),
+                        ->required()
+                        ->disabled($isWebsiteOrder),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\Select::make('shipping_address.division')
                         ->label('Division')
                         ->options(array_combine(array_keys($locations), array_keys($locations)))
-                        ->live(),
+                        ->live()
+                        ->disabled($isWebsiteOrder),
                     Forms\Components\Select::make('shipping_address.city')
                         ->label('City (District)')
                         ->options(fn (Forms\Get $get): array => 
                             $get('shipping_address.division') ? array_combine($locations[$get('shipping_address.division')] ?? [], $locations[$get('shipping_address.division')] ?? []) : []
-                        ),
+                        )
+                        ->disabled($isWebsiteOrder),
                     Forms\Components\TextInput::make('shipping_address.upazila')
-                        ->label('Upazila/Area'),
+                        ->label('Upazila/Area')
+                        ->disabled($isWebsiteOrder),
                 ]),
             ]),
             Forms\Components\Section::make('Order Items')->schema([
                 Forms\Components\Repeater::make('items')
                     ->relationship()
+                    ->disabled($isWebsiteOrder)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) use ($updateTotals) {
                         $updateTotals($get, $set);
@@ -375,12 +388,14 @@ class OrderResource extends Resource
             ]),
             Forms\Components\Section::make('Financials')->schema([
                 Forms\Components\Grid::make(4)->schema([
-                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required(),
+                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required()->disabled($isWebsiteOrder),
                     Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required()
+                        ->disabled($isWebsiteOrder)
                         ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
                     Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required()
+                        ->disabled($isWebsiteOrder)
                         ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
-                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required(),
+                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required()->disabled($isWebsiteOrder),
                 ]),
                 Forms\Components\Select::make('coupon_id')
                     ->label('Coupon (Optional)')
@@ -388,6 +403,7 @@ class OrderResource extends Resource
                     ->searchable()
                     ->preload()
                     ->nullable()
+                    ->disabled($isWebsiteOrder)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
             ]),
