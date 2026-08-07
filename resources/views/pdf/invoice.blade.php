@@ -57,8 +57,10 @@
                 <td style="width: 50%; text-align: right;">
                     <strong>Invoice #:</strong> {{ 'INV-' . $order->order_number }}<br>
                     <strong>Order #:</strong> {{ $order->order_number }}<br>
-                    <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}<br>
-                    <strong>Status:</strong> <span class="status-badge {{ $statusClass }}">{{ strtoupper($order->payment_status->label() ?? 'UNPAID') }}</span>
+                    <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}
+                    <div style="margin-top: 8px;">
+                        <strong>Status:</strong> <span class="status-badge {{ $statusClass }}">{{ strtoupper($order->payment_status->label() ?? 'UNPAID') }}</span>
+                    </div>
                 </td>
             </tr>
         </table>
