@@ -755,25 +755,32 @@ class ProductResource extends Resource
                         'reserved_stock' => 'Reserved Stock',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
+                        $val = $data['value'] ?? null;
                         return $query
                             ->when(
-                                $data['value'] === 'out_of_stock',
-                                fn (Builder $query): Builder => $query->where('stock_quantity', '<=', 0),
+                                $val === 'out_of_stock',
+                                fn (Builder $query): Builder => $query->where('stock_quantity', '<=', 0)->whereDoesntHave('variants', fn($q) => $q->where('stock_quantity', '>', 0)),
                             )
                             ->when(
-                                $data['value'] === 'low_stock',
-                                fn (Builder $query): Builder => $query->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0),
+                                $val === 'low_stock',
+                                fn (Builder $query): Builder => $query->where(function($q) {
+                                    $q->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0)
+                                      ->orWhereHas('variants', fn($vq) => $vq->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0));
+                                }),
                             )
                             ->when(
-                                $data['value'] === 'in_stock',
-                                fn (Builder $query): Builder => $query->where('stock_quantity', '>', 0),
+                                $val === 'in_stock',
+                                fn (Builder $query): Builder => $query->where(function($q) {
+                                    $q->where('stock_quantity', '>', 0)
+                                      ->orWhereHas('variants', fn($vq) => $vq->where('stock_quantity', '>', 0));
+                                }),
                             )
                             ->when(
-                                $data['value'] === 'available_stock',
+                                $val === 'available_stock',
                                 fn (Builder $query): Builder => $query->whereRaw('stock_quantity > reserved_stock'),
                             )
                             ->when(
-                                $data['value'] === 'reserved_stock',
+                                $val === 'reserved_stock',
                                 fn (Builder $query): Builder => $query->where('reserved_stock', '>', 0),
                             );
                     }),

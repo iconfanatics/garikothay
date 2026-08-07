@@ -73,9 +73,15 @@ class StatsOverview extends BaseWidget
         $totalRevenue = Order::whereNotIn('status', [OrderStatus::Cancelled, OrderStatus::Returned])->sum('total');
 
         $totalProducts = \App\Models\Product::count();
-        $inStockProducts = \App\Models\Product::where('stock_quantity', '>', 0)->count();
-        $outOfStockProducts = \App\Models\Product::where('stock_quantity', '<=', 0)->count();
-        $lowStockProducts = \App\Models\Product::whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0)->count();
+        $inStockProducts = \App\Models\Product::where(function($q) {
+            $q->where('stock_quantity', '>', 0)
+              ->orWhereHas('variants', fn($vq) => $vq->where('stock_quantity', '>', 0));
+        })->count();
+        $outOfStockProducts = \App\Models\Product::where('stock_quantity', '<=', 0)->whereDoesntHave('variants', fn($q) => $q->where('stock_quantity', '>', 0))->count();
+        $lowStockProducts = \App\Models\Product::where(function($q) {
+            $q->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0)
+              ->orWhereHas('variants', fn($vq) => $vq->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0));
+        })->count();
         
         $completedOrders = Order::where('status', OrderStatus::Delivered)->count();
         $cancelledOrders = Order::where('status', OrderStatus::Cancelled)->count();

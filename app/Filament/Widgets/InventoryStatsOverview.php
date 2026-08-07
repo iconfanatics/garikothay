@@ -15,19 +15,25 @@ class InventoryStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $totalProducts = Product::count();
-        $totalStock = (int) Product::sum('stock_quantity');
+        $totalStock = (int) Product::sum('stock_quantity') + (int) \App\Models\ProductVariant::sum('stock_quantity');
         $reservedStock = (int) Product::sum('reserved_stock');
         $availableStock = $totalStock - $reservedStock;
         
-        $inStockCount = Product::where('stock_quantity', '>', 0)->count();
-        $outOfStockCount = Product::where('stock_quantity', '<=', 0)->count();
-        $lowStockCount = Product::whereColumn('stock_quantity', '<=', 'low_stock_threshold')
-            ->where('stock_quantity', '>', 0)
-            ->count();
+        $inStockCount = Product::where(function($q) {
+            $q->where('stock_quantity', '>', 0)
+              ->orWhereHas('variants', fn($vq) => $vq->where('stock_quantity', '>', 0));
+        })->count();
+        
+        $outOfStockCount = Product::where('stock_quantity', '<=', 0)->whereDoesntHave('variants', fn($q) => $q->where('stock_quantity', '>', 0))->count();
+        
+        $lowStockCount = Product::where(function($q) {
+            $q->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0)
+              ->orWhereHas('variants', fn($vq) => $vq->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->where('stock_quantity', '>', 0));
+        })->count();
             
         $preOrderCount = Product::where('is_preorder', true)->count();
         
-        $inventoryValue = (float) Product::sum(DB::raw('stock_quantity * IFNULL(cost_price, 0)'));
+        $inventoryValue = (float) Product::sum(DB::raw('stock_quantity * IFNULL(cost_price, 0)')) + (float) \App\Models\ProductVariant::join('products', 'product_variants.product_id', '=', 'products.id')->sum(DB::raw('product_variants.stock_quantity * IFNULL(products.cost_price, 0)'));
 
         return [
             Stat::make("Total Products", number_format($totalProducts))
@@ -40,7 +46,7 @@ class InventoryStatsOverview extends BaseWidget
                 ->description($inStockCount . ' Products in stock')
                 ->descriptionIcon('heroicon-m-inbox-stack')
                 ->color('info')
-                ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'in_stock']]])),
+                ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'in_stock']]]), true),
                 
             Stat::make("Available Stock", number_format($availableStock) . ' Items')
                 ->description('Ready for new orders')
