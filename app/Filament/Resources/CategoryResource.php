@@ -226,6 +226,8 @@ class CategoryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort_order')
+            ->defaultPaginationPageOption(50)
+            ->paginationPageOptions([50, 100, 250, 'all'])
             ->groups([
                 Tables\Grouping\Group::make('parent_id')
                     ->label('Parent Category')
