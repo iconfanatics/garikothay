@@ -101,19 +101,12 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
-                    /* Remove sticky column shadow */
-                    .fi-ta-table th::before,
-                    .fi-ta-table td::before {
-                        box-shadow: none !important;
+                    /* Make all sticky cells completely transparent so they match the row perfectly */
+                    .fi-ta-table .sticky {
+                        background-color: transparent !important;
                     }
-                    /* Match header cell color perfectly */
-                    .fi-ta-table th.sticky {
-                        background-color: #f9fafb !important;
-                    }
-                    .dark .fi-ta-table th.sticky {
-                        background-color: #27272a !important; /* Zinc 800 which closely matches white/5 over Zinc 900 */
-                    }
-                    .fi-ta-table th.sticky::before {
+                    /* Remove Filament sticky pseudo-elements (which cause the shadow and color mismatch) */
+                    .fi-ta-table .sticky::before {
                         display: none !important;
                     }
                 </style>',
