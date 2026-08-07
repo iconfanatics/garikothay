@@ -783,7 +783,7 @@
                         <span>({{ $approvedReviews->count() }} reviews)</span>
                         <span>·</span>
                         @if($product->isInStock())
-                            <span style="color:#16a34a; font-weight:800;">In Stock ({{ $product->stock_quantity }})</span>
+                            <span style="color:#16a34a; font-weight:800;">In Stock</span>
                         @else
                             <span style="color:#e11d48; font-weight:800;">Out of Stock</span>
                         @endif
