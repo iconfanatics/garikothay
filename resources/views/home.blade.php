@@ -1072,23 +1072,7 @@
                             <span class="gk-eyebrow">{{ $slide['tag'] }}</span>
                             <h1 class="gk-hero-title">{{ $slide['title'] }}</h1>
                             <p class="gk-hero-copy">{{ $slide['subtitle'] }}</p>
-                            <div class="gk-hero-actions">
-                                <a href="{{ $slide['link'] }}" class="gk-btn gk-btn-light">
-                                    {{ $slide['button'] }}
-                                    <span aria-hidden="true">→</span>
-                                </a>
-                                @if(!empty($slide['btn2']))
-                                <a href="{{ $slide['link2'] }}" class="gk-btn gk-btn-dark">
-                                    {{ $slide['btn2'] }}
-                                    <span aria-hidden="true">→</span>
-                                </a>
-                                @else
-                                <a href="#vehicle-services" class="gk-btn gk-btn-dark">
-                                    Services
-                                    <span aria-hidden="true">→</span>
-                                </a>
-                                @endif
-                            </div>
+
                         </div>
                     </article>
                 @endforeach
