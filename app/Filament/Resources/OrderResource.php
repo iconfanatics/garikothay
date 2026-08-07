@@ -208,6 +208,7 @@ class OrderResource extends Resource
                             'bkash' => 'bKash',
                         ])
                         ->default('cod')
+                        ->disabled($isWebsiteOrder)
                         ->required(),
                     Forms\Components\TextInput::make('order_number')
                         ->label('Order Number')
