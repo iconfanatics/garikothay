@@ -101,15 +101,30 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
-                    /* Target the exact actions header and cell classes to make them transparent */
-                    th.fi-ta-actions-header-cell,
-                    td.fi-ta-actions-cell {
+                    /* Make all sticky cells completely transparent so they match the row perfectly */
+                    .fi-ta-table .sticky {
                         background-color: transparent !important;
-                        box-shadow: none !important;
                     }
-                    th.fi-ta-actions-header-cell::before,
-                    td.fi-ta-actions-cell::before {
+                    /* Remove Filament sticky pseudo-elements (which cause the shadow and color mismatch) */
+                    .fi-ta-table .sticky::before {
                         display: none !important;
+                    }
+                    /* Make the table header sticky vertically */
+                    .fi-ta-content {
+                        max-height: calc(100vh - 16rem);
+                        overflow-y: auto !important;
+                    }
+                    .fi-ta-table thead {
+                        position: sticky;
+                        top: 0;
+                        z-index: 20;
+                    }
+                    /* Ensure the header has a solid background so scrolling rows are hidden */
+                    .fi-ta-table thead tr {
+                        background-color: #f9fafb !important;
+                    }
+                    .dark .fi-ta-table thead tr {
+                        background-color: #18181b !important; /* Zinc 900 for solid header */
                     }
                 </style>',
             )
