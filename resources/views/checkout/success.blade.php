@@ -20,8 +20,15 @@
                 </svg>
             </div>
             
-            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-700 to-rose-500 mb-4">{{ __('Order Placed Successfully!') }}</h1>
-            <p class="text-gray-600 text-lg mb-2">{{ __('Thank you for your order. We\'ll start preparing it right away!') }}</p>
+            @php
+                $title = \App\Models\Setting::get('order_success_title');
+                $message = \App\Models\Setting::get('order_success_message');
+                
+                if (empty($title)) $title = 'Order Placed Successfully!';
+                if (empty($message)) $message = "Thank you for your order. We'll start preparing it right away!";
+            @endphp
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-700 to-rose-500 mb-4">{{ __($title) }}</h1>
+            <p class="text-gray-600 text-lg mb-2">{{ __($message) }}</p>
             <div class="inline-block bg-rose-50 border border-rose-100 text-rose-800 px-6 py-2 rounded-full font-semibold mt-2 mb-8 shadow-sm">
                 {{ __('Order #') }} <span class="font-bold">{{ $order->order_number }}</span>
             </div>

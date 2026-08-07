@@ -50,6 +50,8 @@ class Settings extends Page
             'guest_checkout_enabled' => (bool) ($settings->get('guest_checkout_enabled')?->getCastedValue() ?? true),
             'cod_enabled' => (bool) ($settings->get('cod_enabled')?->getCastedValue() ?? true),
             'order_notes_enabled' => (bool) ($settings->get('order_notes_enabled')?->getCastedValue() ?? true),
+            'order_success_title' => $settings->get('order_success_title')?->value ?? '',
+            'order_success_message' => $settings->get('order_success_message')?->value ?? '',
             'steadfast_api_key' => $settings->get('steadfast_api_key')?->value ?? '',
             'steadfast_secret_key' => $settings->get('steadfast_secret_key')?->value ?? '',
         ]);
@@ -147,6 +149,12 @@ class Settings extends Page
                         ->label('Order Notes')
                         ->helperText('Allow customers to leave notes during checkout.')
                         ->default(true),
+                    Forms\Components\TextInput::make('order_success_title')
+                        ->label('Order Success Title')
+                        ->placeholder('Order Placed Successfully!'),
+                    Forms\Components\Textarea::make('order_success_message')
+                        ->label('Order Success Message')
+                        ->placeholder('Thank you for your order. We\'ll start preparing it right away!'),
                 ])->columns(3),
             ])
             ->statePath('data');
@@ -179,6 +187,8 @@ class Settings extends Page
             'guest_checkout_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
             'cod_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
             'order_notes_enabled' => ['group' => 'checkout', 'type' => SettingType::Boolean],
+            'order_success_title' => ['group' => 'checkout', 'type' => SettingType::Text],
+            'order_success_message' => ['group' => 'checkout', 'type' => SettingType::Textarea],
             'steadfast_api_key' => ['group' => 'logistics', 'type' => SettingType::Text],
             'steadfast_secret_key' => ['group' => 'logistics', 'type' => SettingType::Text],
         ];
