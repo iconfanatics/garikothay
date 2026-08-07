@@ -552,9 +552,15 @@
                     <p>Select how you would like to pay.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    @php $codEnabled = (bool) \App\Models\Setting::get('cod_enabled', 1); @endphp
+                    @php 
+                        $codEnabled = (bool) \App\Models\Setting::get('cod_enabled', 1); 
+                        $activeGateways = \App\Models\PaymentGateway::where('is_active', true)->pluck('slug')->toArray();
+                    @endphp
                     @foreach(\App\Enums\PaymentMethod::cases() as $method)
                     @if($method->value === 'cod' && !$codEnabled)
+                        @continue
+                    @endif
+                    @if(!in_array($method->value, $activeGateways))
                         @continue
                     @endif
                     <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer">
