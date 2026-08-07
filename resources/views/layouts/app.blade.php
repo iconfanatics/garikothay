@@ -81,6 +81,9 @@
 
 <body class="antialiased">
 
+    <!-- Announcements -->
+    <x-announcements />
+
     <!-- Navbar -->
     <x-navbar :site-name="$siteName" />
 
