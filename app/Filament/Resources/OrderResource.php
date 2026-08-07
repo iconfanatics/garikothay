@@ -407,6 +407,8 @@ class OrderResource extends Resource
     {
         return $table
             ->recordClasses(fn (Order $record) => $record->status === OrderStatus::Pending ? 'bg-primary-50/50 dark:bg-primary-900/10 border-l-4 border-primary-500 font-semibold' : null)
+            ->defaultPaginationPageOption(50)
+            ->paginationPageOptions([50, 100, 250, 'all'])
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Order Date & Time')

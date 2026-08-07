@@ -65,6 +65,7 @@ class LowStockAlert extends BaseWidget
             ->emptyStateHeading('All products are well-stocked!')
             ->emptyStateDescription('No products are currently below their low-stock threshold.')
             ->emptyStateIcon('heroicon-o-check-circle')
-            ->paginated([10, 25, 50]);
+            ->defaultPaginationPageOption(50)
+            ->paginated([50, 100, 250, 'all']);
     }
 }

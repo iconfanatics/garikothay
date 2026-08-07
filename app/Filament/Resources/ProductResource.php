@@ -662,6 +662,8 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultPaginationPageOption(50)
+            ->paginationPageOptions([50, 100, 250, 'all'])
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('Product ID')->sortable()->searchable(),
                 Tables\Columns\ImageColumn::make('primary_image')
