@@ -260,7 +260,7 @@
 @endphp
 
 <div class="sticky top-0 z-50">
-    @if(count($marqueeItems) > 0)
+    @if(count($marqueeItems) > 0 && \App\Models\Setting::get('theme1_show_top_ticker', true))
     <div class="gk-topbar">
         <div class="gk-topbar-track {{ $isSliding ? 'is-sliding' : 'is-static' }}" style="--marquee-speed: {{ $marqueeSpeed }}s;">
             @foreach($marqueeItems as $item)

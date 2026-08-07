@@ -90,6 +90,20 @@ class ThemeSettings extends Page
             'theme1_stats' => $stats,
             'theme1_service_cards' => $serviceCards,
             'theme1_delivery_partners' => $deliveryPartners,
+            'theme1_show_top_ticker' => $settings->get('theme1_show_top_ticker')?->getCastedValue() ?? true,
+            'theme1_show_hero' => $settings->get('theme1_show_hero')?->getCastedValue() ?? true,
+            'theme1_show_trust_features' => $settings->get('theme1_show_trust_features')?->getCastedValue() ?? true,
+            'theme1_show_mega_sale' => $settings->get('theme1_show_mega_sale')?->getCastedValue() ?? true,
+            'theme1_show_new_arrivals' => $settings->get('theme1_show_new_arrivals')?->getCastedValue() ?? true,
+            'theme1_show_featured' => $settings->get('theme1_show_featured')?->getCastedValue() ?? true,
+            'theme1_show_best_sellers' => $settings->get('theme1_show_best_sellers')?->getCastedValue() ?? true,
+            'theme1_show_services' => $settings->get('theme1_show_services')?->getCastedValue() ?? true,
+            'theme1_show_reviews' => $settings->get('theme1_show_reviews')?->getCastedValue() ?? true,
+            'theme1_show_stats' => $settings->get('theme1_show_stats')?->getCastedValue() ?? true,
+            'theme1_show_app' => $settings->get('theme1_show_app')?->getCastedValue() ?? true,
+            'theme1_show_blogs' => $settings->get('theme1_show_blogs')?->getCastedValue() ?? true,
+            'theme1_show_newsletter' => $settings->get('theme1_show_newsletter')?->getCastedValue() ?? true,
+            'theme1_show_partners' => $settings->get('theme1_show_partners')?->getCastedValue() ?? true,
         ]);
     }
 
@@ -97,6 +111,25 @@ class ThemeSettings extends Page
     {
         return $form
             ->schema([
+                Forms\Components\Section::make('Section Visibility')
+                    ->description('Show or hide sections on the homepage.')
+                    ->schema([
+                        Forms\Components\Toggle::make('theme1_show_top_ticker')->label('Top Ticker')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_hero')->label('Hero Slider & Promos')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_trust_features')->label('Trust Features')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_mega_sale')->label('Mega Sale')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_new_arrivals')->label('New Arrivals')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_featured')->label('Featured Products')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_best_sellers')->label('Best Sellers')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_services')->label('Automotive Services')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_reviews')->label('Customer Reviews')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_stats')->label('Statistics')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_app')->label('Mobile App Promo')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_blogs')->label('Automotive Tips (Blog)')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_newsletter')->label('Newsletter Subscription')->default(true),
+                        Forms\Components\Toggle::make('theme1_show_partners')->label('Delivery Partners')->default(true),
+                    ])->columns(3)
+                    ->collapsible(),
                 Forms\Components\Section::make('Theme Logos')
                     ->description('Upload logos for the header and footer.')
                     ->schema([
@@ -330,6 +363,20 @@ class ThemeSettings extends Page
             'theme1_stats' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_service_cards' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_delivery_partners' => ['group' => 'theme', 'type' => SettingType::Json],
+            'theme1_show_top_ticker' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_hero' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_trust_features' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_mega_sale' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_new_arrivals' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_featured' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_best_sellers' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_services' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_reviews' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_stats' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_app' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_blogs' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_newsletter' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_show_partners' => ['group' => 'theme', 'type' => SettingType::Boolean],
         ];
 
         foreach ($data as $key => $value) {

@@ -1051,6 +1051,7 @@
 @endphp
 
 <div class="gk-page">
+    @if(\App\Models\Setting::get('theme1_show_hero', true))
     <section class="gk-hero-wrap">
         <div class="gk-container gk-hero-grid">
             <!-- Sidebar categories removed -->
@@ -1098,7 +1099,9 @@
             </div>
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_trust_features', true))
     <section class="gk-trust">
         <div class="gk-container gk-trust-grid">
             @foreach($trustFeatures as $feature)
@@ -1112,7 +1115,9 @@
             @endforeach
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_mega_sale', true))
     <section class="gk-section">
         <div class="gk-container">
             <div class="gk-section-head">
@@ -1129,8 +1134,10 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Top Categories section removed -->
+    @if(\App\Models\Setting::get('theme1_show_new_arrivals', true))
     <section class="gk-section">
         <div class="gk-container">
             <div class="gk-section-head">
@@ -1147,7 +1154,9 @@
             </div>
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_featured', true))
     <section class="gk-section gk-section-muted">
         <div class="gk-container">
             <div class="gk-section-head">
@@ -1164,7 +1173,9 @@
             </div>
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_best_sellers', true))
     <section class="gk-section">
         <div class="gk-container">
             <div class="gk-section-head">
@@ -1181,7 +1192,9 @@
             </div>
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_services', true))
     <section class="gk-section" id="vehicle-services">
         <div class="gk-container">
             <div style="max-width: 720px; margin: 0 auto 2rem; text-align: center;">
@@ -1201,8 +1214,9 @@
             </div>
         </div>
     </section>
+    @endif
 
-    @if($reviews->isNotEmpty())
+    @if(\App\Models\Setting::get('theme1_show_reviews', true) && $reviews->isNotEmpty())
         <section class="gk-section gk-section-muted">
             <div class="gk-container">
                 <div class="gk-section-head">
@@ -1234,6 +1248,7 @@
         </section>
     @endif
 
+    @if(\App\Models\Setting::get('theme1_show_stats', true))
     <section class="gk-stats">
         <div class="gk-container gk-stats-grid">
             @foreach($stats as $stat)
@@ -1244,7 +1259,9 @@
             @endforeach
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_app', true))
     <section class="gk-section">
         <div class="gk-container">
             <div class="gk-app-promo">
@@ -1274,8 +1291,9 @@
             </div>
         </div>
     </section>
+    @endif
 
-    @if($blogs->isNotEmpty())
+    @if(\App\Models\Setting::get('theme1_show_blogs', true) && $blogs->isNotEmpty())
         <section class="gk-section gk-section-muted">
             <div class="gk-container">
                 <div class="gk-section-head">
@@ -1305,6 +1323,7 @@
         </section>
     @endif
 
+    @if(\App\Models\Setting::get('theme1_show_newsletter', true))
     <section class="gk-newsletter" x-data="{ email: '', msg: '' }">
         <div class="gk-container gk-newsletter-grid">
             <div>
@@ -1326,7 +1345,9 @@
             </div>
         </div>
     </section>
+    @endif
 
+    @if(\App\Models\Setting::get('theme1_show_partners', true))
     <section class="gk-partners">
         <div class="gk-partners-head">
             <span class="gk-partners-kicker">Trusted by</span>
@@ -1340,5 +1361,6 @@
             </div>
         </div>
     </section>
+    @endif
 </div>
 @endsection
