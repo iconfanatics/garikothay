@@ -37,6 +37,8 @@ class ActivityResource extends Resource
     {
         return $table
 
+            ->defaultPaginationPageOption(50)
+            ->paginationPageOptions([50, 100, 250, 'all'])
             ->columns([
                 Tables\Columns\TextColumn::make('log_name')
                     ->badge()
