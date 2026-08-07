@@ -98,6 +98,16 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\StaffResource::class,
                 \App\Filament\Resources\BrandResource::class,
             ])
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::HEAD_END,
+                fn (): string => '<style>
+                    /* Remove sticky column shadow */
+                    .fi-ta-table th::before,
+                    .fi-ta-table td::before {
+                        box-shadow: none !important;
+                    }
+                </style>',
+            )
             ->pages([
                 Dashboard::class, 
                 \App\Filament\Pages\Settings::class, 
