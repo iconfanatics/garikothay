@@ -59,8 +59,8 @@
 
 <!-- Footer -->
 <footer class="bg-gray-900 text-gray-300 mt-16 py-12">
-    <div class="gk-footer-inner grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div>
+    <div class="gk-footer-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+        <div class="lg:col-span-2">
             <h3 class="text-white text-lg font-bold mb-4">
                 @php $logo = \App\Models\Setting::get('theme1_footer_logo'); @endphp
                 @if($logo)
@@ -70,44 +70,10 @@
                     {{ \App\Models\Setting::get('site_name', config('app.name')) }}
                 @endif
             </h3>
-            <p class="text-sm leading-relaxed text-gray-400">
+            <p class="text-sm leading-relaxed text-gray-400 mb-6">
                 {{ \App\Models\Setting::get('site_tagline', 'Bangladesh\'s premier online IT & Computer Accessories store.') }}
             </p>
-        </div>
-        <div>
-            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">
-                {{ __('general.quick_links') }}
-            </h4>
-            <ul class="space-y-2 text-sm">
-                @php
-                    $quickLinks = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
-                        ? \App\Models\NavigationItem::where('group', 'footer_quick_links')->where('is_active', true)->orderBy('sort_order')->get()
-                        : collect();
-                @endphp
-                @foreach($quickLinks as $link)
-                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
-                @endforeach
-            </ul>
-        </div>
-        <div>
-            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">
-                {{ __('general.customer_service') }}
-            </h4>
-            <ul class="space-y-2 text-sm">
-                @php
-                    $customerServiceLinks = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
-                        ? \App\Models\NavigationItem::where('group', 'footer_customer_service')->where('is_active', true)->orderBy('sort_order')->get()
-                        : collect();
-                @endphp
-                @foreach($customerServiceLinks as $link)
-                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
-                @endforeach
-            </ul>
-        </div>
-        <div>
-            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">{{ __('general.contact') }}
-            </h4>
-            <ul class="space-y-2 text-sm text-gray-400">
+            <ul class="space-y-2 text-sm text-gray-400 mb-6">
                 @php
                     $phone1 = \App\Models\Setting::get('phone', '+880 1700-000000');
                     $phone2 = \App\Models\Setting::get('phone_2');
@@ -149,6 +115,55 @@
                 </div>
                 <p x-show="msg" x-text="msg" class="text-sm text-green-400 mt-2"></p>
             </div>
+        </div>
+
+        <div>
+            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Company</h4>
+            <ul class="space-y-2 text-sm text-gray-400 capitalize">
+                <li><a href="#" class="hover:text-rose-400 transition">About Us</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Our Team</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Careers</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Contact Us</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Press & Media+</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Partners+</a></li>
+            </ul>
+        </div>
+        
+        <div>
+            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Business</h4>
+            <ul class="space-y-2 text-sm text-gray-400 capitalize">
+                <li><a href="#" class="hover:text-rose-400 transition">Why List With Us</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Advertise With Us</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Trust & Verification</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Business Listing Plans+</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Partner With Us+</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Help & Information</h4>
+            <ul class="space-y-2 text-sm text-gray-400 capitalize">
+                <li><a href="#" class="hover:text-rose-400 transition">Feedback</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Tips & Guide</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition uppercase">FAQ</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Help Center</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Report A Problem</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Safety Guidelines</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Legal & Policies</h4>
+            <ul class="space-y-2 text-sm text-gray-400 capitalize">
+                <li><a href="{{ route('page.show', 'privacy-policy') }}" class="hover:text-rose-400 transition">Privacy Policy</a></li>
+                <li><a href="{{ route('page.show', 'terms-and-conditions') }}" class="hover:text-rose-400 transition">Terms & Condition</a></li>
+                <li><a href="{{ route('page.show', 'delivery-policy') }}" class="hover:text-rose-400 transition">Delivery Policy</a></li>
+                <li><a href="{{ route('page.show', 'refund-and-return-policy') }}" class="hover:text-rose-400 transition">Refund & Return Policy</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Exchange Policy</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Cancellation Policy</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition">Warranty Policy</a></li>
+                <li><a href="#" class="hover:text-rose-400 transition uppercase">EMI & Payment Policy</a></li>
+            </ul>
         </div>
     </div>
     <div class="gk-footer-inner mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
