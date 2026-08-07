@@ -80,6 +80,7 @@ class ThemeSettings extends Page
         $this->form->fill([
             'theme1_header_logo' => $settings->get('theme1_header_logo')?->value ?? '',
             'theme1_footer_logo' => $settings->get('theme1_footer_logo')?->value ?? '',
+            'theme1_favicon' => $settings->get('theme1_favicon')?->value ?? '',
             'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
             'theme1_top_ticker' => $settings->get('theme1_top_ticker')?->getCastedValue() ?? [],
@@ -109,7 +110,12 @@ class ThemeSettings extends Page
                             ->helperText('Recommended size: 250x60 pixels. PNG format with transparent background is best. White/light logo is recommended for dark footers.')
                             ->image()
                             ->directory('theme'),
-                    ])->columns(2),
+                        Forms\Components\FileUpload::make('theme1_favicon')
+                            ->label('Favicon')
+                            ->helperText('Recommended size: 32x32 pixels or 64x64 pixels (PNG/ICO).')
+                            ->image()
+                            ->directory('theme'),
+                    ])->columns(3),
                 Forms\Components\Section::make('Top Ticker (Marquee)')
                     ->description('Customize the scrolling text at the very top of the page.')
                     ->schema([
@@ -314,6 +320,7 @@ class ThemeSettings extends Page
         $settingsMeta = [
             'theme1_header_logo' => ['group' => 'theme', 'type' => SettingType::Image],
             'theme1_footer_logo' => ['group' => 'theme', 'type' => SettingType::Image],
+            'theme1_favicon' => ['group' => 'theme', 'type' => SettingType::Image],
             'theme1_top_ticker_speed' => ['group' => 'theme', 'type' => SettingType::Number],
             'theme1_top_ticker_style' => ['group' => 'theme', 'type' => SettingType::Text],
             'theme1_top_ticker' => ['group' => 'theme', 'type' => SettingType::Json],
