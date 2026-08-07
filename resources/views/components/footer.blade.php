@@ -62,10 +62,10 @@
     <div class="gk-footer-inner grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
             <h3 class="text-white text-lg font-bold mb-4">
-                @php $logo = \App\Models\Setting::get('site_logo'); @endphp
+                @php $logo = \App\Models\Setting::get('theme1_footer_logo'); @endphp
                 @if($logo)
                     <img src="{{ asset('storage/' . $logo) }}" alt="{{ config('app.name') }}"
-                        class="h-8 w-auto object-contain brightness-0 invert">
+                        class="h-10 w-auto object-contain">
                 @else
                     {{ \App\Models\Setting::get('site_name', config('app.name')) }}
                 @endif

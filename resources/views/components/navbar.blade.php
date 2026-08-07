@@ -32,6 +32,7 @@
     }
 
     $selectedSearchCategoryLabel = $selectedSearchCategory?->name ?? 'All Categories';
+    $headerLogo = \App\Models\Setting::get('theme1_header_logo');
 @endphp
 
 <style>
@@ -275,11 +276,15 @@
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
-            <span class="gk-brand-mark">G</span>
-            <span class="hidden sm:block leading-tight">
-                <span class="gk-brand-title">Gari Kothay</span>
-                <span class="gk-brand-subtitle">Auto Marketplace</span>
-            </span>
+            @if($headerLogo)
+                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto object-contain">
+            @else
+                <span class="gk-brand-mark">G</span>
+                <span class="hidden sm:block leading-tight">
+                    <span class="gk-brand-title">Gari Kothay</span>
+                    <span class="gk-brand-subtitle">Auto Marketplace</span>
+                </span>
+            @endif
         </a>
         <!-- Search (desktop) -->
         <form action="{{ route('search.index') }}" method="GET"
@@ -431,10 +436,14 @@
             
             <div class="w-1/3 flex justify-center">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
-                    <span class="gk-brand-mark">G</span>
-                    <span class="leading-tight">
-                        <span class="gk-brand-title">Gari Kothay</span>
-                    </span>
+                    @if($headerLogo)
+                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-8 w-auto object-contain">
+                    @else
+                        <span class="gk-brand-mark">G</span>
+                        <span class="leading-tight">
+                            <span class="gk-brand-title">Gari Kothay</span>
+                        </span>
+                    @endif
                 </a>
             </div>
             
@@ -503,8 +512,12 @@
             <!-- Header -->
             <div class="flex items-center justify-between p-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
-                    <span class="gk-brand-mark">G</span>
-                    <span class="font-bold text-lg text-gray-900">Menu</span>
+                    @if($headerLogo)
+                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-8 w-auto object-contain">
+                    @else
+                        <span class="gk-brand-mark">G</span>
+                        <span class="font-bold text-lg text-gray-900">Menu</span>
+                    @endif
                 </div>
                 <button @click="mobileOpen = false" class="p-2 text-gray-500 hover:text-[var(--gk-red)] bg-gray-50 rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

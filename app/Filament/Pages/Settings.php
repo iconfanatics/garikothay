@@ -31,7 +31,6 @@ class Settings extends Page
         $this->form->fill([
             'site_name' => $settings->get('site_name')?->value ?? '',
             'site_tagline' => $settings->get('site_tagline')?->value ?? '',
-            'site_logo' => $settings->get('site_logo')?->value ?? '',
             'site_favicon' => $settings->get('site_favicon')?->value ?? '',
             'free_shipping_threshold' => $settings->get('free_shipping_threshold')?->value ?? '',
             'dhaka_city_shipping_charge' => $settings->get('dhaka_city_shipping_charge')?->value ?? '80',
@@ -64,7 +63,6 @@ class Settings extends Page
                 Forms\Components\Section::make('General')->schema([
                     Forms\Components\TextInput::make('site_name')->label('Site Name'),
                     Forms\Components\TextInput::make('site_tagline')->label('Site Tagline'),
-                    Forms\Components\FileUpload::make('site_logo')->label('Site Logo')->image()->directory('settings'),
                     Forms\Components\FileUpload::make('site_favicon')->label('Favicon')->image()->directory('settings'),
                 ])->columns(2),
                 Forms\Components\Section::make('SEO & Analytics')->schema([
@@ -163,7 +161,6 @@ class Settings extends Page
         $settingsMeta = [
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
             'site_tagline' => ['group' => 'general', 'type' => SettingType::Text],
-            'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
             'site_favicon' => ['group' => 'general', 'type' => SettingType::Image],
             'home_meta_title' => ['group' => 'seo', 'type' => SettingType::Text],
             'home_meta_description' => ['group' => 'seo', 'type' => SettingType::Textarea],
