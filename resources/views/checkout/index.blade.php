@@ -359,6 +359,8 @@
         }
 
         this.applyingCoupon = true;
+        sessionStorage.setItem('gk_checkout_data', JSON.stringify(this.formData));
+        
         fetch('/cart/coupon', {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
@@ -373,11 +375,26 @@
             this.applyingCoupon = false;
         });
     },
+    removeCoupon() {
+        sessionStorage.setItem('gk_checkout_data', JSON.stringify(this.formData));
+        fetch('/cart/coupon', {
+            method: 'DELETE', 
+            headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}
+        }).then(() => window.location.reload());
+    },
     init() {
-        const defaultAddr = this.addresses.find(a => a.is_default);
-        if (defaultAddr && !@js(old('full_name', ''))) {
-            this.selectedAddressId = defaultAddr.id;
-            this.selectAddress(defaultAddr.id);
+        const savedData = sessionStorage.getItem('gk_checkout_data');
+        if (savedData) {
+            try {
+                this.formData = { ...this.formData, ...JSON.parse(savedData) };
+            } catch (e) {}
+            sessionStorage.removeItem('gk_checkout_data');
+        } else {
+            const defaultAddr = this.addresses.find(a => a.is_default);
+            if (defaultAddr && !@js(old('full_name', ''))) {
+                this.selectedAddressId = defaultAddr.id;
+                this.selectAddress(defaultAddr.id);
+            }
         }
     },
     selectAddress(id) {
@@ -616,7 +633,7 @@
                                 <span class="font-bold text-sm">Coupon Applied:</span>
                                 <span class="text-sm ml-1">{{ $cart->coupon->code }}</span>
                             </div>
-                            <button type="button" class="text-sm font-bold text-red-600 hover:text-red-800" onclick="fetch('/cart/coupon', {method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}}).then(() => window.location.reload())">Remove</button>
+                            <button type="button" class="text-sm font-bold text-red-600 hover:text-red-800" @click="removeCoupon()">Remove</button>
                         </div>
                     @else
                         <label for="checkout-coupon">{{ __('general.coupon_code') }}</label>
