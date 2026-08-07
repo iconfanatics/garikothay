@@ -113,6 +113,66 @@ class OrderResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $updateParentTotals = function (Forms\Get $get, Forms\Set $set) {
+            $items = $get('../../items') ?? [];
+            $subtotal = 0;
+            foreach ($items as $item) {
+                $subtotal += (float) ($item['total_price'] ?? 0);
+            }
+            $set('../../subtotal', $subtotal);
+
+            $discount = (float) $get('../../discount_amount');
+            $shipping = (float) $get('../../shipping_amount');
+
+            $couponId = $get('../../coupon_id');
+            if ($couponId) {
+                $coupon = \App\Models\Coupon::find($couponId);
+                if ($coupon) {
+                    if (strtolower((string) $coupon->type) === 'percentage') {
+                        $discount = $subtotal * ((float) $coupon->value / 100);
+                        if ($coupon->max_discount_amount) {
+                            $discount = min($discount, (float) $coupon->max_discount_amount);
+                        }
+                    } else {
+                        $discount = (float) $coupon->value;
+                    }
+                    $set('../../discount_amount', $discount);
+                }
+            }
+
+            $set('../../total', max(0, $subtotal - $discount + $shipping));
+        };
+
+        $updateTotals = function (Forms\Get $get, Forms\Set $set) {
+            $items = $get('items') ?? [];
+            $subtotal = 0;
+            foreach ($items as $item) {
+                $subtotal += (float) ($item['total_price'] ?? 0);
+            }
+            $set('subtotal', $subtotal);
+
+            $discount = (float) $get('discount_amount');
+            $shipping = (float) $get('shipping_amount');
+
+            $couponId = $get('coupon_id');
+            if ($couponId) {
+                $coupon = \App\Models\Coupon::find($couponId);
+                if ($coupon) {
+                    if (strtolower((string) $coupon->type) === 'percentage') {
+                        $discount = $subtotal * ((float) $coupon->value / 100);
+                        if ($coupon->max_discount_amount) {
+                            $discount = min($discount, (float) $coupon->max_discount_amount);
+                        }
+                    } else {
+                        $discount = (float) $coupon->value;
+                    }
+                    $set('discount_amount', $discount);
+                }
+            }
+
+            $set('total', max(0, $subtotal - $discount + $shipping));
+        };
+
         $locations = [
             'Dhaka' => ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
             'Chattogram' => ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
@@ -233,16 +293,8 @@ class OrderResource extends Resource
                 Forms\Components\Repeater::make('items')
                     ->relationship()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
-                        $items = $get('items') ?? [];
-                        $subtotal = 0;
-                        foreach ($items as $item) {
-                            $subtotal += (float) ($item['total_price'] ?? 0);
-                        }
-                        $set('subtotal', $subtotal);
-                        $discount = (float) $get('discount_amount');
-                        $shipping = (float) $get('shipping_amount');
-                        $set('total', $subtotal - $discount + $shipping);
+                    ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) use ($updateTotals) {
+                        $updateTotals($get, $set);
                     })
                     ->schema([
                         Forms\Components\Grid::make(5)->schema([
@@ -254,13 +306,15 @@ class OrderResource extends Resource
                                 ->preload()
                                 ->required()
                                 ->live(onBlur: true)
-                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
                                     if ($state) {
                                         $product = \App\Models\Product::find($state);
                                         if ($product) {
                                             $set('product_name', $product->name);
                                             $set('product_sku', $product->sku);
                                             $set('unit_price', $product->selling_price);
+                                            $set('total_price', $product->selling_price * (float) $get('quantity'));
+                                            $updateParentTotals($get, $set);
                                         }
                                     }
                                 }),
@@ -274,13 +328,15 @@ class OrderResource extends Resource
                                     return \App\Models\ProductVariant::where('product_id', $productId)->get()->mapWithKeys(fn ($v) => [$v->id => (string) ($v->name ?? 'Variant #'.$v->id)]);
                                 })
                                 ->live(onBlur: true)
-                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
                                     if ($state) {
                                         $variant = \App\Models\ProductVariant::find($state);
                                         $product = \App\Models\Product::find($get('product_id'));
                                         if ($variant && $product) {
                                             $price = $variant->price > 0 ? $variant->price : $product->selling_price + $variant->price_modifier;
                                             $set('unit_price', $price);
+                                            $set('total_price', $price * (float) $get('quantity'));
+                                            $updateParentTotals($get, $set);
                                         }
                                     }
                                 }),
@@ -290,13 +346,19 @@ class OrderResource extends Resource
                                 ->default(1)
                                 ->required()
                                 ->live(onBlur: true)
-                                ->afterStateUpdated(fn ($state, Forms\Set $set, Forms\Get $get) => $set('total_price', (float) $state * (float) $get('unit_price'))),
+                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
+                                    $set('total_price', (float) $state * (float) $get('unit_price'));
+                                    $updateParentTotals($get, $set);
+                                }),
                             Forms\Components\TextInput::make('unit_price')
                                 ->label('Unit Price')
                                 ->numeric()
                                 ->required()
                                 ->live(onBlur: true)
-                                ->afterStateUpdated(fn ($state, Forms\Set $set, Forms\Get $get) => $set('total_price', (float) $state * (float) $get('quantity'))),
+                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
+                                    $set('total_price', (float) $state * (float) $get('quantity'));
+                                    $updateParentTotals($get, $set);
+                                }),
                             Forms\Components\TextInput::make('total_price')
                                 ->label('Total')
                                 ->numeric()
@@ -315,9 +377,9 @@ class OrderResource extends Resource
                 Forms\Components\Grid::make(4)->schema([
                     Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required(),
                     Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required()
-                        ->live(onBlur: true)->afterStateUpdated(fn(Forms\Get $get, Forms\Set $set, $state) => $set('total', (float) $get('subtotal') - (float) $state + (float) $get('shipping_amount'))),
+                        ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
                     Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required()
-                        ->live(onBlur: true)->afterStateUpdated(fn(Forms\Get $get, Forms\Set $set, $state) => $set('total', (float) $get('subtotal') - (float) $get('discount_amount') + (float) $state)),
+                        ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
                     Forms\Components\TextInput::make('total')->label('Total')->numeric()->required(),
                 ]),
                 Forms\Components\Select::make('coupon_id')
@@ -325,7 +387,9 @@ class OrderResource extends Resource
                     ->relationship('coupon', 'code')
                     ->searchable()
                     ->preload()
-                    ->nullable(),
+                    ->nullable()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
             ]),
             Forms\Components\Section::make('Payment Info (Optional)')->schema([
                 Forms\Components\TextInput::make('manual_payment_amount')
