@@ -69,12 +69,18 @@
         margin-top: 0.25rem;
         font-size: 0.9rem;
         opacity: 0.9;
+        word-break: break-all;
     }
 
     .gk-account-grid {
         display: grid;
         gap: 1.5rem;
         margin-top: 1.5rem;
+    }
+
+    .gk-account-grid > aside,
+    .gk-account-grid > main {
+        min-width: 0;
     }
 
     @media (min-width: 1024px) {
@@ -437,7 +443,8 @@
             flex-direction: column;
         }
 
-        .gk-account-hero > .gk-account-btn {
+        .gk-account-hero form,
+        .gk-account-hero form .gk-account-btn {
             width: 100%;
         }
     }
