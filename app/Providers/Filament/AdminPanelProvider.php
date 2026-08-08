@@ -109,14 +109,10 @@ class AdminPanelProvider extends PanelProvider
                     .fi-ta-table .sticky::before {
                         display: none !important;
                     }
-                    /* Make the table header sticky vertically */
-                    .fi-ta-content {
-                        max-height: calc(100vh - 16rem);
-                        overflow-y: auto !important;
-                    }
+                    /* Make the table header sticky vertically relative to the page */
                     .fi-ta-table thead {
                         position: sticky;
-                        top: 0;
+                        top: 64px; /* Height of the Filament topbar */
                         z-index: 20;
                     }
                     /* Ensure the header has a solid background so scrolling rows are hidden */

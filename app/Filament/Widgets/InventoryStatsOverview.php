@@ -19,6 +19,8 @@ class InventoryStatsOverview extends BaseWidget
         $reservedStock = (int) Product::sum('reserved_stock');
         $availableStock = $totalStock - $reservedStock;
         
+        $availableStockCount = Product::whereRaw('stock_quantity > reserved_stock')->count();
+        
         $inStockCount = Product::where(function($q) {
             $q->where('stock_quantity', '>', 0)
               ->orWhereHas('variants', fn($vq) => $vq->where('stock_quantity', '>', 0));
@@ -48,8 +50,8 @@ class InventoryStatsOverview extends BaseWidget
                 ->color('info')
                 ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'in_stock']]]), true),
                 
-            Stat::make("Available Stock", number_format($availableStock) . ' Items')
-                ->description('Ready for new orders')
+            Stat::make("Available Stock", number_format($availableStockCount) . ' Products')
+                ->description('Products ready for orders')
                 ->descriptionIcon('heroicon-m-check-badge')
                 ->color('success')
                 ->url(route('filament.admin.resources.products.index', ['tableFilters' => ['stock_level' => ['value' => 'available_stock']]])),
