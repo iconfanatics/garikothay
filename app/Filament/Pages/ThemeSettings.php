@@ -333,6 +333,11 @@ class ThemeSettings extends Page
                         Forms\Components\Repeater::make('theme1_delivery_partners')
                             ->label('Partners')
                             ->schema([
+                                Forms\Components\FileUpload::make('image')
+                                    ->label('Logo Image')
+                                    ->image()
+                                    ->directory('theme')
+                                    ->helperText('Recommended size: 120x60 pixels. PNG format with transparent background is best.'),
                                 Forms\Components\TextInput::make('name')
                                     ->label('Name (with icon)')
                                     ->required()

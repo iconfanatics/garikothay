@@ -1044,8 +1044,17 @@
     $dbStats = \App\Models\Setting::get('theme1_stats');
     $stats = empty($dbStats) ? $fallbackStats : collect($dbStats);
 
-    $fallbackDeliveryPartners = ['🚲 Pathao', '✈ Paperfly', '🚚 RedX', '▣ Sundarban', '📦 SA Paribahan', '🚀 Steadfast', '➤ eCourier', '⛴ Janani'];
-    $dbDeliveryPartners = collect(\App\Models\Setting::get('theme1_delivery_partners'))->pluck('name')->filter()->toArray();
+    $fallbackDeliveryPartners = [
+        ['name' => '🚲 Pathao', 'image' => null],
+        ['name' => '✈ Paperfly', 'image' => null],
+        ['name' => '🚚 RedX', 'image' => null],
+        ['name' => '▣ Sundarban', 'image' => null],
+        ['name' => '📦 SA Paribahan', 'image' => null],
+        ['name' => '🚀 Steadfast', 'image' => null],
+        ['name' => '➤ eCourier', 'image' => null],
+        ['name' => '⛴ Janani', 'image' => null]
+    ];
+    $dbDeliveryPartners = collect(\App\Models\Setting::get('theme1_delivery_partners'))->filter(fn($p) => !empty($p['name']))->toArray();
     $deliveryPartners = empty($dbDeliveryPartners) ? $fallbackDeliveryPartners : $dbDeliveryPartners;
     $partnerLoop = array_merge($deliveryPartners, $deliveryPartners);
 @endphp
@@ -1356,7 +1365,12 @@
         <div style="position:relative;">
             <div class="gk-partner-track">
                 @foreach($partnerLoop as $partner)
-                    <span class="gk-partner">{{ $partner }}</span>
+                    <span class="gk-partner">
+                        @if(!empty($partner['image']))
+                            <img src="{{ asset('storage/' . $partner['image']) }}" alt="{{ $partner['name'] }}" style="height: 32px; width: auto; object-fit: contain;">
+                        @endif
+                        <span>{{ $partner['name'] }}</span>
+                    </span>
                 @endforeach
             </div>
         </div>
