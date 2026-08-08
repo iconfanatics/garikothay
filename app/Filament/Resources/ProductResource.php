@@ -665,7 +665,11 @@ class ProductResource extends Resource
             ->defaultPaginationPageOption(50)
             ->paginationPageOptions([50, 100, 250, 'all'])
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('Product ID')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Product ID')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ImageColumn::make('primary_image')
                     ->label('Thumbnail')
                     ->state(function (Product $record) {
@@ -709,11 +713,13 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created Date')
                     ->dateTime('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Last Updated')
                     ->dateTime('d M Y, h:i A')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
