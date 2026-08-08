@@ -158,9 +158,17 @@ class BlogResource extends Resource
                     ->visibility("public")
                     ->maxSize(4096)
                     ->imageResizeMode("contain")
-                    ->imageResizeTargetWidth("1600")
                     ->imageResizeTargetHeight("900")
-                    ->imagePreviewHeight("150"),
+                    ->imagePreviewHeight("150")
+                    ->columnSpanFull(),
+                Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\TextInput::make("image_alt_text")
+                        ->label("Image Alt Text")
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make("image_caption")
+                        ->label("Image Caption")
+                        ->maxLength(255),
+                ]),
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\Toggle::make("is_published")
                         ->label("Published")
@@ -174,6 +182,21 @@ class BlogResource extends Resource
                                 "is_published",
                             ),
                         ),
+                    Forms\Components\Select::make("author_id")
+                        ->label("Author")
+                        ->relationship("author", "name")
+                        ->searchable()
+                        ->preload()
+                        ->default(fn () => \Filament\Facades\Filament::auth()->id())
+                        ->required(),
+                    Forms\Components\Toggle::make("is_featured")
+                        ->label("Featured Blog")
+                        ->default(false),
+                    Forms\Components\TextInput::make("reading_time_minutes")
+                        ->label("Reading Time (Minutes)")
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->helperText("Auto-calculated on save."),
                 ]),
             ]),
         ]);
@@ -185,6 +208,11 @@ class BlogResource extends Resource
             ->defaultPaginationPageOption(50)
             ->paginationPageOptions([50, 100, 250, 'all'])
             ->columns([
+                Tables\Columns\TextColumn::make("blog_code")
+                    ->label("Blog ID")
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ImageColumn::make("featured_image")
                     ->label("Image")
                     ->disk("public")
@@ -248,6 +276,31 @@ class BlogResource extends Resource
                             ->get()
                             ->pluck("name", "id"),
                     ),
+                Tables\Filters\SelectFilter::make("author_id")
+                    ->label("Author")
+                    ->relationship("author", "name")
+                    ->searchable()
+                    ->preload(),
+                Tables\Filters\TernaryFilter::make("is_featured")
+                    ->label("Featured Blog")
+                    ->trueLabel("Featured Only")
+                    ->falseLabel("Non-Featured Only"),
+                Tables\Filters\Filter::make('published_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('published_from'),
+                        Forms\Components\DatePicker::make('published_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['published_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('published_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['published_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('published_at', '<=', $date),
+                            );
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

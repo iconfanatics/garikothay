@@ -21,7 +21,9 @@ class CreateBlog extends CreateRecord
     {
         unset($data['translations']);
 
-        $data['author_id'] = Filament::auth()->id();
+        if (empty($data['author_id'])) {
+            $data['author_id'] = Filament::auth()->id();
+        }
 
         if (($data['is_published'] ?? false) && empty($data['published_at'])) {
             $data['published_at'] = now();

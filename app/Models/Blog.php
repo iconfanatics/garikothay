@@ -18,24 +18,57 @@ class Blog extends Model
     use HasFactory, LogsActivity, HasTranslations;
 
     protected $fillable = [
-        'blog_category_id', 'slug', 'featured_image', 'author_id', 'is_published', 'published_at',
+        'blog_category_id',
+        'slug',
+        'featured_image',
+        'author_id',
+        'is_published',
+        'published_at',
+        'seo_title',
+        'meta_description',
+        'tags',
+        'blog_code',
+        'reading_time_minutes',
+        'is_featured',
+        'image_alt_text',
+        'image_caption',
     ];
 
-        public function getActivitylogOptions(): LogOptions
+    protected $casts = [
+        'is_published' => 'boolean',
+        'published_at' => 'datetime',
+        'tags' => 'array',
+        'is_featured' => 'boolean',
+        'reading_time_minutes' => 'integer',
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($blog) {
+            // Auto generate blog_code on creation
+            if (empty($blog->blog_code)) {
+                $lastBlog = static::orderBy('id', 'desc')->first();
+                $lastId = $lastBlog ? $lastBlog->id : 0;
+                $blog->blog_code = 'BLG-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+            }
+
+            // Auto calculate reading time based on English content
+            $content = $blog->getTranslation('content', 'en') ?? '';
+            $wordCount = str_word_count(strip_tags($content));
+            $blog->reading_time_minutes = max(1, ceil($wordCount / 200));
+        });
+    }
+
+    public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logAll()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
-protected function casts(): array
-    {
-        return [
-            'is_published' => 'boolean',
-            'published_at' => 'datetime',
-            'tags' => 'array',
-        ];
-    }
+
 
     public function comments(): HasMany
     {
