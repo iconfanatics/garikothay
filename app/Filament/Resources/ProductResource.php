@@ -785,7 +785,10 @@ class ProductResource extends Resource
                             )
                             ->when(
                                 $val === 'available_stock',
-                                fn (Builder $query): Builder => $query->whereRaw('stock_quantity > reserved_stock'),
+                                fn (Builder $query): Builder => $query->where(function($q) {
+                                    $q->whereRaw('products.stock_quantity > IFNULL(products.reserved_stock, 0)')
+                                      ->orWhereHas('variants', fn($vq) => $vq->where('product_variants.stock_quantity', '>', 0));
+                                }),
                             )
                             ->when(
                                 $val === 'reserved_stock',

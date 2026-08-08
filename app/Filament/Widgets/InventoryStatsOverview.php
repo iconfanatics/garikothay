@@ -19,7 +19,10 @@ class InventoryStatsOverview extends BaseWidget
         $reservedStock = (int) Product::sum('reserved_stock');
         $availableStock = $totalStock - $reservedStock;
         
-        $availableStockCount = Product::whereRaw('stock_quantity > reserved_stock')->count();
+        $availableStockCount = Product::where(function($q) {
+            $q->whereRaw('products.stock_quantity > IFNULL(products.reserved_stock, 0)')
+              ->orWhereHas('variants', fn($vq) => $vq->where('product_variants.stock_quantity', '>', 0));
+        })->count();
         
         $inStockCount = Product::where(function($q) {
             $q->where('stock_quantity', '>', 0)
