@@ -149,12 +149,33 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
                     html .trix-content b, html .trix-content strong { font-weight: 700; }
-                    .fi-ta-content { max-height: none !important; overflow-y: visible !important; }
-                    .fi-ta-header-cell { position: sticky !important; top: 64px !important; z-index: 10 !important; }
+                    .fi-ta-content { max-height: 75vh !important; overflow-y: auto !important; }
+                    .fi-ta-header-cell { position: sticky !important; top: 0 !important; z-index: 5 !important; }
                     html:not(.dark) .fi-ta-header-cell { background-color: rgb(255 255 255) !important; }
                     .dark .fi-ta-header-cell { background-color: rgb(24 24 27) !important; }
                     .trix-content p, .prose p, .fi-fo-rich-editor-content p { margin-top: 0.25em !important; margin-bottom: 0.25em !important; }
-                </style>'
+                </style>
+                <script>
+                    function saveTableScroll() {
+                        const table = document.querySelector(".fi-ta-content");
+                        if (table) {
+                            sessionStorage.setItem("fi_scroll_" + window.location.pathname, table.scrollTop);
+                        }
+                    }
+                    function restoreTableScroll() {
+                        const scrollPos = sessionStorage.getItem("fi_scroll_" + window.location.pathname);
+                        if (scrollPos) {
+                            setTimeout(() => {
+                                const table = document.querySelector(".fi-ta-content");
+                                if (table) table.scrollTop = parseInt(scrollPos);
+                            }, 50);
+                        }
+                    }
+                    window.addEventListener("beforeunload", saveTableScroll);
+                    document.addEventListener("livewire:navigating", saveTableScroll);
+                    document.addEventListener("DOMContentLoaded", restoreTableScroll);
+                    document.addEventListener("livewire:navigated", restoreTableScroll);
+                </script>'
             );
     }
 }
