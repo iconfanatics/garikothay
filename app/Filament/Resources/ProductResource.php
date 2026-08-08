@@ -675,13 +675,11 @@ class ProductResource extends Resource
                     ->state(function (Product $record) {
                         return $record->images->first()?->path;
                     })
-                    ->square()
-                    ->toggleable(),
+                    ->square(),
                 Tables\Columns\TextColumn::make('translations.name')
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
                     ->searchable()
-                    ->toggleable()
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderBy(
                             \App\Models\ProductTranslation::select('name')
