@@ -13,7 +13,9 @@ class ManageSuppliers extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->slideOver()
+                ->modalWidth(\Filament\Support\Enums\MaxWidth::SevenExtraLarge),
         ];
     }
 }

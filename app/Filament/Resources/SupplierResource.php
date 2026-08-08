@@ -250,7 +250,9 @@ class SupplierResource extends Resource
                     ->falseLabel('Non-Preferred Only'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver()
+                    ->modalWidth(\Filament\Support\Enums\MaxWidth::SevenExtraLarge),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
