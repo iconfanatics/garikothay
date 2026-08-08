@@ -516,17 +516,46 @@ class OrderResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Order Status')
                     ->options(OrderStatus::options()),
-                Tables\Filters\SelectFilter::make('payment_status')
-                    ->label('Payment Status')
-                    ->options(PaymentStatus::options()),
-                Tables\Filters\SelectFilter::make('payment_method')
-                    ->label('Payment Method')
-                    ->options([
-                        'cod' => 'Cash on Delivery',
-                        'sslcommerz' => 'SSLCommerz',
-                        'stripe' => 'Stripe',
-                        'bkash' => 'bKash',
-                    ]),
+                    
+                Tables\Filters\Filter::make('payment')
+                    ->label('Payment Details')
+                    ->form([
+                        Forms\Components\Select::make('payment_status')
+                            ->label('Payment Status')
+                            ->options(PaymentStatus::options())
+                            ->live(),
+                        Forms\Components\Select::make('payment_method')
+                            ->label('Payment Method')
+                            ->options(function (Forms\Get $get) {
+                                if ($get('payment_status') === 'unpaid') {
+                                    return ['cod' => 'Cash on Delivery'];
+                                }
+                                return [
+                                    'cod' => 'Cash on Delivery',
+                                    'sslcommerz' => 'SSLCommerz',
+                                    'stripe' => 'Stripe',
+                                    'bkash' => 'bKash',
+                                ];
+                            }),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['payment_status'] ?? null, fn($q, $v) => $q->where('payment_status', $v))
+                            ->when($data['payment_method'] ?? null, fn($q, $v) => $q->where('payment_method', $v));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['payment_status'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('Payment Status: ' . str($data['payment_status'])->headline())
+                                ->removeField('payment_status');
+                        }
+                        if ($data['payment_method'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('Payment Method: ' . str($data['payment_method'])->headline())
+                                ->removeField('payment_method');
+                        }
+                        return $indicators;
+                    }),
+
                 Tables\Filters\SelectFilter::make('delivery_method')
                     ->label('Delivery Method')
                     ->options([
@@ -537,15 +566,18 @@ class OrderResource extends Resource
                         'Sundarban' => 'Sundarban',
                         'Own Delivery' => 'Own Delivery',
                     ]),
+                    
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\DatePicker::make('from')
                                 ->label('From Date')
-                                ->maxDate(now()),
+                                ->maxDate(now())
+                                ->live(),
                             Forms\Components\DatePicker::make('until')
                                 ->label('To Date')
-                                ->maxDate(now()),
+                                ->maxDate(now())
+                                ->minDate(fn (Forms\Get $get) => $get('from')),
                         ])
                     ])
                     ->columnSpan(['md' => 2])
@@ -554,11 +586,22 @@ class OrderResource extends Resource
                             ->when($data['from'], fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
                             ->when($data['until'], fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
                     }),
+                    
                 Tables\Filters\Filter::make('total')
                     ->form([
                         Forms\Components\Grid::make(2)->schema([
-                            Forms\Components\TextInput::make('min')->label('Min Amount')->numeric(),
-                            Forms\Components\TextInput::make('max')->label('Max Amount')->numeric(),
+                            Forms\Components\TextInput::make('min')
+                                ->label('Min Amount')
+                                ->numeric()
+                                ->live(onBlur: true),
+                            Forms\Components\TextInput::make('max')
+                                ->label('Max Amount')
+                                ->numeric()
+                                ->rule(fn (Forms\Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    if (filled($get('min')) && (float) $value < (float) $get('min')) {
+                                        $fail('Max amount cannot be less than Min amount.');
+                                    }
+                                }),
                         ])
                     ])
                     ->columnSpan(['md' => 2])
@@ -567,9 +610,11 @@ class OrderResource extends Resource
                             ->when($data['min'], fn ($q, $min) => $q->where('total', '>=', $min))
                             ->when($data['max'], fn ($q, $max) => $q->where('total', '<=', $max));
                     }),
+                    
                 Tables\Filters\SelectFilter::make('assigned_staff_id')
                     ->label('Assigned Staff')
                     ->relationship('assignedStaff', 'name'),
+                    
                 Tables\Filters\SelectFilter::make('supplier_id')
                     ->label('Supplier')
                     ->options(fn () => \App\Models\Supplier::pluck('name', 'id')->toArray())
@@ -578,7 +623,6 @@ class OrderResource extends Resource
                         return $query->whereHas('items.product', fn($q) => $q->where('supplier_id', $data['value']));
                     }),
             ])
-            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make()->label('Manage Order'),
                 Tables\Actions\Action::make('download_invoice')
