@@ -24,8 +24,9 @@ class OutOfStockProducts extends BaseWidget
             )
             ->heading('Out of Stock Products')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('translations.name')
                     ->label('Product Name')
+                    ->formatStateUsing(fn ($record) => $record->name)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU'),

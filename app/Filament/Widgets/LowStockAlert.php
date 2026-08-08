@@ -31,11 +31,10 @@ class LowStockAlert extends BaseWidget
                     ->label('Image')
                     ->circular()
                     ->defaultImageUrl(asset('images/placeholder.png')),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('translations.name')
                     ->label('Product')
-                    ->searchable(query: function ($query, string $search): void {
-                        $query->whereHas('translations', fn ($q) => $q->where('name', 'like', "%{$search}%"));
-                    })
+                    ->formatStateUsing(fn ($record) => $record->name)
+                    ->searchable()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
