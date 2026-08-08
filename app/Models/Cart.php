@@ -10,7 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cart extends Model
 {
-    protected $fillable = ['user_id', 'session_id', 'coupon_id'];
+    protected $fillable = ['user_id', 'session_id', 'coupon_id', 'recovery_status', 'is_reminder_sent', 'reminder_sent_at', 'shipping_charge', 'discount_amount', 'grand_total'];
+
+    protected $casts = [
+        'is_reminder_sent' => 'boolean',
+        'reminder_sent_at' => 'datetime',
+    ];
 
     public function user(): BelongsTo
     {
