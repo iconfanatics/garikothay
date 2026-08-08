@@ -149,28 +149,6 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
                     html .trix-content b, html .trix-content strong { font-weight: 700; }
-                    /* Make the table header sticky vertically relative to the page */
-                    .fi-ta-table thead {
-                        position: sticky !important;
-                        top: 64px !important;
-                        z-index: 20 !important;
-                    }
-                    /* Ensure the header has a solid background so scrolling rows are hidden */
-                    .fi-ta-table thead tr, .fi-ta-header-cell {
-                        background-color: #f9fafb !important;
-                    }
-                    .dark .fi-ta-table thead tr, .dark .fi-ta-header-cell {
-                        background-color: #18181b !important; /* Zinc 900 for solid header */
-                    }
-                    /* Make all sticky cells completely transparent so they match the row perfectly */
-                    .fi-ta-table .sticky {
-                        background-color: transparent !important;
-                    }
-                    /* Remove Filament sticky pseudo-elements (which cause the shadow and color mismatch) */
-                    .fi-ta-table .sticky::before {
-                        display: none !important;
-                    }
-                    /* Allow the table to scroll smoothly with the window */
                     .fi-ta-content { max-height: none !important; overflow-y: visible !important; }
                     .trix-content p, .prose p, .fi-fo-rich-editor-content p { margin-top: 0.25em !important; margin-bottom: 0.25em !important; }
                 </style>'
