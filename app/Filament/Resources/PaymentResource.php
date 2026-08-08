@@ -143,8 +143,13 @@ class PaymentResource extends Resource
             ->filters([
                 Tables\Filters\Filter::make('created_at')
                     ->form([
-                        Forms\Components\DatePicker::make('created_from')->label('From Date'),
-                        Forms\Components\DatePicker::make('created_until')->label('To Date'),
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('From Date')
+                            ->maxDate(now()),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('To Date')
+                            ->maxDate(now())
+                            ->afterOrEqual('created_from'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -181,7 +186,6 @@ class PaymentResource extends Resource
                         return \App\Models\PaymentGateway::pluck('name', 'slug')->toArray();
                     }),
             ])
-            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
             ->defaultPaginationPageOption(30)
             ->paginationPageOptions([10, 30, 50, 100, 'all'])
             ->actions([
