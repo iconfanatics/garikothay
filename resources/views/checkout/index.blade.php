@@ -418,7 +418,12 @@
     },
     get availableShippingMethods() {
         if (!this.formData.city) return [];
-        const zone = this.shippingZones.find(z => z.districts && z.districts.includes(this.formData.city));
+        let zone = this.shippingZones.find(z => z.districts && z.districts.includes(this.formData.city));
+        
+        if (!zone) {
+            zone = this.shippingZones.find(z => z.districts && z.districts.includes('All'));
+        }
+        
         if (zone) {
             return zone.shipping_methods;
         }

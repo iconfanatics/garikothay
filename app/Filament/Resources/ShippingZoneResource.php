@@ -44,7 +44,9 @@ class ShippingZoneResource extends Resource
                                 'Rangpur' => ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
                                 'Mymensingh' => ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur']
                             ];
-                            $options = [];
+                            $options = [
+                                'All' => 'All Districts (Anywhere in BD)'
+                            ];
                             foreach ($locations as $division => $districts) {
                                 foreach ($districts as $district) {
                                     $options[$district] = $district . ' (' . $division . ')';
