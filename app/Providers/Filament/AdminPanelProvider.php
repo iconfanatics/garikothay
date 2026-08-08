@@ -98,32 +98,6 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\StaffResource::class,
                 \App\Filament\Resources\BrandResource::class,
             ])
-            ->renderHook(
-                \Filament\View\PanelsRenderHook::HEAD_END,
-                fn (): string => '<style>
-                    /* Make all sticky cells completely transparent so they match the row perfectly */
-                    .fi-ta-table .sticky {
-                        background-color: transparent !important;
-                    }
-                    /* Remove Filament sticky pseudo-elements (which cause the shadow and color mismatch) */
-                    .fi-ta-table .sticky::before {
-                        display: none !important;
-                    }
-                    /* Make the table header sticky vertically relative to the page */
-                    .fi-ta-table thead {
-                        position: sticky;
-                        top: 64px; /* Height of the Filament topbar */
-                        z-index: 20;
-                    }
-                    /* Ensure the header has a solid background so scrolling rows are hidden */
-                    .fi-ta-table thead tr {
-                        background-color: #f9fafb !important;
-                    }
-                    .dark .fi-ta-table thead tr {
-                        background-color: #18181b !important; /* Zinc 900 for solid header */
-                    }
-                </style>',
-            )
             ->pages([
                 Dashboard::class, 
                 \App\Filament\Pages\Settings::class, 
@@ -175,10 +149,29 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
                     html .trix-content b, html .trix-content strong { font-weight: 700; }
-                    .fi-ta-content { max-height: 75vh !important; overflow-y: auto !important; }
-                    .fi-ta-header-cell { position: sticky !important; top: 0 !important; z-index: 5 !important; }
-                    html:not(.dark) .fi-ta-header-cell { background-color: rgb(255 255 255) !important; }
-                    .dark .fi-ta-header-cell { background-color: rgb(24 24 27) !important; }
+                    /* Make the table header sticky vertically relative to the page */
+                    .fi-ta-table thead {
+                        position: sticky !important;
+                        top: 64px !important;
+                        z-index: 20 !important;
+                    }
+                    /* Ensure the header has a solid background so scrolling rows are hidden */
+                    .fi-ta-table thead tr, .fi-ta-header-cell {
+                        background-color: #f9fafb !important;
+                    }
+                    .dark .fi-ta-table thead tr, .dark .fi-ta-header-cell {
+                        background-color: #18181b !important; /* Zinc 900 for solid header */
+                    }
+                    /* Make all sticky cells completely transparent so they match the row perfectly */
+                    .fi-ta-table .sticky {
+                        background-color: transparent !important;
+                    }
+                    /* Remove Filament sticky pseudo-elements (which cause the shadow and color mismatch) */
+                    .fi-ta-table .sticky::before {
+                        display: none !important;
+                    }
+                    /* Allow the table to scroll smoothly with the window */
+                    .fi-ta-content { max-height: none !important; overflow-y: visible !important; }
                     .trix-content p, .prose p, .fi-fo-rich-editor-content p { margin-top: 0.25em !important; margin-bottom: 0.25em !important; }
                 </style>'
             );
