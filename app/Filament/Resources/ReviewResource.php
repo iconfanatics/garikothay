@@ -117,6 +117,20 @@ class ReviewResource extends Resource
                             ->mapWithKeys(fn($p) => [$p->id => (string) (($p->name ?? 'Product #'.$p->id) . ' - ' . $p->sku)])
                     )
                     ->searchable(),
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->label('Category')
+                    ->options(
+                        \App\Models\Category::with('translations')
+                            ->get()
+                            ->mapWithKeys(fn($c) => [$c->id => (string) ($c->name ?? 'Category #'.$c->id)])
+                    )
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        if (!empty($data['value'])) {
+                            return $query->whereHas('product', fn ($q) => $q->where('category_id', $data['value']));
+                        }
+                        return $query;
+                    })
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
