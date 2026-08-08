@@ -540,8 +540,12 @@ class OrderResource extends Resource
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\Grid::make(2)->schema([
-                            Forms\Components\DatePicker::make('from')->label('From Date'),
-                            Forms\Components\DatePicker::make('until')->label('To Date'),
+                            Forms\Components\DatePicker::make('from')
+                                ->label('From Date')
+                                ->maxDate(now()),
+                            Forms\Components\DatePicker::make('until')
+                                ->label('To Date')
+                                ->maxDate(now()),
                         ])
                     ])
                     ->columnSpan(['md' => 2])
