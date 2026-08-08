@@ -123,7 +123,7 @@ Route::get('/admin/invoice/{invoice}/pdf', function (\App\Models\Invoice $invoic
     if (!$invoice->order) {
         abort(404, 'Invoice order not found.');
     }
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $invoice->order]);
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $invoice->order, 'invoice' => $invoice]);
     return response()->stream(function () use ($pdf) {
         echo $pdf->output();
     }, 200, [

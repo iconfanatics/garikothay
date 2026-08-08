@@ -19,16 +19,34 @@ class Invoice extends Model
         'invoice_date',
         'status',
         'billing_information',
+        'due_date',
+        'payment_status',
+        'subtotal',
+        'discount_amount',
+        'shipping_amount',
+        'tax_amount',
+        'total',
+        'paid_amount',
+        'due_amount',
+        'payment_method',
+        'transaction_id',
+        'customer_note',
+        'admin_note',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'invoice_date' => 'datetime',
-            'status' => InvoiceStatus::class,
-            'billing_information' => 'array',
-        ];
-    }
+    protected $casts = [
+        'invoice_date' => 'datetime',
+        'due_date' => 'date',
+        'status' => \App\Enums\InvoiceStatus::class,
+        'billing_information' => 'array',
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'shipping_amount' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'total' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
+        'due_amount' => 'decimal:2',
+    ];
 
     public function order(): BelongsTo
     {

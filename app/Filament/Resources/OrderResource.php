@@ -653,7 +653,7 @@ class OrderResource extends Resource
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->action(function (Order $record) {
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $record]);
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $record, 'invoice' => $record->invoice]);
                         return response()->streamDownload(fn () => print($pdf->output()), 'invoice-' . $record->order_number . '.pdf');
                     }),
                 Tables\Actions\Action::make('download_vendor_slip')

@@ -35,7 +35,9 @@
         </div>
 
         @php
-            $statusStr = strtolower($order->payment_status->value ?? 'unpaid');
+            $hasInvoice = isset($invoice) && $invoice;
+            $paymentStatus = $hasInvoice && $invoice->payment_status ? $invoice->payment_status : ($order->payment_status->value ?? 'unpaid');
+            $statusStr = strtolower($paymentStatus);
             if (in_array($statusStr, ['partially_refunded', 'refunded'])) {
                 $statusClass = 'status-unpaid';
             } elseif ($statusStr === 'paid') {
@@ -43,6 +45,8 @@
             } else {
                 $statusClass = 'status-pending';
             }
+            $dueDate = $hasInvoice && $invoice->due_date ? $invoice->due_date->format('M d, Y') : null;
+            $transactionId = $hasInvoice && $invoice->transaction_id ? $invoice->transaction_id : null;
         @endphp
 
         <table class="invoice-details">
@@ -55,11 +59,17 @@
                     {{ $order->billing_address['full_address'] ?? $order->shipping_full_address ?? '' }}
                 </td>
                 <td style="width: 50%; text-align: right;">
-                    <strong>Invoice #:</strong> {{ 'INV-' . $order->order_number }}<br>
+                    <strong>Invoice #:</strong> {{ $hasInvoice ? $invoice->invoice_number : ('INV-' . $order->order_number) }}<br>
                     <strong>Order #:</strong> {{ $order->order_number }}<br>
-                    <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}
+                    <strong>Date:</strong> {{ $hasInvoice ? $invoice->invoice_date->format('M d, Y') : $order->created_at->format('M d, Y') }}
+                    @if($dueDate)
+                        <br><strong>Due Date:</strong> {{ $dueDate }}
+                    @endif
+                    @if($transactionId)
+                        <br><strong>Transaction ID:</strong> {{ $transactionId }}
+                    @endif
                     <div style="margin-top: 8px;">
-                        <strong>Status:</strong> <span class="status-badge {{ $statusClass }}">{{ strtoupper($order->payment_status->label() ?? 'UNPAID') }}</span>
+                        <strong>Status:</strong> <span class="status-badge {{ $statusClass }}">{{ strtoupper($paymentStatus) }}</span>
                     </div>
                 </td>
             </tr>
@@ -94,27 +104,52 @@
         <table class="totals-table">
             <tr>
                 <th>Subtotal:</th>
-                <td>{{ number_format($order->subtotal, 2) }} BDT</td>
+                <td>{{ number_format($hasInvoice ? $invoice->subtotal : $order->subtotal, 2) }} BDT</td>
             </tr>
-            @if($order->discount_amount > 0)
+            @php
+                $discountAmount = $hasInvoice ? $invoice->discount_amount : $order->discount_amount;
+                $shippingAmount = $hasInvoice ? $invoice->shipping_amount : $order->shipping_amount;
+                $taxAmount = $hasInvoice ? $invoice->tax_amount : $order->tax_amount;
+                $totalAmount = $hasInvoice ? $invoice->total : $order->total;
+                $paidAmount = $hasInvoice ? $invoice->paid_amount : ($statusStr === 'paid' ? $order->total : 0);
+                $dueAmount = $hasInvoice ? $invoice->due_amount : ($statusStr === 'paid' ? 0 : $order->total);
+            @endphp
+            @if($discountAmount > 0)
             <tr>
                 <th>Discount:</th>
-                <td>-{{ number_format($order->discount_amount, 2) }} BDT</td>
+                <td>-{{ number_format($discountAmount, 2) }} BDT</td>
             </tr>
             @endif
             <tr>
                 <th>Shipping:</th>
-                <td>{{ number_format($order->shipping_amount, 2) }} BDT</td>
+                <td>{{ number_format($shippingAmount, 2) }} BDT</td>
             </tr>
             <tr>
                 <th>Tax:</th>
-                <td>{{ number_format($order->tax_amount, 2) }} BDT</td>
+                <td>{{ number_format($taxAmount, 2) }} BDT</td>
             </tr>
             <tr>
                 <th>Total:</th>
-                <td><strong>{{ number_format($order->total, 2) }} BDT</strong></td>
+                <td><strong>{{ number_format($totalAmount, 2) }} BDT</strong></td>
+            </tr>
+            <tr>
+                <th>Paid Amount:</th>
+                <td>{{ number_format($paidAmount, 2) }} BDT</td>
+            </tr>
+            <tr>
+                <th>Due Amount:</th>
+                <td>{{ number_format($dueAmount, 2) }} BDT</td>
             </tr>
         </table>
+        
+        <div class="clear"></div>
+        
+        @if($hasInvoice && $invoice->customer_note)
+        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #111;">
+            <strong>Note:</strong><br>
+            {{ $invoice->customer_note }}
+        </div>
+        @endif
         
         <div class="clear"></div>
         
