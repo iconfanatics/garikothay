@@ -433,18 +433,20 @@
         return this.availableShippingMethods.find(m => m.id == this.shippingMethodId);
     },
     get shippingCharge() {
+        if (!this.selectedShippingMethod) {
+            return null;
+        }
+
         if (this.qualifiesForFreeShipping) return 0;
         
-        if (this.selectedShippingMethod) {
-            if (this.selectedShippingMethod.free_shipping_threshold > 0 && this.orderValue >= this.selectedShippingMethod.free_shipping_threshold) {
-                return 0;
-            }
-            return parseFloat(this.selectedShippingMethod.base_charge);
+        if (this.selectedShippingMethod.free_shipping_threshold > 0 && this.orderValue >= this.selectedShippingMethod.free_shipping_threshold) {
+            return 0;
         }
-        return 0;
+        
+        return parseFloat(this.selectedShippingMethod.base_charge);
     },
     get checkoutTotal() {
-        return this.orderValue + this.shippingCharge;
+        return this.orderValue + (this.shippingCharge || 0);
     },
     formatMoney(value) {
         return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
@@ -692,7 +694,7 @@
                     @endif
                     <div class="gk-checkout-total-row">
                         <span>{{ __('general.shipping') }}</span>
-                        <span x-text="shippingCharge > 0 ? '৳' + formatMoney(shippingCharge) : @js(__('general.free'))"></span>
+                        <span x-text="shippingCharge === null ? '-' : (shippingCharge > 0 ? '৳' + formatMoney(shippingCharge) : @js(__('general.free')))"></span>
                     </div>
                     <div class="gk-checkout-logistics">
                         <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-gray-800">{{ $deliveryTime }}</strong></div>
