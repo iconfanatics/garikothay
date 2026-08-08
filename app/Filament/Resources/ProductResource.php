@@ -675,11 +675,13 @@ class ProductResource extends Resource
                     ->state(function (Product $record) {
                         return $record->images->first()?->path;
                     })
-                    ->square(),
+                    ->square()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('translations.name')
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
                     ->searchable()
+                    ->toggleable()
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderBy(
                             \App\Models\ProductTranslation::select('name')
@@ -692,15 +694,18 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
                     ->money('BDT')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('stock_quantity')
                     ->label('Stock')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\BadgeColumn::make('publish_status')
                     ->label('Status')
                     ->colors([
@@ -709,7 +714,8 @@ class ProductResource extends Resource
                         'success' => 'Published',
                         'primary' => 'Scheduled',
                         'secondary' => 'Unpublished',
-                    ]),
+                    ])
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created Date')
                     ->dateTime('d M Y')
