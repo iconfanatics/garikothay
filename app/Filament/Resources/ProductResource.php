@@ -675,13 +675,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('translations.name')
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->whereHas('translations', function ($q) use ($search) {
-                            foreach (explode(' ', $search) as $term) {
-                                $q->where('name', 'like', "%{$term}%");
-                            }
-                        });
-                    })
+                    ->searchable()
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderBy(
                             \App\Models\ProductTranslation::select('name')

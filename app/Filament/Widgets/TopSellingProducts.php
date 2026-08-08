@@ -27,13 +27,7 @@ class TopSellingProducts extends BaseWidget
                 Tables\Columns\TextColumn::make('translations.name')
                     ->label('Product Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
-                    ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->whereHas('translations', function ($q) use ($search) {
-                            foreach (explode(' ', $search) as $term) {
-                                $q->where('name', 'like', "%{$term}%");
-                            }
-                        });
-                    }),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU')
                     ->searchable(),
