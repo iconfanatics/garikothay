@@ -81,7 +81,15 @@ class StaffResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->label('Roles'),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Active Status'),
+                Tables\Filters\TernaryFilter::make('is_super_admin')
+                    ->label('Super Admin'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
