@@ -24,9 +24,14 @@ class TopSellingProducts extends BaseWidget
             )
             ->heading('Top Selling Products')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('translations.name')
                     ->label('Product Name')
-                    ->searchable(),
+                    ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('translations', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('sku')
                     ->label('SKU'),
                 Tables\Columns\TextColumn::make('order_items_sum_quantity')
