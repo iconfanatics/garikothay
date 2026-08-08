@@ -30,7 +30,7 @@
                             @foreach($cart->items as $item)
                             <tr>
                                 <td class="whitespace-nowrap py-2 text-sm text-gray-900 dark:text-white">
-                                    {{ $item->product->name }}
+                                    {{ $item->product ? $item->product->name : 'Deleted Product' }}
                                     @if($item->variant)
                                         <span class="text-xs text-gray-500 block">{{ $item->variant->name }}</span>
                                     @endif
