@@ -126,7 +126,7 @@ class CartResource extends Resource
                     ->label('Customer')
                     ->icon('heroicon-o-user')
                     ->color('secondary')
-                    ->url(fn (Cart $record) => $record->user_id ? route('filament.admin.resources.customers.edit', $record->user_id) : null)
+                    ->url(fn (Cart $record) => $record->user_id ? route('filament.admin.resources.customers.view', $record->user_id) : null)
                     ->hidden(fn (Cart $record) => !$record->user_id),
                 Tables\Actions\ViewAction::make()
                     ->modalHeading('Abandoned Cart Details')
