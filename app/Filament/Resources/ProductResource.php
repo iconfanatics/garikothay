@@ -107,7 +107,8 @@ class ProductResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->dehydrateStateUsing(fn (?string $state) => \Illuminate\Support\Str::slug($state ?? ''))
-                        ->unique(Product::class, 'slug', ignoreRecord: true),
+                        ->unique(Product::class, 'slug', ignoreRecord: true)
+                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
                     Forms\Components\Textarea::make('translations.en.short_description')
                         ->label('Short Description (EN)')
                         ->rows(2),
@@ -338,16 +339,13 @@ class ProductResource extends Resource
 
                                 $profit = $sellingPrice - $supplierPrice;
                                 $percentage = $sellingPrice > 0 ? ($profit / $sellingPrice) * 100 : 0;
-
-                                return '৳' . number_format($profit, 2) . ' (' . number_format($percentage, 2) . '%)';
-                            }),
-                    ]),
                     Forms\Components\Grid::make(4)->schema([
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU')
                             ->helperText('Leave blank to generate automatically, for example GK-BCDf34.')
                             ->placeholder('Auto-generated if blank')
                             ->nullable()
+                            ->readOnly(fn (string $operation): bool => $operation === 'edit')
                             ->unique(ignoreRecord: true),
                         Forms\Components\TextInput::make('stock_quantity')->label('Total Stock')->numeric()->required()->default(0),
                         Forms\Components\TextInput::make('reserved_stock')->label('Reserved Stock')->numeric()->default(0)->helperText('Booked but not shipped'),
@@ -546,8 +544,9 @@ class ProductResource extends Resource
                                             Forms\Components\TextInput::make("name")->required()
                                         ]),
                                     Forms\Components\TextInput::make('sku')
-                                        ->unique(ignoreRecord: true)
                                         ->label('SKU (Optional)')
+                                        ->readOnly(fn (string $operation): bool => $operation === 'edit')
+                                        ->unique(ignoreRecord: true)
                                         ->nullable()
                                         ->default(fn () => 'VAR-' . strtoupper(str()->random(6))),
                                 ])->columnSpan(1),
@@ -725,6 +724,7 @@ class ProductResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('supplier_id')
