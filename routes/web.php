@@ -118,6 +118,20 @@ Route::withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken
     Route::post('/payment/sslcommerz/ipn', [SslCommerzController::class, 'ipn'])->name('payment.sslcommerz.ipn');
 });
 
+// Admin PDF view route
+Route::get('/admin/invoice/{invoice}/pdf', function (\App\Models\Invoice $invoice) {
+    if (!$invoice->order) {
+        abort(404, 'Invoice order not found.');
+    }
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $invoice->order]);
+    return response()->stream(function () use ($pdf) {
+        echo $pdf->output();
+    }, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="'.$invoice->invoice_number.'.pdf"',
+    ]);
+})->name('invoice.pdf.view')->middleware(['web']);
+
 require __DIR__.'/auth.php';
 
 // Dynamic Page fallback route (Must be at the very bottom)

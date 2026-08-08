@@ -25,11 +25,13 @@ class InvoiceResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('order_id')
-                    ->relationship('order', 'order_number')
+                    ->relationship('order', 'order_number', modifyQueryUsing: fn (Builder $query, string $context) => $context === 'create' ? $query->doesntHave('invoice') : $query)
                     ->required()
                     ->searchable()
                     ->preload()
                     ->live()
+                    ->disabled(fn (string $context) => $context !== 'create')
+                    ->dehydrated()
                     ->afterStateUpdated(function ($state, Forms\Set $set) {
                         if (blank($state)) {
                             $set('billing_information', []);
@@ -62,15 +64,23 @@ class InvoiceResource extends Resource
                 Forms\Components\TextInput::make('invoice_number')
                     ->required()
                     ->unique(ignoreRecord: true)
-                    ->default(fn () => 'INV-' . date('Ymd') . '-' . strtoupper(str()->random(4))),
+                    ->default(fn () => 'INV-' . date('Ymd') . '-' . strtoupper(str()->random(4)))
+                    ->disabled()
+                    ->dehydrated(),
                 Forms\Components\DateTimePicker::make('invoice_date')
                     ->required()
-                    ->default(now()),
+                    ->default(now())
+                    ->disabled()
+                    ->dehydrated(),
                 Forms\Components\Select::make('status')
                     ->options(\App\Enums\InvoiceStatus::class)
                     ->required()
-                    ->default(\App\Enums\InvoiceStatus::Pending),
+                    ->default(\App\Enums\InvoiceStatus::Pending)
+                    ->disabled()
+                    ->dehydrated(),
                 Forms\Components\KeyValue::make('billing_information')
+                    ->disabled()
+                    ->dehydrated()
                     ->columnSpanFull(),
             ]);
     }
@@ -83,20 +93,27 @@ class InvoiceResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('invoice_number')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('Invoice number copied')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('invoice_date')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
                 Tables\Columns\TextColumn::make('order.order_number')
                     ->label('Linked Order')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('Order number copied'),
                 Tables\Columns\TextColumn::make('order.total')
                     ->label('Amount')
                     ->money('BDT')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -127,8 +144,12 @@ class InvoiceResource extends Resource
                             echo $pdf->output();
                         }, $record->invoice_number . '.pdf');
                     }),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('view_pdf')
+                    ->label('View PDF')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(fn (Invoice $record) => route('invoice.pdf.view', $record))
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
