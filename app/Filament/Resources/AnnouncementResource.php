@@ -28,7 +28,14 @@ class AnnouncementResource extends Resource
                 Forms\Components\Section::make('Announcement Details')->schema([
                     Forms\Components\TextInput::make('title')
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('summary')
+                        ->label('Short Summary')
+                        ->maxLength(500)
+                        ->columnSpanFull(),
+                    Forms\Components\RichEditor::make('content')
+                        ->columnSpanFull(),
                     Forms\Components\Select::make('type')
                         ->options([
                             'info' => 'Information',
@@ -37,20 +44,49 @@ class AnnouncementResource extends Resource
                         ])
                         ->default('info')
                         ->required(),
-                    Forms\Components\Textarea::make('content')
-                        ->columnSpanFull(),
                 ])->columns(2),
                 Forms\Components\Section::make('Display Rules')->schema([
+                    Forms\Components\Select::make('display_location')
+                        ->label('Display Location')
+                        ->options([
+                            'site_wide' => 'Site-wide',
+                            'header_bar' => 'Header Bar',
+                            'homepage' => 'Homepage',
+                            'shop' => 'Shop',
+                            'checkout' => 'Checkout',
+                        ])
+                        ->default('site_wide')
+                        ->required(),
+                    Forms\Components\TextInput::make('priority')
+                        ->label('Priority / Sort Order')
+                        ->numeric()
+                        ->default(0)
+                        ->helperText('Higher numbers are shown first.'),
                     Forms\Components\Toggle::make('is_active')
                         ->label('Active')
-                        ->default(true),
+                        ->default(true)
+                        ->columnSpanFull(),
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\DateTimePicker::make('starts_at')
-                            ->label('Starts At (Optional)'),
+                            ->label('Starts At (Optional)')
+                            ->rule(fn (string $context) => $context === 'create' ? 'after_or_equal:now' : null)
+                            ->before('expires_at'),
                         Forms\Components\DateTimePicker::make('expires_at')
-                            ->label('Expires At (Optional)'),
+                            ->label('Expires At (Optional)')
+                            ->after('starts_at'),
                     ]),
-                ]),
+                ])->columns(2),
+                Forms\Components\Section::make('Appearance')->schema([
+                    Forms\Components\TextInput::make('button_text')
+                        ->label('Button Text')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('button_url')
+                        ->label('Button URL')
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('open_in_new_tab')
+                        ->label('Open Link in New Tab')
+                        ->default(false),
+                ])->columns(2),
             ]);
     }
 
@@ -86,14 +122,68 @@ class AnnouncementResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\Filter::make('search')
+                    ->label('Search')
+                    ->form([
+                        Forms\Components\TextInput::make('query')->label('Search Title or Content')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['query'] ?? null,
+                            fn (Builder $q, $search) => $q->where('title', 'like', "%{$search}%")
+                                ->orWhere('content', 'like', "%{$search}%")
+                                ->orWhere('summary', 'like', "%{$search}%")
+                        );
+                    }),
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'info' => 'Information',
+                        'warning' => 'Warning',
+                        'promo' => 'Promotional',
+                    ]),
+                Tables\Filters\SelectFilter::make('display_location')
+                    ->options([
+                        'site_wide' => 'Site-wide',
+                        'header_bar' => 'Header Bar',
+                        'homepage' => 'Homepage',
+                        'shop' => 'Shop',
+                        'checkout' => 'Checkout',
+                    ]),
+                Tables\Filters\TernaryFilter::make('is_active')
+                    ->label('Status')
+                    ->trueLabel('Active')
+                    ->falseLabel('Inactive'),
+                Tables\Filters\Filter::make('created_at')
+                    ->label('Date Range (Created)')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Created From'),
+                        Forms\Components\DatePicker::make('created_until')->label('Created Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_from'] ?? null, fn($q, $d) => $q->whereDate('created_at', '>=', $d))
+                            ->when($data['created_until'] ?? null, fn($q, $d) => $q->whereDate('created_at', '<=', $d));
+                    }),
+            ], layout: Tables\Enums\FiltersLayout::Modal)
+            ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('activate')
+                        ->label('Activate')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_active' => true]))
+                        ->requiresConfirmation(),
+                    Tables\Actions\BulkAction::make('deactivate')
+                        ->label('Deactivate')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('warning')
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_active' => false]))
+                        ->requiresConfirmation(),
                 ]),
             ]);
     }
