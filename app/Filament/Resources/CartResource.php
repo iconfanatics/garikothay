@@ -73,8 +73,7 @@ class CartResource extends Resource
                 Tables\Columns\TextColumn::make('subtotal')
                     ->label('Cart Value')
                     ->money('BDT')
-                    ->getStateUsing(fn (Cart $record): float => $record->subtotal)
-                    ->sortable(),
+                    ->getStateUsing(fn (Cart $record): float => $record->subtotal),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label('Last Active')
                     ->dateTime()
