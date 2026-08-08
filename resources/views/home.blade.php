@@ -1336,8 +1336,8 @@
     <section class="gk-newsletter" x-data="{ email: '', msg: '' }">
         <div class="gk-container gk-newsletter-grid">
             <div>
-                <h2 class="gk-section-title">Get Deals in Your Inbox</h2>
-                <p class="gk-section-subtitle">Subscribe for exclusive offers, new arrivals and service discounts.</p>
+                <h2 class="gk-section-title">{{ strtoupper(\App\Models\Setting::get('theme1_newsletter_title', 'GET DEALS IN YOUR INBOX')) }}</h2>
+                <p class="gk-section-subtitle">{{ \App\Models\Setting::get('theme1_newsletter_subtitle', 'Subscribe for exclusive offers, new arrivals and service discounts.') }}</p>
             </div>
             <div>
                 <div class="gk-newsletter-form">

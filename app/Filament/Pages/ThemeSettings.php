@@ -104,6 +104,8 @@ class ThemeSettings extends Page
             'theme1_show_blogs' => $settings->get('theme1_show_blogs')?->getCastedValue() ?? true,
             'theme1_show_newsletter' => $settings->get('theme1_show_newsletter')?->getCastedValue() ?? true,
             'theme1_show_partners' => $settings->get('theme1_show_partners')?->getCastedValue() ?? true,
+            'theme1_newsletter_title' => $settings->get('theme1_newsletter_title')?->value ?? 'GET DEALS IN YOUR INBOX',
+            'theme1_newsletter_subtitle' => $settings->get('theme1_newsletter_subtitle')?->value ?? 'Subscribe for exclusive offers, new arrivals and service discounts.',
         ]);
     }
 
@@ -346,6 +348,18 @@ class ThemeSettings extends Page
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->collapsible()
                             ->defaultItems(0)
+                    ]),
+                Forms\Components\Section::make('Newsletter Settings')
+                    ->description('Customize the newsletter subscription text.')
+                    ->schema([
+                        Forms\Components\TextInput::make('theme1_newsletter_title')
+                            ->label('Title')
+                            ->default('GET DEALS IN YOUR INBOX')
+                            ->required(),
+                        Forms\Components\TextInput::make('theme1_newsletter_subtitle')
+                            ->label('Subtitle')
+                            ->default('Subscribe for exclusive offers, new arrivals and service discounts.')
+                            ->required(),
                     ])
             ])
             ->statePath('data');
@@ -382,6 +396,8 @@ class ThemeSettings extends Page
             'theme1_show_blogs' => ['group' => 'theme', 'type' => SettingType::Boolean],
             'theme1_show_newsletter' => ['group' => 'theme', 'type' => SettingType::Boolean],
             'theme1_show_partners' => ['group' => 'theme', 'type' => SettingType::Boolean],
+            'theme1_newsletter_title' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_newsletter_subtitle' => ['group' => 'theme', 'type' => SettingType::Text],
         ];
 
         foreach ($data as $key => $value) {
