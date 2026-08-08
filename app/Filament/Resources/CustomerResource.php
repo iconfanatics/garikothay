@@ -386,7 +386,7 @@ class CustomerResource extends Resource
                     ->label('District')
                     ->options(fn() => \App\Models\User::whereNotNull('district')->where('district', '!=', '')->distinct()->pluck('district', 'district')->toArray())
                     ->searchable(),
-            ])
+            ], layout: Tables\Enums\FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->filtersFormWidth('4xl')
                         ->actions([
