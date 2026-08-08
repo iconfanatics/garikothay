@@ -29,11 +29,14 @@ class TopSellingProducts extends BaseWidget
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('translations', function ($q) use ($search) {
-                            $q->where('name', 'like', "%{$search}%");
+                            foreach (explode(' ', $search) as $term) {
+                                $q->where('name', 'like', "%{$term}%");
+                            }
                         });
                     }),
                 Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU'),
+                    ->label('SKU')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('order_items_sum_quantity')
                     ->label('Sold Quantity')
                     ->badge()
