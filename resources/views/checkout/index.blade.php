@@ -321,8 +321,8 @@
     selectedAddressId: null,
     orderValue: @js((float) $orderValue),
     freeShippingThreshold: @js((float) $freeShippingThreshold),
-    dhakaCityShippingCharge: @js((float) $dhakaCityShippingCharge),
-    outsideDhakaShippingCharge: @js((float) $outsideDhakaShippingCharge),
+    shippingZones: @js($shippingZones),
+    shippingMethodId: null,
     locations: {
         'Dhaka': ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
         'Chattogram': ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
@@ -348,6 +348,10 @@
     },
     onDivisionChange() {
         this.formData.city = '';
+        this.shippingMethodId = null;
+    },
+    onDistrictChange() {
+        this.shippingMethodId = null;
     },
     couponCode: '',
     couponMsg: '',
@@ -412,17 +416,27 @@
     get qualifiesForFreeShipping() {
         return this.freeShippingThreshold > 0 && this.orderValue >= this.freeShippingThreshold;
     },
-    get isDhakaCity() {
-        const city = String(this.formData.city || '').trim().toLocaleLowerCase();
-
-        return ['dhaka', 'dhaka city', 'dacca', 'ঢাকা', 'ঢাকা সিটি'].includes(city);
+    get availableShippingMethods() {
+        if (!this.formData.city) return [];
+        const zone = this.shippingZones.find(z => z.districts && z.districts.includes(this.formData.city));
+        if (zone) {
+            return zone.shipping_methods;
+        }
+        return [];
+    },
+    get selectedShippingMethod() {
+        return this.availableShippingMethods.find(m => m.id == this.shippingMethodId);
     },
     get shippingCharge() {
-        if (this.qualifiesForFreeShipping) {
-            return 0;
+        if (this.qualifiesForFreeShipping) return 0;
+        
+        if (this.selectedShippingMethod) {
+            if (this.selectedShippingMethod.free_shipping_threshold > 0 && this.orderValue >= this.selectedShippingMethod.free_shipping_threshold) {
+                return 0;
+            }
+            return parseFloat(this.selectedShippingMethod.base_charge);
         }
-
-        return this.isDhakaCity ? this.dhakaCityShippingCharge : this.outsideDhakaShippingCharge;
+        return 0;
     },
     get checkoutTotal() {
         return this.orderValue + this.shippingCharge;
@@ -537,16 +551,13 @@
                     </div>
                     <div class="gk-checkout-field">
                         <label>{{ __('general.city') }} (District) *</label>
-                        <select name="city" x-model="formData.city" required class="@error('city') border-red-400 @enderror" :disabled="!formData.division">
+                        <select name="city" x-model="formData.city" @change="onDistrictChange()" required class="@error('city') border-red-400 @enderror" :disabled="!formData.division">
                             <option value="">Select District</option>
                             <template x-for="district in availableDistricts" :key="district">
                                 <option :value="district" x-text="district"></option>
                             </template>
                         </select>
                         @error('city') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
-                        <p class="mt-1 text-xs text-gray-500" x-show="formData.city">
-                            <span x-text="isDhakaCity ? 'Inside Dhaka city rate selected' : 'Outside Dhaka rate selected'"></span>
-                        </p>
                     </div>
                     <div class="gk-checkout-field">
                         <label>{{ __('general.postal_code') }}</label>
@@ -561,6 +572,28 @@
                 </label>
                 @endauth
             </section>
+
+            <!-- Shipping Method -->
+            <section class="gk-checkout-panel" x-show="availableShippingMethods.length > 0">
+                <div class="gk-checkout-section-head">
+                    <h2>Shipping Method</h2>
+                    <p>Select your preferred shipping option.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <template x-for="method in availableShippingMethods" :key="method.id">
+                        <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer">
+                            <input type="radio" name="shipping_method_id" :value="method.id" x-model="shippingMethodId" required class="text-[#e11d48]">
+                            <div class="flex-1">
+                                <div class="font-semibold text-sm" x-text="method.name"></div>
+                            </div>
+                            <div class="text-sm font-bold" x-text="method.base_charge == 0 ? 'Free' : '৳' + formatMoney(method.base_charge)"></div>
+                        </label>
+                    </template>
+                </div>
+            </section>
+            <div x-show="formData.city && availableShippingMethods.length === 0" class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-3 text-sm">
+                No shipping methods are available for the selected district. Please contact support.
+            </div>
 
             <!-- Payment Method -->
             <section class="gk-checkout-panel">

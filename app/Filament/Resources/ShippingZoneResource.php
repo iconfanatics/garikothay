@@ -29,6 +29,29 @@ class ShippingZoneResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->unique(ignoreRecord: true),
+                    Forms\Components\Select::make('districts')
+                        ->label('Districts')
+                        ->multiple()
+                        ->searchable()
+                        ->options(function () {
+                            $locations = [
+                                'Dhaka' => ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+                                'Chattogram' => ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+                                'Rajshahi' => ['Bogra', 'Chapainawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
+                                'Khulna' => ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+                                'Barishal' => ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
+                                'Sylhet' => ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+                                'Rangpur' => ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+                                'Mymensingh' => ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur']
+                            ];
+                            $options = [];
+                            foreach ($locations as $division => $districts) {
+                                foreach ($districts as $district) {
+                                    $options[$district] = $district . ' (' . $division . ')';
+                                }
+                            }
+                            return $options;
+                        }),
                     Forms\Components\Toggle::make('is_active')
                         ->label('Active')
                         ->default(true),

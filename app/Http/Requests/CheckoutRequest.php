@@ -33,6 +33,7 @@ class CheckoutRequest extends FormRequest
             'city' => ['required', 'string', 'max:100'],
             'division' => ['required', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:10'],
+            'shipping_method_id' => ['required', 'integer', 'exists:shipping_methods,id'],
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
             'notes' => ['nullable', 'string', 'max:500'],
             'save_address' => ['nullable', 'boolean'],

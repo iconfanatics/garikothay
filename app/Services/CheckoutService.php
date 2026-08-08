@@ -39,12 +39,23 @@ class CheckoutService
                 $this->couponService->incrementUsage($coupon);
             }
 
-            $shipping = $this->shippingService->isFreeShipping($subtotal - $discount)
-                ? 0
-                : $this->shippingService->calculate(
-                    $shippingAddress['division'] ?? '',
-                    $shippingAddress['city'] ?? null,
-                );
+            $shippingMethodId = $shippingAddress['shipping_method_id'] ?? null;
+            $shippingMethod = $shippingMethodId ? \App\Models\ShippingMethod::find($shippingMethodId) : null;
+
+            if ($shippingMethod) {
+                if ($shippingMethod->free_shipping_threshold > 0 && ($subtotal - $discount) >= $shippingMethod->free_shipping_threshold) {
+                    $shipping = 0;
+                } else {
+                    $shipping = $shippingMethod->base_charge;
+                }
+            } else {
+                $shipping = $this->shippingService->isFreeShipping($subtotal - $discount)
+                    ? 0
+                    : $this->shippingService->calculate(
+                        $shippingAddress['division'] ?? '',
+                        $shippingAddress['city'] ?? null,
+                    );
+            }
 
             $total = max(0, $subtotal - $discount + $shipping);
             $shippingAddress['delivery_time'] = $this->shippingService->getDeliveryTime();
@@ -58,6 +69,7 @@ class CheckoutService
                 'subtotal' => $subtotal,
                 'discount_amount' => $discount,
                 'shipping_amount' => $shipping,
+                'shipping_method_id' => $shippingMethodId,
                 'tax_amount' => 0,
                 'total' => $total,
                 'coupon_id' => $coupon?->id,

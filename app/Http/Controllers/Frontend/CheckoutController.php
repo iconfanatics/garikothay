@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Payments\PaymentManager;
 use App\Services\CartService;
 use App\Services\CheckoutService;
+use App\Models\ShippingZone;
 use App\Services\ShippingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
@@ -40,16 +41,19 @@ class CheckoutController extends Controller
             : 0;
         $orderValue = max(0, $cart->subtotal - $discount);
 
+        $shippingZones = ShippingZone::with(['shippingMethods' => function ($query) {
+            $query->where('is_active', true);
+        }])->where('is_active', true)->get();
+
         return view('checkout.index', [
             'cart' => $cart,
             'addresses' => auth()->user()?->addresses ?? collect(),
             'guestCheckoutEnabled' => $this->guestCheckoutEnabled(),
             'orderValue' => $orderValue,
             'freeShippingThreshold' => (float) Setting::get('free_shipping_threshold', 1500),
-            'dhakaCityShippingCharge' => $this->shippingService->getDhakaCityCharge(),
-            'outsideDhakaShippingCharge' => $this->shippingService->getOutsideDhakaCharge(),
-            'deliveryTime' => $this->shippingService->getDeliveryTime(),
-            'deliveryPartner' => $this->shippingService->getDeliveryPartner(),
+            'shippingZones' => $shippingZones,
+            'deliveryTime' => (string) Setting::get('delivery_time', '2-5 business days'),
+            'deliveryPartner' => (string) Setting::get('delivery_partner', 'Steadfast'),
         ]);
     }
 

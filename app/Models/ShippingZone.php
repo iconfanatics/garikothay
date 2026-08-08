@@ -10,11 +10,12 @@ class ShippingZone extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'is_active'];
+    protected $fillable = ['name', 'districts', 'is_active'];
 
     protected function casts(): array
     {
         return [
+            'districts' => 'array',
             'is_active' => 'boolean',
         ];
     }
