@@ -248,18 +248,19 @@ class CustomerResource extends Resource
                         'returning' => 'Returning Customers (>1 Order)',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
+                        $val = $data['value'] ?? null;
                         return $query
                             ->when(
-                                $data['value'] === 'new_this_month',
+                                $val === 'new_this_month',
                                 fn (Builder $query): Builder => $query->where('created_at', '>=', \Illuminate\Support\Carbon::now()->startOfMonth()),
                             )
                             ->when(
-                                $data['value'] === 'active_last_30_days',
+                                $val === 'active_last_30_days',
                                 fn (Builder $query): Builder => $query->whereHas('orders', fn ($q) => $q->where('created_at', '>=', \Illuminate\Support\Carbon::now()->subDays(30))),
                             )
                             ->when(
-                                $data['value'] === 'returning',
-                                fn (Builder $query): Builder => $query->whereHas('orders', fn ($q) => $q->select('id'), '>', 1),
+                                $val === 'returning',
+                                fn (Builder $query): Builder => $query->has('orders', '>', 1),
                             );
                     }),
                 Tables\Filters\Filter::make('created_at')
