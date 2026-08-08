@@ -568,47 +568,67 @@ class OrderResource extends Resource
                     ]),
                     
                 Tables\Filters\Filter::make('created_at')
+                    ->label('Date Range')
                     ->form([
-                        Forms\Components\Grid::make(2)->schema([
-                            Forms\Components\DatePicker::make('from')
-                                ->label('From Date')
-                                ->maxDate(now())
-                                ->live(),
-                            Forms\Components\DatePicker::make('until')
-                                ->label('To Date')
-                                ->maxDate(now())
-                                ->minDate(fn (Forms\Get $get) => $get('from')),
-                        ])
+                        Forms\Components\DatePicker::make('from')
+                            ->label('From Date')
+                            ->maxDate(now())
+                            ->live(),
+                        Forms\Components\DatePicker::make('until')
+                            ->label('To Date')
+                            ->maxDate(now())
+                            ->minDate(fn (Forms\Get $get) => $get('from')),
                     ])
-                    ->columnSpan(['md' => 2])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['from'], fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
                             ->when($data['until'], fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('From: ' . \Carbon\Carbon::parse($data['from'])->format('d M, Y'))
+                                ->removeField('from');
+                        }
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('To: ' . \Carbon\Carbon::parse($data['until'])->format('d M, Y'))
+                                ->removeField('until');
+                        }
+                        return $indicators;
                     }),
                     
                 Tables\Filters\Filter::make('total')
+                    ->label('Order Amount')
                     ->form([
-                        Forms\Components\Grid::make(2)->schema([
-                            Forms\Components\TextInput::make('min')
-                                ->label('Min Amount')
-                                ->numeric()
-                                ->live(onBlur: true),
-                            Forms\Components\TextInput::make('max')
-                                ->label('Max Amount')
-                                ->numeric()
-                                ->rule(fn (Forms\Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
-                                    if (filled($get('min')) && (float) $value < (float) $get('min')) {
-                                        $fail('Max amount cannot be less than Min amount.');
-                                    }
-                                }),
-                        ])
+                        Forms\Components\TextInput::make('min')
+                            ->label('Min Amount')
+                            ->numeric()
+                            ->live(onBlur: true),
+                        Forms\Components\TextInput::make('max')
+                            ->label('Max Amount')
+                            ->numeric()
+                            ->rule(fn (Forms\Get $get) => function (string $attribute, $value, \Closure $fail) use ($get) {
+                                if (filled($get('min')) && (float) $value < (float) $get('min')) {
+                                    $fail('Max amount cannot be less than Min amount.');
+                                }
+                            }),
                     ])
-                    ->columnSpan(['md' => 2])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when($data['min'], fn ($q, $min) => $q->where('total', '>=', $min))
                             ->when($data['max'], fn ($q, $max) => $q->where('total', '<=', $max));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if ($data['min'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('Min Amount: ৳' . $data['min'])
+                                ->removeField('min');
+                        }
+                        if ($data['max'] ?? null) {
+                            $indicators[] = Tables\Filters\Indicator::make('Max Amount: ৳' . $data['max'])
+                                ->removeField('max');
+                        }
+                        return $indicators;
                     }),
                     
                 Tables\Filters\SelectFilter::make('assigned_staff_id')
@@ -623,6 +643,8 @@ class OrderResource extends Resource
                         return $query->whereHas('items.product', fn($q) => $q->where('supplier_id', $data['value']));
                     }),
             ])
+            ->filtersLayout(Tables\Enums\FiltersLayout::Modal)
+            ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\EditAction::make()->label('Manage Order'),
                 Tables\Actions\Action::make('download_invoice')
