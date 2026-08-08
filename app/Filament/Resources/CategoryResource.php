@@ -57,6 +57,7 @@ class CategoryResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->unique(Category::class, 'slug', ignoreRecord: true)
+                        ->readOnly()
                         ->disabled(fn ($record) => $record?->is_locked),
                     Forms\Components\Select::make('parent_id')
                         ->label('Parent Category')
@@ -111,23 +112,26 @@ class CategoryResource extends Resource
                             ->disabled(fn ($record) => $record?->is_locked),
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Publish Date & Time')
-                            ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published']))
+                            ->visible(fn (Forms\Get $get) => $get('publish_status') === 'Scheduled')
+                            ->minDate(now())
                             ->disabled(fn ($record) => $record?->is_locked),
                         Forms\Components\DateTimePicker::make('unpublished_at')
                             ->label('Unpublish Date & Time')
                             ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished']))
+                            ->minDate(now())
+                            ->after('published_at')
                             ->disabled(fn ($record) => $record?->is_locked),
                     ]),
                     Forms\Components\Section::make('Activity Indicator')->schema([
                         Forms\Components\Placeholder::make('created_by')
                             ->label('Created By')
-                            ->content(fn ($record) => $record?->createdByAdmin?->name ?? 'System'),
+                            ->content(fn ($record) => $record ? ($record->createdByAdmin?->name ?? 'System') : (auth('admin')->user()?->name ?? 'System')),
                         Forms\Components\Placeholder::make('created_at')
                             ->label('Created At')
                             ->content(fn ($record) => $record?->created_at?->format('d M Y, h:i A') ?? '-'),
                         Forms\Components\Placeholder::make('updated_by')
                             ->label('Last Edited By')
-                            ->content(fn ($record) => $record?->updatedByAdmin?->name ?? 'System'),
+                            ->content(fn ($record) => $record ? ($record->updatedByAdmin?->name ?? 'System') : '-'),
                         Forms\Components\Placeholder::make('updated_at')
                             ->label('Last Saved Time')
                             ->content(fn ($record) => $record?->updated_at?->format('d M Y, h:i A') ?? '-'),
