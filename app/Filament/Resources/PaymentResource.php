@@ -117,6 +117,10 @@ class PaymentResource extends Resource
                     ->label('Order Number')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('order.user.name')
+                    ->label('Customer')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('transaction_id')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('payment_method')

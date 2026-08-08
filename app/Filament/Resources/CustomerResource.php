@@ -34,7 +34,8 @@ class CustomerResource extends Resource
                     Forms\Components\TextInput::make("name")
                         ->label("Full Name")
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
                     Forms\Components\TextInput::make("email")
                         ->label("Email Address")
                         ->email()
@@ -46,7 +47,8 @@ class CustomerResource extends Resource
                         ->label("Phone Number")
                         ->tel()
                         ->rule(new \App\Rules\BdPhone())
-                        ->maxLength(20),
+                        ->maxLength(20)
+                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
                     Forms\Components\Select::make("locale")
                         ->label("Preferred Language")
                         ->options(["en" => "English", "bn" => "বাংলা"])
@@ -59,11 +61,16 @@ class CustomerResource extends Resource
             Forms\Components\Section::make("Address & Preferences")->schema([
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\TextInput::make("address")->label("Address"),
-                    Forms\Components\TextInput::make("division")->label("Division"),
-                    Forms\Components\TextInput::make("district")->label("District"),
+                    Forms\Components\TextInput::make("division")
+                        ->label("Division")
+                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
+                    Forms\Components\TextInput::make("district")
+                        ->label("District")
+                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
                     Forms\Components\Select::make("preferred_payment_method")
                         ->label("Preferred Payment Method")
-                        ->options(\App\Enums\PaymentMethod::options()),
+                        ->options(\App\Enums\PaymentMethod::options())
+                        ->disabled(fn (string $operation): bool => $operation === 'edit'),
                 ]),
             ]),
             Forms\Components\Section::make("Admin Notes")->schema([
@@ -122,7 +129,7 @@ class CustomerResource extends Resource
                     Infolists\Components\TextEntry::make("total_orders")
                         ->label("Total Orders")
                         ->state(fn(User $record): int => $record->orders()->count())
-                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id]))
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone ?? $record->email]))
                         ->color('primary'),
                     Infolists\Components\TextEntry::make("total_products")
                         ->label("Total Products Purchased")
@@ -134,19 +141,19 @@ class CustomerResource extends Resource
                     Infolists\Components\TextEntry::make("total_spent")
                         ->label("Total Spent")
                         ->state(fn(User $record): string => "৳" . number_format($record->total_spent, 2))
-                        ->url(fn (User $record): string => route('filament.admin.resources.payments.index', ['tableFilters[order_user_id][value]' => $record->id]))
+                        ->url(fn (User $record): string => route('filament.admin.resources.payments.index', ['tableSearch' => $record->phone ?? $record->email]))
                         ->color('primary'),
                     Infolists\Components\TextEntry::make("coupon_usage")
                         ->label("Coupon Usage Count")
                         ->state(fn(User $record): int => $record->orders()->whereNotNull('coupon_id')->whereNotIn('status', ['cancelled'])->count())
-                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id, 'tableFilters[has_coupon][value]' => true]))
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone ?? $record->email, 'tableFilters[has_coupon][value]' => true]))
                         ->color('primary'),
                     
                     Infolists\Components\TextEntry::make("pending_orders")
                         ->label("Pending Orders")
-                        ->state(fn(User $record): int => $record->orders()->where('status', 'pending')->count())
+                        ->state(fn(User $record): int => $record->orders()->where('status', \App\Enums\OrderStatus::Pending->value)->count())
                         ->color('warning')
-                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableFilters[user][value]' => $record->id, 'tableFilters[status][value]' => 'pending'])),
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone ?? $record->email, 'tableFilters[status][value]' => \App\Enums\OrderStatus::Pending->value])),
                     Infolists\Components\TextEntry::make("completed_orders")
                         ->label("Completed Orders")
                         ->state(fn(User $record): int => $record->orders()->where('status', 'delivered')->count())
@@ -184,7 +191,10 @@ class CustomerResource extends Resource
                 Tables\Columns\TextColumn::make("customer_id")
                     ->label("Customer ID")
                     ->state(fn(\App\Models\User $record): string => '#CUST-' . str_pad((string)$record->id, 4, '0', STR_PAD_LEFT))
-                    ->searchable(['id'])
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        $id = preg_replace('/[^0-9]/', '', $search);
+                        return $id ? $query->where('id', $id) : $query;
+                    })
                     ->sortable(['id']),
                 Tables\Columns\TextColumn::make("name")
                     ->label("Name")

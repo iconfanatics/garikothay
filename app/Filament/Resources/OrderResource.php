@@ -646,6 +646,7 @@ class OrderResource extends Resource
             ->filtersLayout(Tables\Enums\FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->actions([
+                Tables\Actions\ViewAction::make()->label('View Order'),
                 Tables\Actions\EditAction::make()->label('Manage Order'),
                 Tables\Actions\Action::make('download_invoice')
                     ->label('Download Invoice')
@@ -795,6 +796,7 @@ class OrderResource extends Resource
         return [
             'index'  => Pages\ListOrders::route('/'),
             'create' => Pages\CreateOrder::route('/create'),
+            'view'   => Pages\ViewOrder::route('/{record}'),
             'edit'   => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
