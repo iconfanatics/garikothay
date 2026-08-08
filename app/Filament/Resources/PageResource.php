@@ -132,8 +132,43 @@ class PageResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\Filter::make('search')
+                    ->label('Search')
+                    ->form([
+                        Forms\Components\TextInput::make('query')
+                            ->label('Search Title or Slug')
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['query'] ?? null,
+                            fn (Builder $query, $search) => $query->where('slug', 'like', "%{$search}%")
+                                ->orWhereHas('translations', fn ($q) => $q->where('title', 'like', "%{$search}%"))
+                        );
+                    }),
+                Tables\Filters\Filter::make('created_at')
+                    ->label('Date Range (Created)')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Created From'),
+                        Forms\Components\DatePicker::make('created_until')->label('Created Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['created_from'] ?? null, fn($q, $d) => $q->whereDate('created_at', '>=', $d))
+                            ->when($data['created_until'] ?? null, fn($q, $d) => $q->whereDate('created_at', '<=', $d));
+                    }),
+                Tables\Filters\Filter::make('updated_at')
+                    ->label('Last Updated Range')
+                    ->form([
+                        Forms\Components\DatePicker::make('updated_from')->label('Updated From'),
+                        Forms\Components\DatePicker::make('updated_until')->label('Updated Until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['updated_from'] ?? null, fn($q, $d) => $q->whereDate('updated_at', '>=', $d))
+                            ->when($data['updated_until'] ?? null, fn($q, $d) => $q->whereDate('updated_at', '<=', $d));
+                    }),
+            ], layout: Tables\Enums\FiltersLayout::Modal)
+            ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
