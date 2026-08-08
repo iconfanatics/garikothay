@@ -102,16 +102,23 @@ class CouponResource extends Resource
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\Toggle::make("is_first_order_only")
                         ->label("First Order Only")
-                        ->helperText("Valid only if the customer has no previous confirmed orders.")
-                        ->default(false),
-                    Forms\Components\Select::make("per_customer_limit")
+                        ->helperText(fn (Forms\Get $get) => 
+                            (empty($get('per_customer_limit')) || (int)$get('per_customer_limit') > 1) 
+                                ? "Requires 'Per Customer Limit' to be 1." 
+                                : "Valid only if the customer has no previous confirmed orders."
+                        )
+                        ->disabled(fn (Forms\Get $get) => empty($get('per_customer_limit')) || (int)$get('per_customer_limit') > 1)
+                        ->default(false)
+                        ->live(),
+                    Forms\Components\TextInput::make("per_customer_limit")
                         ->label("Per Customer Limit")
-                        ->options([
-                            1 => '1 Time Only',
-                        ])
+                        ->numeric()
+                        ->minValue(1)
                         ->placeholder('Unlimited')
                         ->default(null)
-                        ->helperText("How many times a single customer can use this coupon."),
+                        ->live()
+                        ->disabled(fn (Forms\Get $get) => $get('is_first_order_only'))
+                        ->helperText("How many times a single customer can use this coupon. Example: 1, 2, 3"),
                 ]),
                 Forms\Components\Select::make("applicable_type")
                     ->label("Applicable Products/Categories")
