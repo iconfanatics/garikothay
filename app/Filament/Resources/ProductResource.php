@@ -214,13 +214,13 @@ class ProductResource extends Resource
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\Placeholder::make('created_by')
                                 ->label('Created By')
-                                ->content(fn ($record) => $record?->createdByAdmin?->name ?? 'System'),
+                                ->content(fn ($record) => $record ? ($record->createdByAdmin?->name ?? 'System') : (auth('admin')->user()?->name ?? 'System')),
                             Forms\Components\Placeholder::make('created_at')
                                 ->label('Created At')
                                 ->content(fn ($record) => $record?->created_at?->format('d M Y, h:i A') ?? '-'),
                             Forms\Components\Placeholder::make('updated_by')
                                 ->label('Last Edited By')
-                                ->content(fn ($record) => $record?->updatedByAdmin?->name ?? 'System'),
+                                ->content(fn ($record) => $record ? ($record->updatedByAdmin?->name ?? 'System') : '-'),
                             Forms\Components\Placeholder::make('updated_at')
                                 ->label('Last Saved Time')
                                 ->content(fn ($record) => $record?->updated_at?->format('d M Y, h:i A') ?? '-'),
@@ -286,8 +286,19 @@ class ProductResource extends Resource
                             ->minValue(0)
                             ->required()
                             ->prefix('৳')
-                            ->live(onBlur: true),
-                        Forms\Components\TextInput::make('compare_price')->label('Discount / Old Price (৳)')->numeric()->prefix('৳')->helperText('Used to show a discount (e.g., if price is 80 and old price is 100, 20% discount).'),
+                            ->live(onBlur: true)
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    $minSelling = (float) $get('minimum_selling_price');
+                                    if ($cost > 0 && $value < $cost) {
+                                        $fail('Selling price cannot be less than Supplier Price.');
+                                    }
+                                    if ($minSelling > 0 && $value < $minSelling) {
+                                        $fail('Selling price cannot be less than Minimum Selling Price.');
+                                    }
+                                };
+                            }),
                         Forms\Components\Select::make('discount_type')
                             ->label('Discount Type')
                             ->options([
@@ -300,7 +311,28 @@ class ProductResource extends Resource
                             ->numeric()
                             ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
                             ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
-                            ->live(onBlur: true),
+                            ->live(onBlur: true)
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    if ($get('discount_type') === 'Percentage' && $value > 100) {
+                                        $fail('Percentage cannot exceed 100.');
+                                    }
+                                    if ($get('discount_type') === 'Fixed' && $value >= (float) $get('price')) {
+                                        $fail('Fixed discount must be less than the selling price.');
+                                    }
+                                    $cost = (float) $get('cost_price');
+                                    $minSelling = (float) $get('minimum_selling_price');
+                                    $price = (float) $get('price');
+                                    $discount = $get('discount_type') === 'Percentage' ? ($price * ($value / 100)) : (float) $value;
+                                    $finalPrice = $price - $discount;
+                                    if ($cost > 0 && $finalPrice < $cost) {
+                                        $fail('Final price after discount cannot be less than Supplier Price.');
+                                    }
+                                    if ($minSelling > 0 && $finalPrice < $minSelling) {
+                                        $fail('Final price after discount cannot be less than Minimum Selling Price.');
+                                    }
+                                };
+                            }),
                         Forms\Components\Placeholder::make('final_price_preview')
                             ->label('Final Price Preview')
                             ->content(function (Forms\Get $get) {
@@ -311,15 +343,38 @@ class ProductResource extends Resource
                                 $final = $discountType === 'Percentage' ? $price - ($price * ($discountAmount / 100)) : $price - $discountAmount;
                                 return '৳' . number_format(max(0, $final), 2);
                             }),
-                        Forms\Components\DateTimePicker::make('discount_start_date')->label('Discount Start Date'),
-                        Forms\Components\DateTimePicker::make('discount_end_date')->label('Discount End Date'),
-                        Forms\Components\TextInput::make('scheduled_price')->label('Scheduled Price')->numeric()->prefix('৳'),
-                        Forms\Components\DateTimePicker::make('price_effective_date')->label('Price Effective Date'),
+                        Forms\Components\DateTimePicker::make('discount_start_date')
+                            ->label('Discount Start Date')
+                            ->minDate(now()),
+                        Forms\Components\DateTimePicker::make('discount_end_date')
+                            ->label('Discount End Date')
+                            ->minDate(now())
+                            ->afterOrEqual('discount_start_date'),
+                        Forms\Components\TextInput::make('scheduled_price')
+                            ->label('Scheduled Price')
+                            ->numeric()
+                            ->prefix('৳')
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    $minSelling = (float) $get('minimum_selling_price');
+                                    if ($cost > 0 && $value < $cost) {
+                                        $fail('Scheduled price cannot be less than Supplier Price.');
+                                    }
+                                    if ($minSelling > 0 && $value < $minSelling) {
+                                        $fail('Scheduled price cannot be less than Minimum Selling Price.');
+                                    }
+                                };
+                            }),
+                        Forms\Components\DateTimePicker::make('price_effective_date')
+                            ->label('Price Effective Date')
+                            ->minDate(now()),
                         Forms\Components\TextInput::make('minimum_selling_price')
                             ->label('Minimum Selling Price (৳)')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('৳'),
+                            ->prefix('৳')
+                            ->live(onBlur: true),
                         Forms\Components\Placeholder::make('profit_margin_preview')
                             ->label('Profit Margin')
                             ->content(function (Forms\Get $get): string {
@@ -339,6 +394,10 @@ class ProductResource extends Resource
 
                                 $profit = $sellingPrice - $supplierPrice;
                                 $percentage = $sellingPrice > 0 ? ($profit / $sellingPrice) * 100 : 0;
+
+                                return '৳' . number_format($profit, 2) . ' (' . number_format($percentage, 2) . '%)';
+                            }),
+                    ]),
                     Forms\Components\Grid::make(4)->schema([
                         Forms\Components\TextInput::make('sku')
                             ->label('SKU')
@@ -352,8 +411,38 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('low_stock_threshold')->label('Low Stock Alert')->numeric()->default(5),
                     ]),
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\TextInput::make('weight_grams')->label('Weight (grams)')->numeric(),
-                        Forms\Components\TextInput::make('tax_rate')->label('Tax Rate (%)')->numeric()->default(0),
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\Select::make('weight_unit')
+                                ->label('Weight Unit')
+                                ->options([
+                                    'g' => 'Grams (g)',
+                                    'kg' => 'Kilograms (kg)'
+                                ])
+                                ->default('g')
+                                ->live()
+                                ->dehydrated(false)
+                                ->afterStateHydrated(function (Forms\Components\Select $component, $state, ?Product $record, Forms\Set $set) {
+                                    if ($record && $record->weight_grams) {
+                                        if ($record->weight_grams >= 1000 && $record->weight_grams % 1000 === 0) {
+                                            $component->state('kg');
+                                            $set('weight_value', $record->weight_grams / 1000);
+                                        } else {
+                                            $component->state('g');
+                                            $set('weight_value', $record->weight_grams);
+                                        }
+                                    }
+                                }),
+                            Forms\Components\TextInput::make('weight_value')
+                                ->label('Weight Value')
+                                ->numeric()
+                                ->dehydrated(false),
+                            Forms\Components\Hidden::make('weight_grams')
+                                ->dehydrateStateUsing(function ($state, Forms\Get $get) {
+                                    $val = (float) $get('weight_value');
+                                    return $get('weight_unit') === 'kg' ? $val * 1000 : $val;
+                                }),
+                        ])->columnSpan(1),
+                        Forms\Components\TextInput::make('tax_rate')->label('Tax Rate (%)')->numeric()->default(0)->columnSpan(1),
                     ]),
                 ]),
 
@@ -454,6 +543,8 @@ class ProductResource extends Resource
                             Forms\Components\Toggle::make('requires_shipping')
                                 ->label('Requires Shipping')
                                 ->default(true)
+                                ->disabled(fn (Forms\Get $get) => $get('shipping_restriction') === 'pickup_only')
+                                ->dehydrated()
                                 ->helperText('Disable for digital products or services.'),
                             Forms\Components\Select::make('shipping_restriction')
                                 ->label('Shipping Restriction')
@@ -463,15 +554,27 @@ class ProductResource extends Resource
                                     'courier_restricted' => 'Courier Restricted',
                                 ])
                                 ->default('home_delivery')
-                                ->native(false),
+                                ->native(false)
+                                ->live()
+                                ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                    if ($state === 'pickup_only') {
+                                        $set('requires_shipping', false);
+                                        $set('is_free_shipping_eligible', false);
+                                        $set('has_special_handling', false);
+                                    }
+                                }),
                             Forms\Components\Toggle::make('is_free_shipping_eligible')
                                 ->label('Free Shipping Eligible')
+                                ->disabled(fn (Forms\Get $get) => $get('shipping_restriction') === 'pickup_only')
+                                ->dehydrated()
                                 ->default(false),
                         ]),
                         Forms\Components\Grid::make(2)->schema([
                             Forms\Components\Toggle::make('has_special_handling')
                                 ->label('Dangerous / Special Handling')
                                 ->default(false)
+                                ->disabled(fn (Forms\Get $get) => $get('shipping_restriction') === 'pickup_only')
+                                ->dehydrated()
                                 ->live(),
                             Forms\Components\Select::make('handling_type')
                                 ->label('Handling Type')
@@ -497,15 +600,41 @@ class ProductResource extends Resource
                                     'shop' => 'Shop Warranty',
                                     'replacement' => 'Replacement Warranty',
                                 ])
+                                ->live()
                                 ->native(false),
-                            Forms\Components\TextInput::make('warranty_duration')
-                                ->label('Warranty Duration')
-                                ->placeholder('e.g. 7 days, 6 months, 1 year')
-                                ->maxLength(255),
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\TextInput::make('warranty_duration_value')
+                                    ->label('Warranty Duration Value')
+                                    ->numeric()
+                                    ->visible(fn (Forms\Get $get) => $get('warranty_type') !== 'none')
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Forms\Components\TextInput $component, ?Product $record, Forms\Set $set) {
+                                        if ($record && $record->warranty_duration) {
+                                            preg_match('/^(\d+)\s*(.*)$/', $record->warranty_duration, $matches);
+                                            if (count($matches) === 3) {
+                                                $component->state($matches[1]);
+                                                $set('warranty_duration_period', ucfirst($matches[2]));
+                                            } else {
+                                                $component->state($record->warranty_duration);
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\Select::make('warranty_duration_period')
+                                    ->label('Warranty Period')
+                                    ->options(['Days' => 'Days', 'Months' => 'Months', 'Years' => 'Years'])
+                                    ->visible(fn (Forms\Get $get) => $get('warranty_type') !== 'none')
+                                    ->dehydrated(false),
+                                Forms\Components\Hidden::make('warranty_duration')
+                                    ->dehydrateStateUsing(function ($state, Forms\Get $get) {
+                                        if ($get('warranty_type') === 'none' || !$get('warranty_duration_value')) return null;
+                                        return $get('warranty_duration_value') . ' ' . $get('warranty_duration_period');
+                                    }),
+                            ])->visible(fn (Forms\Get $get) => $get('warranty_type') !== 'none'),
                         ]),
                         Forms\Components\Textarea::make('warranty_claim_process')
                             ->label('Warranty Claim Process')
                             ->rows(3)
+                            ->visible(fn (Forms\Get $get) => $get('warranty_type') !== 'none')
                             ->columnSpanFull(),
                     ]),
 
@@ -560,31 +689,33 @@ class ProductResource extends Resource
                                     ->columnSpan(1),
                             ]),
                             
-                            Forms\Components\Grid::make(4)->schema([
+                            Forms\Components\Grid::make(2)->schema([
+                                Forms\Components\TextInput::make('cost_price')
+                                    ->label('Supplier Price (৳)')
+                                    ->helperText('Internal purchase price for variant.')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('৳')
+                                    ->live(onBlur: true),
                                 Forms\Components\TextInput::make('price')
+                                    ->label('Selling Price (৳)')
                                     ->numeric()
-                                    ->label('Price')
-                                    ->prefix('৳')
-                                    ->nullable()
-                                    ->live(onBlur: true)
-                                    ->helperText('Overrides base price if set.'),
-                                    
-                                Forms\Components\TextInput::make('compare_price')
-                                    ->numeric()
-                                    ->label('Compare Price')
+                                    ->minValue(0)
                                     ->prefix('৳')
                                     ->live(onBlur: true)
-                                    ->nullable(),
-                                    
-                                Forms\Components\TextInput::make('price_modifier')
-                                    ->numeric()
-                                    ->default(0)
-                                    ->label('Price Modifier (+/-)')
-                                    ->prefix('৳')
-                                    ->live(onBlur: true)
-                                    ->helperText('Used if Price is empty.'),
-                            ]),
-                            Forms\Components\Grid::make(4)->schema([
+                                    ->helperText('Overrides base price if set.')
+                                    ->rule(function (Forms\Get $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            $cost = (float) $get('cost_price');
+                                            $minSelling = (float) $get('minimum_selling_price');
+                                            if ($cost > 0 && (float) $value < $cost) {
+                                                $fail('Selling price cannot be less than Supplier Price.');
+                                            }
+                                            if ($minSelling > 0 && (float) $value < $minSelling) {
+                                                $fail('Selling price cannot be less than Minimum Selling Price.');
+                                            }
+                                        };
+                                    }),
                                 Forms\Components\Select::make('discount_type')
                                     ->label('Discount Type')
                                     ->options([
@@ -597,33 +728,72 @@ class ProductResource extends Resource
                                     ->numeric()
                                     ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
                                     ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
-                                    ->live(onBlur: true),
-                                Forms\Components\DateTimePicker::make('discount_start_date')->label('Discount Start Date'),
-                                Forms\Components\DateTimePicker::make('discount_end_date')->label('Discount End Date'),
-                            ]),
-                            Forms\Components\Grid::make(1)->schema([
+                                    ->live(onBlur: true)
+                                    ->rule(function (Forms\Get $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            if ($get('discount_type') === 'Percentage' && $value > 100) {
+                                                $fail('Percentage cannot exceed 100.');
+                                            }
+                                            $price = (float) $get('price');
+                                            if ($get('discount_type') === 'Fixed' && $price > 0 && $value >= $price) {
+                                                $fail('Fixed discount must be less than the selling price.');
+                                            }
+                                            $cost = (float) $get('cost_price');
+                                            $minSelling = (float) $get('minimum_selling_price');
+                                            if ($price > 0) {
+                                                $discount = $get('discount_type') === 'Percentage' ? ($price * ($value / 100)) : (float) $value;
+                                                $finalPrice = $price - $discount;
+                                                if ($cost > 0 && $finalPrice < $cost) {
+                                                    $fail('Final price after discount cannot be less than Supplier Price.');
+                                                }
+                                                if ($minSelling > 0 && $finalPrice < $minSelling) {
+                                                    $fail('Final price after discount cannot be less than Minimum Selling Price.');
+                                                }
+                                            }
+                                        };
+                                    }),
                                 Forms\Components\Placeholder::make('discount_preview')
                                     ->label('Final Price Preview')
                                     ->content(function (Forms\Get $get) {
-                                        $price = (float) ($get('price') ?? 0);
-                                        $modifier = (float) ($get('price_modifier') ?? 0);
-                                        $base = $price > 0 ? $price : $modifier; // We can't easily get parent product price here without full model context, but we can try
-                                        $compare = (float) ($get('compare_price') ?? 0);
+                                        $price = (float) $get('price');
                                         $discountType = $get('discount_type');
-                                        $discountAmount = (float) ($get('discount_amount') ?? 0);
-
-                                        if ($discountAmount > 0 && $discountType) {
-                                            $discount = $discountType === 'Percentage' ? ($base * ($discountAmount / 100)) : $discountAmount;
-                                            return '৳' . number_format(max(0, $base - $discount), 2) . ' (Base: ৳' . number_format($base, 2) . ')';
-                                        }
-
-                                        if ($price > 0 && $compare > $price) {
-                                            $discount = $compare - $price;
-                                            $percentage = ($discount / $compare) * 100;
-                                            return '৳' . number_format($price, 2) . ' (Discount: ' . number_format($percentage, 0) . '%)';
-                                        }
-                                        return '-';
+                                        $discountAmount = (float) $get('discount_amount');
+                                        if (! $price || ! $discountAmount || ! $discountType) return '-';
+                                        $final = $discountType === 'Percentage' ? $price - ($price * ($discountAmount / 100)) : $price - $discountAmount;
+                                        return '৳' . number_format(max(0, $final), 2);
                                     }),
+                                Forms\Components\DateTimePicker::make('discount_start_date')
+                                    ->label('Discount Start Date')
+                                    ->minDate(now()),
+                                Forms\Components\DateTimePicker::make('discount_end_date')
+                                    ->label('Discount End Date')
+                                    ->minDate(now())
+                                    ->afterOrEqual('discount_start_date'),
+                                Forms\Components\TextInput::make('scheduled_price')
+                                    ->label('Scheduled Price')
+                                    ->numeric()
+                                    ->prefix('৳')
+                                    ->rule(function (Forms\Get $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            $cost = (float) $get('cost_price');
+                                            $minSelling = (float) $get('minimum_selling_price');
+                                            if ($cost > 0 && $value < $cost) {
+                                                $fail('Scheduled price cannot be less than Supplier Price.');
+                                            }
+                                            if ($minSelling > 0 && $value < $minSelling) {
+                                                $fail('Scheduled price cannot be less than Minimum Selling Price.');
+                                            }
+                                        };
+                                    }),
+                                Forms\Components\DateTimePicker::make('price_effective_date')
+                                    ->label('Price Effective Date')
+                                    ->minDate(now()),
+                                Forms\Components\TextInput::make('minimum_selling_price')
+                                    ->label('Minimum Selling Price (৳)')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->prefix('৳')
+                                    ->live(onBlur: true),
                             ]),
 
                             Forms\Components\Grid::make(3)->schema([
