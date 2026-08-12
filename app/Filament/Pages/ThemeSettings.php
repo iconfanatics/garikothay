@@ -80,6 +80,7 @@ class ThemeSettings extends Page
         $this->form->fill([
             'theme1_header_logo' => $settings->get('theme1_header_logo')?->value ?? '',
             'theme1_footer_logo' => $settings->get('theme1_footer_logo')?->value ?? '',
+            'theme1_payment_banner' => $settings->get('theme1_payment_banner')?->value ?? '',
             'theme1_favicon' => $settings->get('theme1_favicon')?->value ?? '',
             'theme1_top_ticker_speed' => $settings->get('theme1_top_ticker_speed')?->getCastedValue() ?? 12,
             'theme1_top_ticker_style' => $settings->get('theme1_top_ticker_style')?->getCastedValue() ?? 'slide',
@@ -143,6 +144,11 @@ class ThemeSettings extends Page
                         Forms\Components\FileUpload::make('theme1_footer_logo')
                             ->label('Footer Logo')
                             ->helperText('Recommended size: 250x60 pixels. PNG format with transparent background is best. White/light logo is recommended for dark footers.')
+                            ->image()
+                            ->directory('theme'),
+                        Forms\Components\FileUpload::make('theme1_payment_banner')
+                            ->label('Payment Banner (Footer)')
+                            ->helperText('Payment methods accepted. E.g. SSLCommerz banner. Transparent PNG is best.')
                             ->image()
                             ->directory('theme'),
                         Forms\Components\FileUpload::make('theme1_favicon')
@@ -372,6 +378,7 @@ class ThemeSettings extends Page
         $settingsMeta = [
             'theme1_header_logo' => ['group' => 'theme', 'type' => SettingType::Image],
             'theme1_footer_logo' => ['group' => 'theme', 'type' => SettingType::Image],
+            'theme1_payment_banner' => ['group' => 'theme', 'type' => SettingType::Image],
             'theme1_favicon' => ['group' => 'theme', 'type' => SettingType::Image],
             'theme1_top_ticker_speed' => ['group' => 'theme', 'type' => SettingType::Number],
             'theme1_top_ticker_style' => ['group' => 'theme', 'type' => SettingType::Text],

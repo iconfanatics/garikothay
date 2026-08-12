@@ -705,6 +705,14 @@
                         <span x-text="'৳' + formatMoney(checkoutTotal)"></span>
                     </div>
                 </div>
+                
+                <div class="mt-4 mb-2 flex items-start gap-2">
+                    <input type="checkbox" id="terms_agree" name="terms_agree" required class="mt-1 text-[#e11d48]" style="accent-color: #e11d48;">
+                    <label for="terms_agree" class="text-xs text-gray-600">
+                        I have read and agree to the <a href="{{ route('page.show', 'terms-and-conditions') }}" target="_blank" class="text-[#e11d48] hover:underline font-bold">Terms & Conditions</a>, <a href="{{ route('page.show', 'privacy-policy') }}" target="_blank" class="text-[#e11d48] hover:underline font-bold">Privacy Policy</a>, and <a href="{{ route('page.show', 'refund-and-return-policy') }}" target="_blank" class="text-[#e11d48] hover:underline font-bold">Return Refund Policy</a>.
+                    </label>
+                </div>
+                
                 <button type="submit" class="gk-checkout-submit">
                     {{ __('general.place_order') }}
                 </button>

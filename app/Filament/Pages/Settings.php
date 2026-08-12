@@ -31,6 +31,7 @@ class Settings extends Page
         $this->form->fill([
             'site_name' => $settings->get('site_name')?->value ?? '',
             'site_tagline' => $settings->get('site_tagline')?->value ?? '',
+            'trade_license_number' => $settings->get('trade_license_number')?->value ?? '',
             'free_shipping_threshold' => $settings->get('free_shipping_threshold')?->value ?? '',
             'dhaka_city_shipping_charge' => $settings->get('dhaka_city_shipping_charge')?->value ?? '80',
             'outside_dhaka_shipping_charge' => $settings->get('outside_dhaka_shipping_charge')?->value ?? $legacyShippingCharge,
@@ -64,6 +65,9 @@ class Settings extends Page
                 Forms\Components\Section::make('General')->schema([
                     Forms\Components\TextInput::make('site_name')->label('Site Name'),
                     Forms\Components\TextInput::make('site_tagline')->label('Site Tagline'),
+                    Forms\Components\TextInput::make('trade_license_number')
+                        ->label('Trade License Number')
+                        ->placeholder('e.g. TRAD/DNCC/12345/2026'),
                 ])->columns(2),
                 Forms\Components\Section::make('SEO & Analytics')->schema([
                     Forms\Components\TextInput::make('home_meta_title')
@@ -167,6 +171,7 @@ class Settings extends Page
         $settingsMeta = [
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
             'site_tagline' => ['group' => 'general', 'type' => SettingType::Text],
+            'trade_license_number' => ['group' => 'general', 'type' => SettingType::Text],
             'home_meta_title' => ['group' => 'seo', 'type' => SettingType::Text],
             'home_meta_description' => ['group' => 'seo', 'type' => SettingType::Textarea],
             'google_analytics_code' => ['group' => 'seo', 'type' => SettingType::Textarea],

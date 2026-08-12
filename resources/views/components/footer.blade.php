@@ -97,6 +97,9 @@
                 <li>✉ <a href="mailto:{{ $email3 }}" class="hover:text-rose-400 transition">{{ $email3 }}</a></li>
                 @endif
                 <li>📍 {{ \App\Models\Setting::get('address', 'House 24, Road 7, Banani, Dhaka 1213, Bangladesh') }}</li>
+                @if(\App\Models\Setting::get('trade_license_number'))
+                <li>📝 Trade License: {{ \App\Models\Setting::get('trade_license_number') }}</li>
+                @endif
             </ul>
 
         </div>
@@ -104,7 +107,7 @@
         <div>
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Company</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
-                <li><a href="#" class="hover:text-rose-400 transition">About Us</a></li>
+                <li><a href="{{ route('page.show', 'about-us') }}" class="hover:text-rose-400 transition">About Us</a></li>
                 <li><a href="#" class="hover:text-rose-400 transition">Our Team</a></li>
                 <li><a href="#" class="hover:text-rose-400 transition">Careers</a></li>
                 <li><a href="#" class="hover:text-rose-400 transition">Contact Us</a></li>
@@ -133,6 +136,7 @@
                 <li><a href="#" class="hover:text-rose-400 transition">Help Center</a></li>
                 <li><a href="#" class="hover:text-rose-400 transition">Report A Problem</a></li>
                 <li><a href="#" class="hover:text-rose-400 transition">Safety Guidelines</a></li>
+                <li>🚚 Delivery Time: Inside Dhaka 5 Days, Outside Dhaka 10 Days</li>
             </ul>
         </div>
 
@@ -150,6 +154,14 @@
             </ul>
         </div>
     </div>
+    
+    @php $paymentBanner = \App\Models\Setting::get('theme1_payment_banner'); @endphp
+    @if($paymentBanner)
+    <div class="gk-footer-inner mt-8">
+        <img src="{{ asset('storage/' . $paymentBanner) }}" alt="Accepted Payment Methods" class="h-12 w-auto mx-auto object-contain">
+    </div>
+    @endif
+    
     <div class="gk-footer-inner mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
         © {{ date('Y') }} {{ \App\Models\Setting::get('site_name', config('app.name')) }}. {{ __('general.all_rights_reserved') }} {{ __('general.made_with_love') }}
     </div>

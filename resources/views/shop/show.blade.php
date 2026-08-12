@@ -754,6 +754,11 @@
                 <div>
                     <div class="gk-gallery-main" @mousemove="setZoom($event)">
                         <img :src="activeImage" alt="{{ $product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';">
+                        @if(!$product->isInStock())
+                            <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.75); display:grid; place-items:center; z-index:10; pointer-events:none;">
+                                <span style="background:#e11d48; color:#fff; padding:0.6rem 1.25rem; font-weight:900; border-radius:6px; font-size:1.35rem; transform:rotate(-15deg); box-shadow: 0 4px 6px rgba(0,0,0,0.1); letter-spacing:0.05em;">OUT OF STOCK</span>
+                            </div>
+                        @endif
                     </div>
                     <div class="gk-thumbs">
                         @forelse($product->images as $image)
@@ -783,9 +788,9 @@
                         <span>({{ $approvedReviews->count() }} reviews)</span>
                         <span>·</span>
                         @if($product->isInStock())
-                            <span style="color:#16a34a; font-weight:800;">In Stock</span>
+                            <span style="color:#16a34a; font-weight:800;">In Stock ({{ $product->stock_quantity }} Available)</span>
                         @else
-                            <span style="color:#e11d48; font-weight:800;">Out of Stock</span>
+                            <span style="color:#e11d48; font-weight:800;">Out of Stock (0 Available)</span>
                         @endif
                         <span>·</span>
                         @if($product->brand)
