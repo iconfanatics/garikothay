@@ -82,10 +82,13 @@ class BannerResource extends Resource
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\DateTimePicker::make('starts_at')
                         ->label('Starts At')
-                        ->nullable(),
+                        ->nullable()
+                        ->live()
+                        ->minDate(now()),
                     Forms\Components\DateTimePicker::make('expires_at')
                         ->label('Expires At')
                         ->nullable()
+                        ->minDate(fn (Forms\Get $get) => $get('starts_at') ?: now())
                         ->after('starts_at'),
                 ]),
                 Forms\Components\Toggle::make('is_active')

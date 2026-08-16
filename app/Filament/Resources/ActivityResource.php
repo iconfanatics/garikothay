@@ -29,7 +29,19 @@ class ActivityResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Section::make('Activity Details')->schema([
+                    Forms\Components\TextInput::make('log_name')->label('Log Name'),
+                    Forms\Components\TextInput::make('description')->label('Description'),
+                    Forms\Components\TextInput::make('subject_type')->label('Subject Type'),
+                    Forms\Components\TextInput::make('event')->label('Event'),
+                    Forms\Components\TextInput::make('causer.name')->label('Causer'),
+                    Forms\Components\DateTimePicker::make('created_at')->label('Time'),
+                ])->columns(2),
+                Forms\Components\Section::make('Properties')->schema([
+                    Forms\Components\KeyValue::make('properties')
+                        ->label('Log Properties (Before / After / IP)')
+                        ->columnSpanFull(),
+                ])
             ]);
     }
 
@@ -63,8 +75,12 @@ class ActivityResource extends Resource
                 Tables\Filters\Filter::make('created_at')
                     ->label('Date Range')
                     ->form([
-                        Forms\Components\DatePicker::make('from')->label('Date From'),
-                        Forms\Components\DatePicker::make('until')->label('Date To'),
+                        Forms\Components\DatePicker::make('from')
+                            ->label('Date From')
+                            ->live(),
+                        Forms\Components\DatePicker::make('until')
+                            ->label('Date To')
+                            ->minDate(fn (Forms\Get $get) => $get('from')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -80,7 +96,8 @@ class ActivityResource extends Resource
                                 \App\Models\Admin::class => 'Admin / Staff',
                                 \App\Models\User::class => 'Customer',
                             ])
-                            ->live(),
+                            ->live()
+                            ->afterStateUpdated(fn (Forms\Set $set) => $set('causer_id', null)),
                         Forms\Components\Select::make('causer_id')
                             ->label('Specific User')
                             ->options(function (Forms\Get $get) {
@@ -92,7 +109,8 @@ class ActivityResource extends Resource
                                 }
                                 return [];
                             })
-                            ->searchable(),
+                            ->searchable()
+                            ->disabled(fn (Forms\Get $get) => empty($get('causer_type'))),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -145,7 +163,7 @@ class ActivityResource extends Resource
             ], layout: Tables\Enums\FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

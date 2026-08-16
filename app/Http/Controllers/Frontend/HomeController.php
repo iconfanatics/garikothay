@@ -22,7 +22,8 @@ class HomeController extends Controller
     public function index(): View
     {
         return view('home', [
-            'banners' => Banner::with('translations')->active()->where('type', 'hero_slider')->orderBy('sort_order')->get(),
+            'heroBanners' => Banner::with('translations')->active()->where('type', 'hero_slider')->orderBy('sort_order')->get(),
+            'promoBanners' => Banner::with('translations')->active()->where('type', 'promotional')->orderBy('sort_order')->get(),
             'categories' => $this->categoryRepository->getWithProductCount(),
             'featured' => $this->productRepository->getFeatured(8),
             'newArrivals' => $this->productRepository->getNewArrivals(8),

@@ -115,286 +115,298 @@ class ThemeSettings extends Page
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Section Visibility')
-                    ->description('Show or hide sections on the homepage.')
-                    ->schema([
-                        Forms\Components\Toggle::make('theme1_show_top_ticker')->label('Top Ticker')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_hero')->label('Hero Slider & Promos')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_trust_features')->label('Trust Features')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_mega_sale')->label('Mega Sale')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_new_arrivals')->label('New Arrivals')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_featured')->label('Featured Products')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_best_sellers')->label('Best Sellers')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_services')->label('Automotive Services')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_reviews')->label('Customer Reviews')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_stats')->label('Statistics')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_app')->label('Mobile App Promo')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_blogs')->label('Automotive Tips (Blog)')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_newsletter')->label('Newsletter Subscription')->default(true),
-                        Forms\Components\Toggle::make('theme1_show_partners')->label('Delivery Partners')->default(true),
-                    ])->columns(3)
-                    ->collapsible(),
-                Forms\Components\Section::make('Theme Logos')
-                    ->description('Upload logos for the header and footer.')
-                    ->schema([
-                        Forms\Components\FileUpload::make('theme1_header_logo')
-                            ->label('Header Logo')
-                            ->helperText('Recommended size: 250x60 pixels. PNG format with transparent background is best.')
-                            ->image()
-                            ->directory('theme'),
-                        Forms\Components\FileUpload::make('theme1_footer_logo')
-                            ->label('Footer Logo')
-                            ->helperText('Recommended size: 250x60 pixels. PNG format with transparent background is best. White/light logo is recommended for dark footers.')
-                            ->image()
-                            ->directory('theme'),
-                        Forms\Components\FileUpload::make('theme1_payment_banner')
-                            ->label('Payment Banner (Footer)')
-                            ->helperText('Payment methods accepted. E.g. SSLCommerz banner. Transparent PNG is best.')
-                            ->image()
-                            ->directory('theme'),
-                        Forms\Components\FileUpload::make('theme1_favicon')
-                            ->label('Favicon')
-                            ->helperText('Recommended size: 32x32 pixels or 64x64 pixels (PNG/ICO).')
-                            ->image()
-                            ->directory('theme'),
-                    ])->columns(3),
-                Forms\Components\Section::make('Top Ticker (Marquee)')
-                    ->description('Customize the scrolling text at the very top of the page.')
-                    ->schema([
-                        Forms\Components\Radio::make('theme1_top_ticker_style')
-                            ->label('Ticker Style')
-                            ->options([
-                                'slide' => 'Slide (Animated Marquee)',
-                                'static' => 'Static (Fixed Center)'
-                            ])
-                            ->default('slide')
-                            ->inline(),
-                        Forms\Components\TextInput::make('theme1_top_ticker_speed')
-                            ->label('Animation Speed (Seconds)')
-                            ->numeric()
-                            ->default(12)
-                            ->minValue(1)
-                            ->maxValue(100)
-                            ->helperText('Lower number means faster scrolling. Default is 12.')
-                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('theme1_top_ticker_style') === 'slide'),
-                        Forms\Components\Repeater::make('theme1_top_ticker')
-                            ->label('Ticker Items')
+                Forms\Components\Tabs::make('Theme Layout')->tabs([
+                    Forms\Components\Tabs\Tab::make('General & Visibility')->schema([
+                        Forms\Components\Section::make('Section Visibility')
+                            ->description('Show or hide sections on the homepage.')
                             ->schema([
-                                Forms\Components\TextInput::make('text')
-                                    ->label('Text')
-                                    ->required()
-                                    ->placeholder('e.g. Get More Customers, Grow Faster.'),
-                            ])
-                            ->itemLabel(fn (array $state): ?string => $state['text'] ?? null)
-                            ->collapsible()
-                            ->defaultItems(0)
-                    ]),
-                
-                Forms\Components\Section::make('Hero Slider')
-                    ->description('Customize the main image slider on the homepage.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_hero_slides')
-                            ->label('Slides')
+                                Forms\Components\Toggle::make('theme1_show_top_ticker')->label('Top Ticker')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_hero')->label('Hero Slider & Promos')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_trust_features')->label('Trust Features')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_mega_sale')->label('Mega Sale')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_new_arrivals')->label('New Arrivals')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_featured')->label('Featured Products')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_best_sellers')->label('Best Sellers')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_services')->label('Automotive Services')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_reviews')->label('Customer Reviews')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_stats')->label('Statistics')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_app')->label('Mobile App Promo')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_blogs')->label('Automotive Tips (Blog)')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_newsletter')->label('Newsletter Subscription')->default(true),
+                                Forms\Components\Toggle::make('theme1_show_partners')->label('Delivery Partners')->default(true),
+                            ])->columns(3)
+                            ->collapsible(),
+                        Forms\Components\Section::make('Theme Logos')
+                            ->description('Upload logos for the header and footer.')
                             ->schema([
-                                Forms\Components\FileUpload::make('image')
-                                    ->label('Background Image')
+                                Forms\Components\FileUpload::make('theme1_header_logo')
+                                    ->label('Header Logo')
+                                    ->helperText('Recommended size: 250x60 pixels. PNG format with transparent background is best.')
                                     ->image()
-                                    ->directory('theme')
-                                    ->helperText('Recommended size: 1600x800 pixels. Use dark/contrasting images for better text readability.')
-                                    ->required()
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('eyebrow')
-                                    ->label('Tag / Eyebrow Text')
-                                    ->placeholder('e.g. Mega Sale'),
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Main Title')
-                                    ->required()
-                                    ->placeholder('e.g. Car Parts Mega Sale'),
-                                Forms\Components\Textarea::make('copy')
-                                    ->label('Subtitle / Description')
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('btn_primary_text')
-                                    ->label('Primary Button Text')
-                                    ->placeholder('e.g. Shop Now'),
-                                Forms\Components\TextInput::make('btn_primary_url')
-                                    ->label('Primary Button URL')
-                                    ->placeholder('e.g. /shop'),
-                                Forms\Components\TextInput::make('btn_secondary_text')
-                                    ->label('Secondary Button Text')
-                                    ->placeholder('e.g. View Lookbook'),
-                                Forms\Components\TextInput::make('btn_secondary_url')
-                                    ->label('Secondary Button URL'),
-                            ])
-                            ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
-                            ->collapsible()
-                            ->defaultItems(0)
-                    ]),
-                
-                Forms\Components\Section::make('Promo Banners')
-                    ->description('Customize the 2 mini promo banners next to the slider.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_promo_banners')
-                            ->label('Banners')
-                            ->schema([
-                                Forms\Components\TextInput::make('kicker')
-                                    ->label('Small Top Text')
-                                    ->placeholder('e.g. UP TO 50% OFF'),
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Main Text')
-                                    ->required()
-                                    ->placeholder('e.g. Brake Pads'),
-                                Forms\Components\TextInput::make('link')
-                                    ->label('URL')
-                                    ->required()
-                                    ->placeholder('e.g. /shop'),
-                                Forms\Components\ColorPicker::make('bg_start')
-                                    ->label('Background Gradient Start Color')
-                                    ->default('#111827'),
-                                Forms\Components\ColorPicker::make('bg_end')
-                                    ->label('Background Gradient End Color')
-                                    ->default('#be123c'),
-                            ])
-                            ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
-                            ->collapsible()
-                            ->maxItems(2)
-                            ->defaultItems(0)
-                    ]),
-                    
-                Forms\Components\Section::make('Trust Features')
-                    ->description('Customize the trust features (e.g. Free Delivery, Genuine Products) shown below the hero section.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_trust_features')
-                            ->label('Features')
-                            ->schema([
-                                Forms\Components\TextInput::make('icon')
-                                    ->label('Icon (Emoji or SVG)')
-                                    ->required()
-                                    ->placeholder('e.g. 🚚 or SVG code'),
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Title')
-                                    ->required()
-                                    ->placeholder('e.g. Free Delivery'),
-                                Forms\Components\TextInput::make('subtitle')
-                                    ->label('Subtitle')
-                                    ->placeholder('e.g. Orders over ৳5,000'),
-                            ])
-                            ->columns(3)
-                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
-                            ->collapsible()
-                            ->defaultItems(0)
-                            ->maxItems(4)
-                    ]),
-                Forms\Components\Section::make('Stats Counter')
-                    ->description('Customize the statistics numbers shown on the homepage.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_stats')
-                            ->label('Stats')
-                            ->schema([
-                                Forms\Components\TextInput::make('value')
-                                    ->label('Value (e.g. 500+)')
-                                    ->required(),
-                                Forms\Components\TextInput::make('label')
-                                    ->label('Label')
-                                    ->required(),
-                            ])
-                            ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
-                            ->collapsible()
-                            ->defaultItems(0)
-                            ->maxItems(5)
-                    ]),
-                Forms\Components\Section::make('Automotive Services')
-                    ->description('Customize the service cards shown on the homepage.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_service_cards')
-                            ->label('Service Cards')
-                            ->schema([
-                                Forms\Components\TextInput::make('icon')
-                                    ->label('Icon (Emoji or SVG)')
-                                    ->required()
-                                    ->placeholder('e.g. 🔧'),
-                                Forms\Components\TextInput::make('bg')
-                                    ->label('Icon Background (CSS gradient or color)')
-                                    ->required()
-                                    ->placeholder('e.g. linear-gradient(135deg,#ef4444,#be123c)'),
-                                Forms\Components\TextInput::make('name')
-                                    ->label('Service Name')
-                                    ->required()
-                                    ->placeholder('e.g. Garage Kothay'),
-                                Forms\Components\Textarea::make('desc')
-                                    ->label('Description')
-                                    ->required(),
-                                Forms\Components\TextInput::make('href')
-                                    ->label('URL')
-                                    ->required()
-                                    ->placeholder('e.g. /garages'),
-                            ])
-                            ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                            ->collapsible()
-                            ->defaultItems(0)
-                    ]),
-                Forms\Components\Section::make('Delivery Partners')
-                    ->description('Customize the scrolling delivery partners list.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_delivery_partners')
-                            ->label('Partners')
-                            ->schema([
-                                Forms\Components\FileUpload::make('image')
-                                    ->label('Logo Image')
+                                    ->directory('theme'),
+                                Forms\Components\FileUpload::make('theme1_footer_logo')
+                                    ->label('Footer Logo')
+                                    ->helperText('Recommended size: 250x60 pixels. PNG format with transparent background is best. White/light logo is recommended for dark footers.')
                                     ->image()
-                                    ->directory('theme')
-                                    ->helperText('Recommended size: 120x60 pixels. PNG format with transparent background is best.'),
-                                Forms\Components\TextInput::make('name')
-                                    ->label('Name (with icon)')
-                                    ->required()
-                                    ->placeholder('e.g. 🚀 Steadfast'),
-                            ])
-                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                            ->collapsible()
-                            ->defaultItems(0)
+                                    ->directory('theme'),
+                                Forms\Components\FileUpload::make('theme1_payment_banner')
+                                    ->label('Payment Banner (Footer)')
+                                    ->helperText('Payment methods accepted. E.g. SSLCommerz banner. Transparent PNG is best.')
+                                    ->image()
+                                    ->directory('theme'),
+                                Forms\Components\FileUpload::make('theme1_favicon')
+                                    ->label('Favicon')
+                                    ->helperText('Recommended size: 32x32 pixels or 64x64 pixels (PNG/ICO).')
+                                    ->image()
+                                    ->directory('theme'),
+                            ])->columns(3),
                     ]),
-                Forms\Components\Section::make('Newsletter Settings')
-                    ->description('Customize the newsletter subscription text.')
-                    ->schema([
-                        Forms\Components\TextInput::make('theme1_newsletter_title')
-                            ->label('Title')
-                            ->default('GET DEALS IN YOUR INBOX')
-                            ->required(),
-                        Forms\Components\TextInput::make('theme1_newsletter_subtitle')
-                            ->label('Subtitle')
-                            ->default('Subscribe for exclusive offers, new arrivals and service discounts.')
-                            ->required(),
-                    ]),
-                Forms\Components\Section::make('Social Media Links')
-                    ->description('Add social media icons and links to the footer.')
-                    ->schema([
-                        Forms\Components\Repeater::make('theme1_social_links')
-                            ->label('Social Links')
+
+                    Forms\Components\Tabs\Tab::make('Top Bar & Hero')->schema([
+                        Forms\Components\Section::make('Top Ticker (Marquee)')
+                            ->description('Customize the scrolling text at the very top of the page.')
                             ->schema([
-                                Forms\Components\Select::make('platform')
-                                    ->label('Platform')
+                                Forms\Components\Radio::make('theme1_top_ticker_style')
+                                    ->label('Ticker Style')
                                     ->options([
-                                        'facebook' => 'Facebook',
-                                        'twitter' => 'Twitter/X',
-                                        'instagram' => 'Instagram',
-                                        'youtube' => 'YouTube',
-                                        'linkedin' => 'LinkedIn',
-                                        'tiktok' => 'TikTok',
-                                        'whatsapp' => 'WhatsApp',
+                                        'slide' => 'Slide (Animated Marquee)',
+                                        'static' => 'Static (Fixed Center)'
                                     ])
+                                    ->default('slide')
+                                    ->inline(),
+                                Forms\Components\TextInput::make('theme1_top_ticker_speed')
+                                    ->label('Animation Speed (Seconds)')
+                                    ->numeric()
+                                    ->default(12)
+                                    ->minValue(1)
+                                    ->maxValue(300)
+                                    ->helperText('Lower number means faster scrolling. Default is 12.')
+                                    ->visible(fn (\Filament\Forms\Get $get): bool => $get('theme1_top_ticker_style') === 'slide'),
+                                Forms\Components\Repeater::make('theme1_top_ticker')
+                                    ->label('Ticker Items')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('text')
+                                            ->label('Text')
+                                            ->required()
+                                            ->placeholder('e.g. Get More Customers, Grow Faster.'),
+                                    ])
+                                    ->itemLabel(fn (array $state): ?string => $state['text'] ?? null)
+                                    ->collapsible()
+                                    ->defaultItems(0)
+                            ]),
+                        
+                        Forms\Components\Section::make('Hero Slider')
+                            ->description('Customize the main image slider on the homepage.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_hero_slides')
+                                    ->label('Slides')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('image')
+                                            ->label('Background Image')
+                                            ->image()
+                                            ->directory('theme')
+                                            ->helperText('Recommended size: 1600x800 pixels. Use dark/contrasting images for better text readability.')
+                                            ->required()
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('eyebrow')
+                                            ->label('Tag / Eyebrow Text')
+                                            ->placeholder('e.g. Mega Sale'),
+                                        Forms\Components\TextInput::make('title')
+                                            ->label('Main Title')
+                                            ->required()
+                                            ->placeholder('e.g. Car Parts Mega Sale'),
+                                        Forms\Components\Textarea::make('copy')
+                                            ->label('Subtitle / Description')
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('btn_primary_text')
+                                            ->label('Primary Button Text')
+                                            ->placeholder('e.g. Shop Now'),
+                                        Forms\Components\TextInput::make('btn_primary_url')
+                                            ->label('Primary Button URL')
+                                            ->placeholder('e.g. /shop'),
+                                        Forms\Components\TextInput::make('btn_secondary_text')
+                                            ->label('Secondary Button Text')
+                                            ->placeholder('e.g. View Lookbook'),
+                                        Forms\Components\TextInput::make('btn_secondary_url')
+                                            ->label('Secondary Button URL'),
+                                    ])
+                                    ->columns(2)
+                                    ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                    ->collapsible()
+                                    ->defaultItems(0)
+                            ]),
+                        
+                        Forms\Components\Section::make('Promo Banners')
+                            ->description('Customize the 2 mini promo banners next to the slider.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_promo_banners')
+                                    ->label('Banners')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('kicker')
+                                            ->label('Small Top Text')
+                                            ->placeholder('e.g. UP TO 50% OFF'),
+                                        Forms\Components\TextInput::make('title')
+                                            ->label('Main Text')
+                                            ->required()
+                                            ->placeholder('e.g. Brake Pads'),
+                                        Forms\Components\TextInput::make('link')
+                                            ->label('URL')
+                                            ->required()
+                                            ->placeholder('e.g. /shop'),
+                                        Forms\Components\ColorPicker::make('bg_start')
+                                            ->label('Background Gradient Start Color')
+                                            ->default('#111827'),
+                                        Forms\Components\ColorPicker::make('bg_end')
+                                            ->label('Background Gradient End Color')
+                                            ->default('#be123c'),
+                                    ])
+                                    ->columns(2)
+                                    ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                    ->collapsible()
+                                    ->maxItems(2)
+                                    ->defaultItems(0)
+                            ]),
+                    ]),
+
+                    Forms\Components\Tabs\Tab::make('Services & Features')->schema([
+                        Forms\Components\Section::make('Trust Features')
+                            ->description('Customize the trust features (e.g. Free Delivery, Genuine Products) shown below the hero section.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_trust_features')
+                                    ->label('Features')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('icon')
+                                            ->label('Icon (Emoji or SVG)')
+                                            ->required()
+                                            ->placeholder('e.g. 🚚 or SVG code'),
+                                        Forms\Components\TextInput::make('title')
+                                            ->label('Title')
+                                            ->required()
+                                            ->placeholder('e.g. Free Delivery'),
+                                        Forms\Components\TextInput::make('subtitle')
+                                            ->label('Subtitle')
+                                            ->placeholder('e.g. Orders over ৳5,000'),
+                                    ])
+                                    ->columns(3)
+                                    ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                                    ->collapsible()
+                                    ->defaultItems(0)
+                                    ->maxItems(4)
+                            ]),
+                        Forms\Components\Section::make('Stats Counter')
+                            ->description('Customize the statistics numbers shown on the homepage.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_stats')
+                                    ->label('Stats')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('value')
+                                            ->label('Value (e.g. 500+)')
+                                            ->required(),
+                                        Forms\Components\TextInput::make('label')
+                                            ->label('Label')
+                                            ->required(),
+                                    ])
+                                    ->columns(2)
+                                    ->itemLabel(fn (array $state): ?string => $state['label'] ?? null)
+                                    ->collapsible()
+                                    ->defaultItems(0)
+                                    ->maxItems(5)
+                            ]),
+                        Forms\Components\Section::make('Automotive Services')
+                            ->description('Customize the service cards shown on the homepage.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_service_cards')
+                                    ->label('Service Cards')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('icon')
+                                            ->label('Icon (Emoji or SVG)')
+                                            ->required()
+                                            ->placeholder('e.g. 🔧'),
+                                        Forms\Components\TextInput::make('bg')
+                                            ->label('Icon Background (CSS gradient or color)')
+                                            ->required()
+                                            ->placeholder('e.g. linear-gradient(135deg,#ef4444,#be123c)'),
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Service Name')
+                                            ->required()
+                                            ->placeholder('e.g. Garage Kothay'),
+                                        Forms\Components\Textarea::make('desc')
+                                            ->label('Description')
+                                            ->required(),
+                                        Forms\Components\TextInput::make('href')
+                                            ->label('URL')
+                                            ->required()
+                                            ->placeholder('e.g. /garages'),
+                                    ])
+                                    ->columns(2)
+                                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                                    ->collapsible()
+                                    ->defaultItems(0)
+                            ]),
+                        Forms\Components\Section::make('Delivery Partners')
+                            ->description('Customize the scrolling delivery partners list.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_delivery_partners')
+                                    ->label('Partners')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('image')
+                                            ->label('Logo Image')
+                                            ->image()
+                                            ->directory('theme')
+                                            ->helperText('Recommended size: 120x60 pixels. PNG format with transparent background is best.'),
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Name (with icon)')
+                                            ->required()
+                                            ->placeholder('e.g. 🚀 Steadfast'),
+                                    ])
+                                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                                    ->collapsible()
+                                    ->defaultItems(0)
+                            ]),
+                    ]),
+
+                    Forms\Components\Tabs\Tab::make('Footer & Social')->schema([
+                        Forms\Components\Section::make('Newsletter Settings')
+                            ->description('Customize the newsletter subscription text.')
+                            ->schema([
+                                Forms\Components\TextInput::make('theme1_newsletter_title')
+                                    ->label('Title')
+                                    ->default('GET DEALS IN YOUR INBOX')
                                     ->required(),
-                                Forms\Components\TextInput::make('url')
-                                    ->label('URL')
-                                    ->url()
+                                Forms\Components\TextInput::make('theme1_newsletter_subtitle')
+                                    ->label('Subtitle')
+                                    ->default('Subscribe for exclusive offers, new arrivals and service discounts.')
                                     ->required(),
+                            ]),
+                        Forms\Components\Section::make('Social Media Links')
+                            ->description('Add social media icons and links to the footer.')
+                            ->schema([
+                                Forms\Components\Repeater::make('theme1_social_links')
+                                    ->label('Social Links')
+                                    ->schema([
+                                        Forms\Components\Select::make('platform')
+                                            ->label('Platform')
+                                            ->options([
+                                                'facebook' => 'Facebook',
+                                                'twitter' => 'Twitter/X',
+                                                'instagram' => 'Instagram',
+                                                'youtube' => 'YouTube',
+                                                'linkedin' => 'LinkedIn',
+                                                'tiktok' => 'TikTok',
+                                                'whatsapp' => 'WhatsApp',
+                                            ])
+                                            ->required(),
+                                        Forms\Components\TextInput::make('url')
+                                            ->label('URL')
+                                            ->url()
+                                            ->required(),
+                                    ])
+                                    ->columns(2)
+                                    ->itemLabel(fn (array $state): ?string => ucfirst($state['platform'] ?? 'Link'))
+                                    ->defaultItems(0)
                             ])
-                            ->columns(2)
-                            ->itemLabel(fn (array $state): ?string => ucfirst($state['platform'] ?? 'Link'))
-                            ->defaultItems(0)
-                    ])
+                    ]),
+                ])
             ])
             ->statePath('data');
     }

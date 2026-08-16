@@ -961,17 +961,16 @@
         ],
     ]);
 
-    $dbSlides = \App\Models\Setting::get('theme1_hero_slides');
-    $slides = empty($dbSlides) ? $fallbackSlides : collect($dbSlides)->map(function($slide) {
+    $slides = $heroBanners->isEmpty() ? $fallbackSlides : $heroBanners->map(function($banner) {
         return [
-            'tag' => $slide['eyebrow'] ?? '',
-            'title' => $slide['title'] ?? '',
-            'subtitle' => $slide['copy'] ?? '',
-            'button' => $slide['btn_primary_text'] ?? 'Shop Now',
-            'link' => $slide['btn_primary_url'] ?? '#',
-            'image' => isset($slide['image']) ? asset('storage/' . $slide['image']) : '',
-            'btn2' => $slide['btn_secondary_text'] ?? null,
-            'link2' => $slide['btn_secondary_url'] ?? '#',
+            'tag' => $banner->type->label(),
+            'title' => $banner->title,
+            'subtitle' => $banner->getTranslation('subtitle', app()->getLocale(), false),
+            'button' => 'Explore',
+            'link' => $banner->link ?? '#',
+            'image' => $banner->image ? asset('storage/' . $banner->image) : '',
+            'btn2' => null,
+            'link2' => '#',
         ];
     });
 
@@ -982,8 +981,22 @@
         ['kicker' => 'Service Bundles', 'title' => '15% Off Packs', 'link' => '#vehicle-services', 'bg_start' => '#f59e0b', 'bg_end' => '#c2410c'],
     ]);
     
-    $dbPromos = \App\Models\Setting::get('theme1_promo_banners');
-    $promos = empty($dbPromos) ? $fallbackPromos : collect($dbPromos);
+    $promos = $promoBanners->isEmpty() ? $fallbackPromos : $promoBanners->map(function($banner, $index) {
+        $colors = [
+            ['#e11d48', '#be123c'],
+            ['#374151', '#000000'],
+            ['#0891b2', '#1d4ed8'],
+            ['#f59e0b', '#c2410c'],
+        ];
+        $color = $colors[$index % 4];
+        return [
+            'kicker' => $banner->getTranslation('subtitle', app()->getLocale(), false) ?: 'PROMO',
+            'title' => $banner->title,
+            'link' => $banner->link ?? '#',
+            'bg_start' => $color[0],
+            'bg_end' => $color[1],
+        ];
+    });
 
     $fallbackTrustFeatures = collect([
         ['icon' => '🚚', 'title' => 'Free Delivery', 'subtitle' => 'Orders over ৳5,000'],

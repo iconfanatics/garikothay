@@ -114,7 +114,11 @@ class PageResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Title')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('translations', function ($q) use ($search) {
+                            $q->where('title', 'like', "%{$search}%");
+                        });
+                    })
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderBy(
                             \App\Models\PageTranslation::select('title')
@@ -148,8 +152,12 @@ class PageResource extends Resource
                 Tables\Filters\Filter::make('created_at')
                     ->label('Date Range (Created)')
                     ->form([
-                        Forms\Components\DatePicker::make('created_from')->label('Created From'),
-                        Forms\Components\DatePicker::make('created_until')->label('Created Until'),
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Created From')
+                            ->live(),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Created Until')
+                            ->minDate(fn (Forms\Get $get) => $get('created_from')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -159,8 +167,12 @@ class PageResource extends Resource
                 Tables\Filters\Filter::make('updated_at')
                     ->label('Last Updated Range')
                     ->form([
-                        Forms\Components\DatePicker::make('updated_from')->label('Updated From'),
-                        Forms\Components\DatePicker::make('updated_until')->label('Updated Until'),
+                        Forms\Components\DatePicker::make('updated_from')
+                            ->label('Updated From')
+                            ->live(),
+                        Forms\Components\DatePicker::make('updated_until')
+                            ->label('Updated Until')
+                            ->minDate(fn (Forms\Get $get) => $get('updated_from')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
