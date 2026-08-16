@@ -156,12 +156,12 @@
     </div>
     
     <div class="gk-footer-inner mt-8 border-t border-gray-800 pt-8">
-        @php $paymentBanner = \App\Models\Setting::get('theme1_payment_banner'); @endphp
-        @if($paymentBanner)
-            <img src="{{ asset('storage/' . $paymentBanner) }}" alt="Accepted Payment Methods" class="w-full max-w-5xl mx-auto h-auto object-contain bg-white rounded-xl p-2 shadow-sm">
-        @else
-            <img src="{{ asset('images/payment-banner.png') }}" alt="Accepted Payment Methods" class="w-full max-w-5xl mx-auto h-auto object-contain bg-white rounded-xl p-2 shadow-sm">
-        @endif
+        @php 
+            $paymentBanner = \App\Models\Setting::get('theme1_payment_banner'); 
+            $hasCustomBanner = $paymentBanner && \Illuminate\Support\Facades\Storage::disk('public')->exists($paymentBanner);
+            $bannerUrl = $hasCustomBanner ? asset('storage/' . $paymentBanner) : asset('images/payment-banner.png');
+        @endphp
+        <img src="{{ $bannerUrl }}" alt="Accepted Payment Methods" class="w-full max-w-5xl mx-auto h-auto object-contain bg-white rounded-xl p-2 shadow-sm">
     </div>
     
     <div class="gk-footer-inner mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
