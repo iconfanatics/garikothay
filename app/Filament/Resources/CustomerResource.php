@@ -26,60 +26,91 @@ class CustomerResource extends Resource
     protected static ?string $modelLabel = "Customer";
     protected static ?string $pluralModelLabel = "Customers";
 
-        public static function form(Form $form): Form
+    public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make("Customer Information")->schema([
+            Forms\Components\Section::make("Basic Information")->schema([
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\TextInput::make("name")
                         ->label("Full Name")
                         ->required()
-                        ->maxLength(255)
-                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
-                    Forms\Components\TextInput::make("email")
-                        ->label("Email Address")
-                        ->email()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make("phone")
+                        ->label("Mobile Number")
+                        ->tel()
                         ->required()
+                        ->rule(new \App\Rules\BdPhone())
+                        ->unique(ignoreRecord: true)
+                        ->maxLength(20),
+                    Forms\Components\TextInput::make("email")
+                        ->label("Email Address (Optional)")
+                        ->email()
+                        ->nullable()
+                        ->unique(ignoreRecord: true)
                         ->maxLength(255),
                 ]),
                 Forms\Components\Grid::make(2)->schema([
-                    Forms\Components\TextInput::make("phone")
-                        ->label("Phone Number")
-                        ->tel()
-                        ->rule(new \App\Rules\BdPhone())
-                        ->maxLength(20)
-                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
-                    Forms\Components\Select::make("locale")
-                        ->label("Preferred Language")
-                        ->options(["en" => "English", "bn" => "বাংলা"])
-                        ->default("en"),
+                    Forms\Components\TextInput::make('password')
+                        ->password()
+                        ->dehydrated(fn ($state) => filled($state))
+                        ->required(fn (string $operation): bool => $operation === 'create')
+                        ->maxLength(255)
+                        ->confirmed(),
+                    Forms\Components\TextInput::make('password_confirmation')
+                        ->password()
+                        ->requiredWith('password')
+                        ->dehydrated(false),
                 ]),
-                Forms\Components\Toggle::make("is_active")
-                    ->label("Active Account")
-                    ->default(true),
             ]),
-            Forms\Components\Section::make("Address & Preferences")->schema([
+            Forms\Components\Section::make("Address")->schema([
                 Forms\Components\Grid::make(2)->schema([
-                    Forms\Components\TextInput::make("address")->label("Address"),
-                    Forms\Components\TextInput::make("division")
+                    Forms\Components\Select::make("division")
                         ->label("Division")
-                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
+                        ->options([
+                            'Dhaka' => 'Dhaka', 'Chattogram' => 'Chattogram', 'Rajshahi' => 'Rajshahi',
+                            'Khulna' => 'Khulna', 'Barishal' => 'Barishal', 'Sylhet' => 'Sylhet',
+                            'Rangpur' => 'Rangpur', 'Mymensingh' => 'Mymensingh'
+                        ])
+                        ->live(),
                     Forms\Components\TextInput::make("district")
-                        ->label("District")
-                        ->readOnly(fn (string $operation): bool => $operation === 'edit'),
-                    Forms\Components\Select::make("preferred_payment_method")
-                        ->label("Preferred Payment Method")
-                        ->options(\App\Enums\PaymentMethod::options())
-                        ->disabled(fn (string $operation): bool => $operation === 'edit'),
+                        ->label("District"),
+                    Forms\Components\TextInput::make("upazila")
+                        ->label("Upazila / Thana"),
+                    Forms\Components\TextInput::make("address")
+                        ->label("Area / Address Line"),
                 ]),
             ]),
-            Forms\Components\Section::make("Admin Notes")->schema([
-                Forms\Components\TagsInput::make("tags")
-                    ->label("Customer Tags")
-                    ->placeholder("e.g. VIP, Wholesaler, Problematic"),
+            Forms\Components\Section::make("Account Settings")->schema([
+                Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Toggle::make("is_active")
+                        ->label("Status (Active/Inactive)")
+                        ->default(true),
+                    Forms\Components\Toggle::make('email_verified_at')
+                        ->label('Email Verified')
+                        ->formatStateUsing(fn ($state) => $state !== null)
+                        ->dehydrateStateUsing(fn ($state, ?User $record) => $state ? ($record?->email_verified_at ?? now()) : null),
+                    Forms\Components\Toggle::make('phone_verified_at')
+                        ->label('Mobile Verified')
+                        ->formatStateUsing(fn ($state) => $state !== null)
+                        ->dehydrateStateUsing(fn ($state, ?User $record) => $state ? ($record?->phone_verified_at ?? now()) : null),
+                ]),
+            ]),
+            Forms\Components\Section::make("Customer Details")->schema([
+                Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Select::make("customer_type")
+                        ->label("Customer Type")
+                        ->options([
+                            'Regular' => 'Regular',
+                            'VIP' => 'VIP',
+                            'Wholesale' => 'Wholesale',
+                            'Corporate' => 'Corporate',
+                        ])
+                        ->default('Regular'),
+                ]),
                 Forms\Components\Textarea::make("notes")
                     ->label("Notes (Admin Only)")
-                    ->rows(3),
+                    ->rows(3)
+                    ->columnSpanFull(),
             ]),
         ]);
     }
@@ -96,9 +127,8 @@ class CustomerResource extends Resource
                     Infolists\Components\TextEntry::make("name")->label("Full Name"),
                     Infolists\Components\TextEntry::make("customer_type")
                         ->label("Customer Type")
-                        ->state(fn(User $record): string => $record->orders()->count() > 1 ? 'Returning' : ($record->orders()->count() == 1 ? 'New' : 'No Orders'))
                         ->badge()
-                        ->color(fn(string $state): string => match($state) { 'Returning' => 'success', 'New' => 'info', default => 'gray' }),
+                        ->color('info'),
                     Infolists\Components\TextEntry::make("email")->label("Email"),
                     Infolists\Components\TextEntry::make("phone")->label("Phone")->default("N/A"),
                     Infolists\Components\TextEntry::make("created_at")
@@ -107,9 +137,9 @@ class CustomerResource extends Resource
                 ]),
                 Infolists\Components\Grid::make(3)->schema([
                     Infolists\Components\TextEntry::make("address")->label("Address")->default("N/A"),
-                    Infolists\Components\TextEntry::make("division_district")
-                        ->label("Division/District")
-                        ->state(fn(User $record): string => trim(($record->division ?? '') . '/' . ($record->district ?? ''), '/'))
+                    Infolists\Components\TextEntry::make("division_district_upazila")
+                        ->label("Division/District/Upazila")
+                        ->state(fn(User $record): string => trim(($record->division ?? '') . '/' . ($record->district ?? '') . '/' . ($record->upazila ?? ''), '/'))
                         ->default("N/A"),
                     Infolists\Components\TextEntry::make("preferred_payment_method")
                         ->label("Preferred Payment Method")
@@ -129,7 +159,7 @@ class CustomerResource extends Resource
                     Infolists\Components\TextEntry::make("total_orders")
                         ->label("Total Orders")
                         ->state(fn(User $record): int => $record->orders()->count())
-                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone ?? $record->email]))
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone]))
                         ->color('primary'),
                     Infolists\Components\TextEntry::make("total_products")
                         ->label("Total Products Purchased")
@@ -141,12 +171,12 @@ class CustomerResource extends Resource
                     Infolists\Components\TextEntry::make("total_spent")
                         ->label("Total Spent")
                         ->state(fn(User $record): string => "৳" . number_format($record->total_spent, 2))
-                        ->url(fn (User $record): string => route('filament.admin.resources.payments.index', ['tableSearch' => $record->phone ?? $record->email]))
+                        ->url(fn (User $record): string => route('filament.admin.resources.payments.index', ['tableSearch' => $record->phone]))
                         ->color('primary'),
                     Infolists\Components\TextEntry::make("coupon_usage")
                         ->label("Coupon Usage Count")
                         ->state(fn(User $record): int => $record->orders()->whereNotNull('coupon_id')->whereNotIn('status', ['cancelled'])->count())
-                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone ?? $record->email, 'tableFilters[has_coupon][value]' => true]))
+                        ->url(fn (User $record): string => route('filament.admin.resources.orders.index', ['tableSearch' => $record->phone, 'tableFilters[has_coupon][value]' => true]))
                         ->color('primary'),
                     
                     Infolists\Components\TextEntry::make("pending_orders")
@@ -454,6 +484,6 @@ class CustomerResource extends Resource
 
     public static function canCreate(): bool
     {
-        return false;
+        return true;
     }
 }

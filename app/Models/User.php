@@ -31,6 +31,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'address',
         'division',
         'district',
+        'upazila',
+        'customer_type',
         'preferred_payment_method',
         'notes',
         'last_login_at',

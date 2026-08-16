@@ -51,6 +51,11 @@ class OrdersRelationManager extends RelationManager
                     ->icon('heroicon-o-eye')
                     ->url(fn (\App\Models\Order $record): string => route('filament.admin.resources.orders.view', $record))
                     ->openUrlInNewTab(),
+                Tables\Actions\Action::make('edit_order')
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->url(fn (\App\Models\Order $record): string => route('filament.admin.resources.orders.edit', $record))
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
             ]);
