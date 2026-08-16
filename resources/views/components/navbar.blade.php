@@ -552,13 +552,14 @@
                     @endforeach
                 </div>
 
-                <div class="px-2 mt-4">
-                    <x-language-switcher :mobile="true" />
-                </div>
             </div>
 
             <!-- Footer -->
-            <div class="p-4 border-t border-gray-100 bg-gray-50">
+            <div class="p-4 border-t border-gray-100 bg-gray-50 flex flex-col gap-3">
+                <div class="pb-3 border-b border-gray-200">
+                    <x-language-switcher :mobile="true" />
+                </div>
+                
                 @auth
                     <a href="{{ route('customer.dashboard') }}"
                         class="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-[var(--gk-red)] text-sm font-medium">{{ __('general.my_account') }}</a>
