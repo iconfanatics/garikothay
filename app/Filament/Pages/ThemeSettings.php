@@ -91,6 +91,7 @@ class ThemeSettings extends Page
             'theme1_stats' => $stats,
             'theme1_service_cards' => $serviceCards,
             'theme1_delivery_partners' => $deliveryPartners,
+            'theme1_social_links' => $settings->get('theme1_social_links')?->getCastedValue() ?? [],
             'theme1_show_top_ticker' => $settings->get('theme1_show_top_ticker')?->getCastedValue() ?? true,
             'theme1_show_hero' => $settings->get('theme1_show_hero')?->getCastedValue() ?? true,
             'theme1_show_trust_features' => $settings->get('theme1_show_trust_features')?->getCastedValue() ?? true,
@@ -366,6 +367,33 @@ class ThemeSettings extends Page
                             ->label('Subtitle')
                             ->default('Subscribe for exclusive offers, new arrivals and service discounts.')
                             ->required(),
+                    ]),
+                Forms\Components\Section::make('Social Media Links')
+                    ->description('Add social media icons and links to the footer.')
+                    ->schema([
+                        Forms\Components\Repeater::make('theme1_social_links')
+                            ->label('Social Links')
+                            ->schema([
+                                Forms\Components\Select::make('platform')
+                                    ->label('Platform')
+                                    ->options([
+                                        'facebook' => 'Facebook',
+                                        'twitter' => 'Twitter/X',
+                                        'instagram' => 'Instagram',
+                                        'youtube' => 'YouTube',
+                                        'linkedin' => 'LinkedIn',
+                                        'tiktok' => 'TikTok',
+                                        'whatsapp' => 'WhatsApp',
+                                    ])
+                                    ->required(),
+                                Forms\Components\TextInput::make('url')
+                                    ->label('URL')
+                                    ->url()
+                                    ->required(),
+                            ])
+                            ->columns(2)
+                            ->itemLabel(fn (array $state): ?string => ucfirst($state['platform'] ?? 'Link'))
+                            ->defaultItems(0)
                     ])
             ])
             ->statePath('data');
@@ -389,6 +417,7 @@ class ThemeSettings extends Page
             'theme1_stats' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_service_cards' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_delivery_partners' => ['group' => 'theme', 'type' => SettingType::Json],
+            'theme1_social_links' => ['group' => 'theme', 'type' => SettingType::Json],
             'theme1_show_top_ticker' => ['group' => 'theme', 'type' => SettingType::Boolean],
             'theme1_show_hero' => ['group' => 'theme', 'type' => SettingType::Boolean],
             'theme1_show_trust_features' => ['group' => 'theme', 'type' => SettingType::Boolean],
