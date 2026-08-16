@@ -178,6 +178,15 @@ class OrderResource extends Resource
             $set('total', max(0, $subtotal - $discount + $shipping));
         };
 
+        $updateShipping = function (Forms\Get $get, Forms\Set $set) use ($updateTotals) {
+            $division = $get('shipping_address.division');
+            if ($division) {
+                $shipping = (strtolower($division) === 'dhaka') ? 70 : 130;
+                $set('shipping_amount', $shipping);
+                $updateTotals($get, $set);
+            }
+        };
+
         $locations = [
             'Dhaka' => ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
             'Chattogram' => ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
@@ -197,11 +206,32 @@ class OrderResource extends Resource
                         ->options(\App\Enums\OrderStatus::class)
                         ->default(\App\Enums\OrderStatus::Pending->value)
                         ->required()
-                        ->disableOptionWhen(fn (string $value) => auth()->user()?->hasRole('Shop Manager') && in_array($value, [\App\Enums\OrderStatus::Cancelled->value, \App\Enums\OrderStatus::Refunded->value, \App\Enums\OrderStatus::Returned->value])),
+                        ->disableOptionWhen(function (string $value, ?Order $record) {
+                            if (!$record) return false;
+                            $currentStatus = $record->status->value ?? 'pending';
+                            $transitions = [
+                                'pending' => ['pending', 'confirmed', 'cancelled'],
+                                'confirmed' => ['confirmed', 'processing', 'packed', 'cancelled'],
+                                'processing' => ['processing', 'packed', 'cancelled'],
+                                'packed' => ['packed', 'shipped', 'cancelled'],
+                                'shipped' => ['shipped', 'delivered', 'returned'],
+                                'delivered' => ['delivered', 'returned', 'refunded'],
+                                'cancelled' => ['cancelled'],
+                                'returned' => ['returned', 'refunded'],
+                                'refunded' => ['refunded'],
+                            ];
+                            $isManager = auth()->user()?->hasRole('Shop Manager');
+                            if ($isManager && in_array($value, ['cancelled', 'refunded', 'returned'])) {
+                                return true;
+                            }
+                            $allowed = $transitions[$currentStatus] ?? [];
+                            return !in_array($value, $allowed);
+                        }),
                     Forms\Components\Select::make('payment_status')
                         ->label('Payment Status')
                         ->options(\App\Enums\PaymentStatus::class)
                         ->default(\App\Enums\PaymentStatus::Unpaid->value)
+                        ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || ($record && $record->getOriginal('payment_status')?->value === 'paid'))
                         ->required(),
                     Forms\Components\Select::make('payment_method')
                         ->label('Payment Method')
@@ -212,13 +242,14 @@ class OrderResource extends Resource
                             'bkash' => 'bKash',
                         ])
                         ->default('cod')
-                        ->disabled($isWebsiteOrder)
+                        ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || $record !== null)
                         ->required(),
                     Forms\Components\TextInput::make('order_number')
                         ->label('Order Number')
                         ->default(fn () => 'GNG-' . date('Ymd') . '-' . mt_rand(1000, 9999))
                         ->required()
-                        ->disabled($isWebsiteOrder)
+                        ->disabled()
+                        ->dehydrated()
                         ->unique(Order::class, 'order_number', ignoreRecord: true),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
@@ -229,8 +260,11 @@ class OrderResource extends Resource
                         ->preload(),
                     Forms\Components\Select::make('order_source')
                         ->label('Order Source')
-                        ->options([
+                        ->options(fn (?Order $record) => $isWebsiteOrder($record) ? [
                             'Website' => 'Website',
+                            'WhatsApp' => 'WhatsApp',
+                            'Call' => 'Call',
+                        ] : [
                             'WhatsApp' => 'WhatsApp',
                             'Call' => 'Call',
                         ])
@@ -262,7 +296,8 @@ class OrderResource extends Resource
                         ->default('Steadfast'),
                     Forms\Components\TextInput::make('tracking_number')
                         ->label('Tracking Number (Optional)')
-                        ->default(fn () => 'TRK-' . date('Ymd') . '-' . mt_rand(100, 999)),
+                        ->default(fn () => 'TRK-' . date('Ymd') . '-' . mt_rand(100, 999))
+                        ->disabled(),
                 ]),
                 Forms\Components\Textarea::make('notes')
                     ->label('Admin Notes')
@@ -273,37 +308,59 @@ class OrderResource extends Resource
                     Forms\Components\Select::make('user_id')
                         ->label('Registered Customer (Optional)')
                         ->relationship('user', 'name')
-                        ->searchable()
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\User $record) => "{$record->name} ({$record->phone})")
+                        ->searchable(['name', 'phone'])
                         ->preload()
+                        ->live()
+                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                            if ($state) {
+                                $user = \App\Models\User::find($state);
+                                if ($user) {
+                                    $set('shipping_address.full_name', $user->name);
+                                    $set('shipping_address.phone', $user->phone);
+                                }
+                            }
+                        })
                         ->disabled($isWebsiteOrder),
                     Forms\Components\TextInput::make('shipping_address.full_name')
                         ->label('Customer Name')
                         ->required()
-                        ->disabled($isWebsiteOrder),
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('shipping_address.phone')
                         ->label('Phone Number')
                         ->required()
-                        ->disabled($isWebsiteOrder),
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('shipping_address.address_line_1')
                         ->label('Full Address')
                         ->required()
-                        ->disabled($isWebsiteOrder),
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
+                        ->dehydrated(),
                 ]),
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\Select::make('shipping_address.division')
                         ->label('Division')
                         ->options(array_combine(array_keys($locations), array_keys($locations)))
                         ->live()
-                        ->disabled($isWebsiteOrder),
+                        ->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, ?Order $record) use ($updateShipping, $isWebsiteOrder) {
+                            if (!$isWebsiteOrder($record)) {
+                                $updateShipping($get, $set);
+                            }
+                        })
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
+                        ->dehydrated(),
                     Forms\Components\Select::make('shipping_address.city')
                         ->label('City (District)')
                         ->options(fn (Forms\Get $get): array => 
                             $get('shipping_address.division') ? array_combine($locations[$get('shipping_address.division')] ?? [], $locations[$get('shipping_address.division')] ?? []) : []
                         )
-                        ->disabled($isWebsiteOrder),
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('shipping_address.upazila')
                         ->label('Upazila/Area')
-                        ->disabled($isWebsiteOrder),
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
+                        ->dehydrated(),
                 ]),
             ]),
             Forms\Components\Section::make('Order Items')->schema([
@@ -311,6 +368,22 @@ class OrderResource extends Resource
                     ->relationship()
                     ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
                     ->live(onBlur: true)
+                    ->addActionLabel('Add Item')
+                    ->itemLabel(fn (array $state): ?string => $state['product_name'] ?? 'New Item')
+                    ->rule(function () {
+                        return function (string $attribute, $value, \Closure $fail) {
+                            if (!is_array($value)) return;
+                            $combinations = [];
+                            foreach ($value as $item) {
+                                if (empty($item['product_id'])) continue;
+                                $key = $item['product_id'] . '-' . ($item['variant_id'] ?? '');
+                                if (in_array($key, $combinations)) {
+                                    $fail('You cannot add the same product/variant multiple times. Please adjust the quantity instead.');
+                                }
+                                $combinations[] = $key;
+                            }
+                        };
+                    })
                     ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) use ($updateTotals) {
                         $updateTotals($get, $set);
                     })
@@ -361,6 +434,7 @@ class OrderResource extends Resource
                             Forms\Components\TextInput::make('quantity')
                                 ->label('Qty')
                                 ->numeric()
+                                ->minValue(1)
                                 ->default(1)
                                 ->required()
                                 ->live(onBlur: true)
@@ -372,11 +446,8 @@ class OrderResource extends Resource
                                 ->label('Unit Price')
                                 ->numeric()
                                 ->required()
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
-                                    $set('total_price', (float) $state * (float) $get('quantity'));
-                                    $updateParentTotals($get, $set);
-                                }),
+                                ->disabled()
+                                ->dehydrated(),
                             Forms\Components\TextInput::make('total_price')
                                 ->label('Total')
                                 ->numeric()
@@ -393,14 +464,10 @@ class OrderResource extends Resource
             ]),
             Forms\Components\Section::make('Financials')->schema([
                 Forms\Components\Grid::make(4)->schema([
-                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required()->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record)),
-                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required()
-                        ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
-                        ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
-                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required()
-                        ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
-                        ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
-                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required()->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record)),
+                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required()->disabled()->dehydrated(),
+                    Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required()->disabled()->dehydrated(),
+                    Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required()->disabled()->dehydrated(),
+                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required()->disabled()->dehydrated(),
                 ]),
                 Forms\Components\Select::make('coupon_id')
                     ->label('Coupon (Optional)')
@@ -408,7 +475,7 @@ class OrderResource extends Resource
                     ->searchable()
                     ->preload()
                     ->nullable()
-                    ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
+                    ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || $record !== null)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
             ]),
@@ -416,11 +483,13 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('manual_payment_amount')
                     ->label('Amount Paid')
                     ->numeric()
+                    ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || $record !== null)
                     ->placeholder('e.g. 500'),
                 Forms\Components\TextInput::make('manual_payment_reference')
                     ->label('Transaction ID / Reference')
+                    ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || $record !== null)
                     ->placeholder('e.g. TrxID...'),
-            ])->hiddenOn('edit'),
+            ]),
         ]);
     }
 
