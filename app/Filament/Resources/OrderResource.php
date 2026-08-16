@@ -114,6 +114,9 @@ class OrderResource extends Resource
     public static function form(Form $form): Form
     {
         $isWebsiteOrder = fn (?Order $record) => $record !== null && $record->order_source === 'Website';
+        $isPriceRestricted = fn (?Order $record) => $isWebsiteOrder($record) || auth()->user()?->hasRole('Shop Manager');
+        $isPaidOrder = fn (?Order $record) => $record !== null && $record->payment_status === \App\Enums\PaymentStatus::Paid;
+        $isOrderRestricted = fn (?Order $record) => ($isPaidOrder($record) && auth()->user()?->hasRole('Shop Manager'));
 
         $updateParentTotals = function (Forms\Get $get, Forms\Set $set) {
             $items = $get('../../items') ?? [];
@@ -193,7 +196,8 @@ class OrderResource extends Resource
                         ->label('Order Status')
                         ->options(\App\Enums\OrderStatus::class)
                         ->default(\App\Enums\OrderStatus::Pending->value)
-                        ->required(),
+                        ->required()
+                        ->disableOptionWhen(fn (string $value) => auth()->user()?->hasRole('Shop Manager') && in_array($value, [\App\Enums\OrderStatus::Cancelled->value, \App\Enums\OrderStatus::Refunded->value, \App\Enums\OrderStatus::Returned->value])),
                     Forms\Components\Select::make('payment_status')
                         ->label('Payment Status')
                         ->options(\App\Enums\PaymentStatus::class)
@@ -305,7 +309,7 @@ class OrderResource extends Resource
             Forms\Components\Section::make('Order Items')->schema([
                 Forms\Components\Repeater::make('items')
                     ->relationship()
-                    ->disabled($isWebsiteOrder)
+                    ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) use ($updateTotals) {
                         $updateTotals($get, $set);
@@ -389,14 +393,14 @@ class OrderResource extends Resource
             ]),
             Forms\Components\Section::make('Financials')->schema([
                 Forms\Components\Grid::make(4)->schema([
-                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required()->disabled($isWebsiteOrder),
+                    Forms\Components\TextInput::make('subtotal')->label('Subtotal')->numeric()->required()->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record)),
                     Forms\Components\TextInput::make('discount_amount')->label('Discount')->numeric()->default(0)->required()
-                        ->disabled($isWebsiteOrder)
+                        ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
                         ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
                     Forms\Components\TextInput::make('shipping_amount')->label('Shipping')->numeric()->default(0)->required()
-                        ->disabled($isWebsiteOrder)
+                        ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
                         ->live(onBlur: true)->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
-                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required()->disabled($isWebsiteOrder),
+                    Forms\Components\TextInput::make('total')->label('Total')->numeric()->required()->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record)),
                 ]),
                 Forms\Components\Select::make('coupon_id')
                     ->label('Coupon (Optional)')
@@ -404,7 +408,7 @@ class OrderResource extends Resource
                     ->searchable()
                     ->preload()
                     ->nullable()
-                    ->disabled($isWebsiteOrder)
+                    ->disabled(fn (?Order $record) => $isPriceRestricted($record) || $isOrderRestricted($record))
                     ->live(onBlur: true)
                     ->afterStateUpdated(function(Forms\Get $get, Forms\Set $set, $state) use ($updateTotals) { $updateTotals($get, $set); }),
             ]),

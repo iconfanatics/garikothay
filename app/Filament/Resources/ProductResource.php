@@ -170,7 +170,8 @@ class ProductResource extends Resource
                         ->maxLength(2048)
                         ->columnSpanFull(),
                     Forms\Components\Grid::make(4)->schema([
-                        Forms\Components\Toggle::make('is_active')->label('Active')->default(true),
+                        Forms\Components\Toggle::make('is_active')->label('Active')->default(true)
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\Toggle::make('is_featured')->label('Featured'),
                         Forms\Components\Toggle::make('is_new_arrival')->label('New Arrival'),
                         Forms\Components\Toggle::make('is_preorder')->label('Pre-Order'),
@@ -279,7 +280,8 @@ class ProductResource extends Resource
                             ->numeric()
                             ->minValue(0)
                             ->prefix('৳')
-                            ->live(onBlur: true),
+                            ->live(onBlur: true)
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\TextInput::make('price')
                             ->label('Selling Price (৳)')
                             ->numeric()
@@ -287,6 +289,7 @@ class ProductResource extends Resource
                             ->required()
                             ->prefix('৳')
                             ->live(onBlur: true)
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     $cost = (float) $get('cost_price');
@@ -305,13 +308,15 @@ class ProductResource extends Resource
                                 'Fixed' => 'Fixed Amount',
                                 'Percentage' => 'Percentage (%)',
                             ])
-                            ->live(),
+                            ->live()
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\TextInput::make('discount_amount')
                             ->label('Discount Amount')
                             ->numeric()
                             ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
                             ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
                             ->live(onBlur: true)
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     if ($get('discount_type') === 'Percentage' && $value > 100) {
@@ -374,7 +379,8 @@ class ProductResource extends Resource
                             ->numeric()
                             ->minValue(0)
                             ->prefix('৳')
-                            ->live(onBlur: true),
+                            ->live(onBlur: true)
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\Placeholder::make('profit_margin_preview')
                             ->label('Profit Margin')
                             ->content(function (Forms\Get $get): string {
@@ -696,13 +702,15 @@ class ProductResource extends Resource
                                     ->numeric()
                                     ->minValue(0)
                                     ->prefix('৳')
-                                    ->live(onBlur: true),
+                                    ->live(onBlur: true)
+                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                                 Forms\Components\TextInput::make('price')
                                     ->label('Selling Price (৳)')
                                     ->numeric()
                                     ->minValue(0)
                                     ->prefix('৳')
                                     ->live(onBlur: true)
+                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
                                     ->helperText('Overrides base price if set.')
                                     ->rule(function (Forms\Get $get) {
                                         return function (string $attribute, $value, \Closure $fail) use ($get) {
@@ -722,13 +730,15 @@ class ProductResource extends Resource
                                         'Fixed' => 'Fixed Amount',
                                         'Percentage' => 'Percentage (%)',
                                     ])
-                                    ->live(),
+                                    ->live()
+                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                                 Forms\Components\TextInput::make('discount_amount')
                                     ->label('Discount Amount')
                                     ->numeric()
                                     ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
                                     ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
                                     ->live(onBlur: true)
+                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
                                     ->rule(function (Forms\Get $get) {
                                         return function (string $attribute, $value, \Closure $fail) use ($get) {
                                             if ($get('discount_type') === 'Percentage' && $value > 100) {
