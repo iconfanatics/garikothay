@@ -155,12 +155,14 @@
         </div>
     </div>
     
-    @php $paymentBanner = \App\Models\Setting::get('theme1_payment_banner'); @endphp
-    @if($paymentBanner)
-    <div class="gk-footer-inner mt-8">
-        <img src="{{ asset('storage/' . $paymentBanner) }}" alt="Accepted Payment Methods" class="h-12 w-auto mx-auto object-contain">
+    <div class="gk-footer-inner mt-8 border-t border-gray-800 pt-8">
+        @php $paymentBanner = \App\Models\Setting::get('theme1_payment_banner'); @endphp
+        @if($paymentBanner)
+            <img src="{{ asset('storage/' . $paymentBanner) }}" alt="Accepted Payment Methods" class="w-full max-w-5xl mx-auto h-auto object-contain bg-white rounded-xl p-2 shadow-sm">
+        @else
+            <img src="{{ asset('images/payment-banner.png') }}" alt="Accepted Payment Methods" class="w-full max-w-5xl mx-auto h-auto object-contain bg-white rounded-xl p-2 shadow-sm">
+        @endif
     </div>
-    @endif
     
     <div class="gk-footer-inner mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
         © {{ date('Y') }} {{ \App\Models\Setting::get('site_name', config('app.name')) }}. {{ __('general.all_rights_reserved') }} {{ __('general.made_with_love') }}
