@@ -112,8 +112,10 @@ class CartResource extends Resource
                 Tables\Filters\Filter::make('updated_at')
                     ->label('Abandoned Date')
                     ->form([
-                        Forms\Components\DatePicker::make('from'),
-                        Forms\Components\DatePicker::make('until'),
+                        Forms\Components\DatePicker::make('from')
+                            ->live(),
+                        Forms\Components\DatePicker::make('until')
+                            ->minDate(fn (Forms\Get $get) => $get('from')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -146,10 +148,13 @@ class CartResource extends Resource
                         ->label('Send Reminder')
                         ->icon('heroicon-o-paper-airplane')
                         ->color('primary')
-                        ->action(fn (Cart $record) => $record->update([
-                            'is_reminder_sent' => true,
-                            'reminder_sent_at' => now(),
-                        ]))
+                        ->action(function (Cart $record) {
+                            $record->timestamps = false;
+                            $record->update([
+                                'is_reminder_sent' => true,
+                                'reminder_sent_at' => now(),
+                            ]);
+                        })
                         ->requiresConfirmation(),
                     Tables\Actions\DeleteAction::make(),
                 ]),

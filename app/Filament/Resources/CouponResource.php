@@ -124,8 +124,7 @@ class CouponResource extends Resource
                     ->label("Applicable Products/Categories")
                     ->options([
                         'all' => 'All Products',
-                        'products' => 'Specific Products',
-                        'categories' => 'Specific Categories',
+                        'specific' => 'Specific Products/Categories',
                     ])
                     ->default('all')
                     ->reactive()
@@ -145,8 +144,8 @@ class CouponResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'products')
-                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'products'),
+                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'specific')
+                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'specific' && empty($get("categories"))),
                 Forms\Components\Select::make("categories")
                     ->label("Specific Categories")
                     ->relationship('categories', 'id')
@@ -161,8 +160,8 @@ class CouponResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'categories')
-                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'categories'),
+                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'specific')
+                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'specific' && empty($get("products"))),
             ]),
         ]);
     }

@@ -86,17 +86,20 @@ class Coupon extends Model
     {
         $applicableSubtotal = 0.0;
         
-        if ($this->applicable_type === 'products') {
+        if ($this->applicable_type === 'specific') {
             $productIds = $this->products()->pluck('products.id')->toArray();
-            foreach ($cart->items as $item) {
-                if (in_array($item->product_id, $productIds)) {
-                    $applicableSubtotal += $item->total_price;
-                }
-            }
-        } elseif ($this->applicable_type === 'categories') {
             $categoryIds = $this->categories()->pluck('categories.id')->toArray();
+
             foreach ($cart->items as $item) {
-                if ($item->product && in_array($item->product->category_id, $categoryIds)) {
+                $isApplicable = false;
+                
+                if (in_array($item->product_id, $productIds)) {
+                    $isApplicable = true;
+                } elseif ($item->product && in_array($item->product->category_id, $categoryIds)) {
+                    $isApplicable = true;
+                }
+                
+                if ($isApplicable) {
                     $applicableSubtotal += $item->total_price;
                 }
             }

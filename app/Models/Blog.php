@@ -51,13 +51,18 @@ class Blog extends Model
             if (empty($blog->blog_code)) {
                 $lastBlog = static::orderBy('id', 'desc')->first();
                 $lastId = $lastBlog ? $lastBlog->id : 0;
-                $blog->blog_code = 'BLG-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+                $blog->blog_code = 'BLG-' . str_pad((string)($lastId + 1), 4, '0', STR_PAD_LEFT);
             }
 
             // Auto calculate reading time based on English content
-            $content = $blog->getTranslation('content', 'en') ?? '';
-            $wordCount = str_word_count(strip_tags($content));
-            $blog->reading_time_minutes = max(1, ceil($wordCount / 200));
+            $content = '';
+            if (!empty($blog->pendingTranslations) && isset($blog->pendingTranslations['en']['content'])) {
+                $content = $blog->pendingTranslations['en']['content'];
+            } else {
+                $content = $blog->getTranslation('content', 'en') ?? '';
+            }
+            $wordCount = str_word_count(strip_tags((string)$content));
+            $blog->reading_time_minutes = max(1, (int) ceil($wordCount / 200));
         });
     }
 

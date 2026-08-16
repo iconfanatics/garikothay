@@ -113,7 +113,7 @@
                 $shippingAmount = $hasInvoice ? $invoice->shipping_amount : $order->shipping_amount;
                 $taxAmount = $hasInvoice ? $invoice->tax_amount : $order->tax_amount;
                 $totalAmount = $hasInvoice ? $invoice->total : $order->total;
-                $paidAmount = $hasInvoice ? $invoice->paid_amount : ($statusStr === 'paid' ? $order->total : 0);
+                $paidAmount = ($hasInvoice && $invoice->paid_amount > 0) ? $invoice->paid_amount : ($statusStr === 'paid' ? $totalAmount : 0);
                 $dueAmount = max(0, $totalAmount - $paidAmount);
             @endphp
             @if($discountAmount > 0)

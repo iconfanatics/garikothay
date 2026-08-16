@@ -111,36 +111,36 @@ class InvoiceResource extends Resource
                 Forms\Components\Section::make('Financial Summary')->schema([
                     Forms\Components\TextInput::make('subtotal')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('discount_amount')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('shipping_amount')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('tax_amount')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('total')
                         ->label('Grand Total')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('paid_amount')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('due_amount')
                         ->numeric()
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                 ])->columns(3),
 
                 Forms\Components\Section::make('Payment Information')->schema([
                     Forms\Components\TextInput::make('payment_status')
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('payment_method')
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                     Forms\Components\TextInput::make('transaction_id')
                         ->label('Transaction ID / Reference')
-                        ->disabled()->dehydrated(),
+                        ->readOnly(),
                 ])->columns(3),
 
                 Forms\Components\Section::make('Notes')->schema([
@@ -172,10 +172,21 @@ class InvoiceResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
-                    ->badge(),
+                    ->badge()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('order.order_number')
                     ->label('Linked Order')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('order', function ($q) use ($search) {
+                            $q->where('order_number', 'like', "%{$search}%")
+                              ->orWhereHas('user', function ($uq) use ($search) {
+                                  $uq->where('phone', 'like', "%{$search}%")
+                                     ->orWhere('email', 'like', "%{$search}%");
+                              })
+                              ->orWhere('billing_address', 'like', "%{$search}%")
+                              ->orWhere('shipping_address', 'like', "%{$search}%");
+                        });
+                    })
                     ->sortable()
                     ->copyable()
                     ->copyMessage('Order number copied'),

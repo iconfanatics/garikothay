@@ -27,7 +27,7 @@ class BlogCommentResource extends Resource
                 Forms\Components\Section::make('Comment Details')->schema([
                     Forms\Components\Select::make('blog_id')
                         ->relationship('blog', 'id')
-                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->title)
+                        ->getOptionLabelFromRecordUsing(fn ($record) => $record->title ?? 'Blog #' . $record->id)
                         ->disabled(),
                     Forms\Components\TextInput::make('name')
                         ->disabled(),

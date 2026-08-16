@@ -69,7 +69,7 @@ class AnnouncementResource extends Resource
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\DateTimePicker::make('starts_at')
                             ->label('Starts At (Optional)')
-                            ->rule(fn (string $context) => $context === 'create' ? 'after_or_equal:now' : null)
+                            ->minDate(fn (string $context) => $context === 'create' ? now() : null)
                             ->before('expires_at'),
                         Forms\Components\DateTimePicker::make('expires_at')
                             ->label('Expires At (Optional)')
