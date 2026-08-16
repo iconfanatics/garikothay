@@ -111,6 +111,21 @@
                     <td>Tracking ID:</td>
                     <td>{{ $order->tracking_number ?? $order->steadfast_tracking_code ?? 'N/A' }}</td>
                 </tr>
+                <tr>
+                    <td>COD / Due Amount:</td>
+                    <td style="font-size: 18px; font-weight: bold; color: #d32f2f;">
+                        @php
+                            $status = is_string($order->payment_status) ? strtolower($order->payment_status) : (isset($order->payment_status->value) ? strtolower($order->payment_status->value) : 'unpaid');
+                            $dueAmount = $status === 'paid' ? 0 : $order->total;
+                            if ($order->invoice && $order->invoice->due_amount > 0) {
+                                $dueAmount = $order->invoice->due_amount;
+                            } elseif ($order->invoice && $order->invoice->paid_amount > 0) {
+                                $dueAmount = max(0, $order->total - $order->invoice->paid_amount);
+                            }
+                        @endphp
+                        {{ number_format($dueAmount, 2) }} BDT
+                    </td>
+                </tr>
             </table>
         </div>
 

@@ -722,21 +722,18 @@ class OrderResource extends Resource
                 Tables\Actions\ViewAction::make()->label('View Order'),
                 Tables\Actions\EditAction::make()->label('Manage Order'),
                 Tables\Actions\Action::make('download_invoice')
-                    ->label('Download Invoice')
-                    ->icon('heroicon-o-arrow-down-tray')
+                    ->label('View Invoice')
+                    ->icon('heroicon-o-document-text')
                     ->color('success')
-                    ->action(function (Order $record) {
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['order' => $record, 'invoice' => $record->invoice]);
-                        return response()->streamDownload(fn () => print($pdf->output()), 'invoice-' . $record->order_number . '.pdf');
-                    }),
+                    ->url(fn (Order $record) => $record->invoice ? route('invoice.pdf.view', $record->invoice) : null)
+                    ->openUrlInNewTab()
+                    ->hidden(fn (Order $record) => !$record->invoice),
                 Tables\Actions\Action::make('download_vendor_slip')
-                    ->label('Vendor Slip')
+                    ->label('View Vendor Slip')
                     ->icon('heroicon-o-truck')
                     ->color('warning')
-                    ->action(function (Order $record) {
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vendor-slip', ['order' => $record]);
-                        return response()->streamDownload(fn () => print($pdf->output()), 'vendor-slip-' . $record->order_number . '.pdf');
-                    }),
+                    ->url(fn (Order $record) => route('order.vendor-slip.pdf.view', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\Action::make('send_to_steadfast')
                     ->label('Send to Steadfast')
                     ->icon('heroicon-o-paper-airplane')

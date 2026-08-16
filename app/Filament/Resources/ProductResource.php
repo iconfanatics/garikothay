@@ -311,6 +311,17 @@ class ProductResource extends Resource
                             ->prefix('৳')
                             ->live(onBlur: true)
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $minSelling = (float) $get('minimum_selling_price');
+                                $val = (float) $state;
+                                $minAllowed = max($cost, $minSelling);
+                                if ($minAllowed > 0 && $val < $minAllowed) {
+                                    $set('price', $minAllowed);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Selling price automatically adjusted to the minimum allowed value ('.number_format($minAllowed, 2).').')->send();
+                                }
+                            })
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     $cost = (float) $get('cost_price');
@@ -338,6 +349,38 @@ class ProductResource extends Resource
                             ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
                             ->live(onBlur: true)
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $minSelling = (float) $get('minimum_selling_price');
+                                $price = (float) $get('price');
+                                $minAllowedPrice = max($cost, $minSelling);
+                                $val = (float) $state;
+                                
+                                if ($get('discount_type') === 'Percentage') {
+                                    if ($val > 100) {
+                                        $set('discount_amount', 100);
+                                        $val = 100;
+                                        \Filament\Notifications\Notification::make()->warning()->title('Percentage cannot exceed 100.')->send();
+                                    }
+                                    $discountValue = $price * ($val / 100);
+                                    if ($minAllowedPrice > 0 && ($price - $discountValue) < $minAllowedPrice) {
+                                        $maxPercentage = $price > 0 ? (($price - $minAllowedPrice) / $price) * 100 : 0;
+                                        $set('discount_amount', round(max(0, $maxPercentage), 2));
+                                        \Filament\Notifications\Notification::make()->warning()->title('Discount automatically adjusted to maintain minimum profit margin.')->send();
+                                    }
+                                } else {
+                                    if ($val >= $price && $price > 0) {
+                                        $set('discount_amount', $price - 1);
+                                        $val = $price - 1;
+                                        \Filament\Notifications\Notification::make()->warning()->title('Fixed discount adjusted to be less than selling price.')->send();
+                                    }
+                                    if ($minAllowedPrice > 0 && ($price - $val) < $minAllowedPrice) {
+                                        $set('discount_amount', max(0, $price - $minAllowedPrice));
+                                        \Filament\Notifications\Notification::make()->warning()->title('Discount automatically adjusted to maintain minimum profit margin.')->send();
+                                    }
+                                }
+                            })
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     if ($get('discount_type') === 'Percentage' && $value > 100) {
@@ -375,11 +418,31 @@ class ProductResource extends Resource
                         Forms\Components\DateTimePicker::make('discount_end_date')
                             ->label('Discount End Date')
                             ->minDate(now())
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                $start = $get('discount_start_date');
+                                if ($start && $state && \Carbon\Carbon::parse($state)->isBefore(\Carbon\Carbon::parse($start))) {
+                                    $set('discount_end_date', null);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Discount End Date cannot be before Start Date.')->send();
+                                }
+                            })
                             ->afterOrEqual('discount_start_date'),
                         Forms\Components\TextInput::make('scheduled_price')
                             ->label('Scheduled Price')
                             ->numeric()
                             ->prefix('৳')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $minSelling = (float) $get('minimum_selling_price');
+                                $val = (float) $state;
+                                $minAllowed = max($cost, $minSelling);
+                                if ($minAllowed > 0 && $val < $minAllowed) {
+                                    $set('scheduled_price', $minAllowed);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Scheduled price automatically adjusted to the minimum allowed value ('.number_format($minAllowed, 2).').')->send();
+                                }
+                            })
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     $cost = (float) $get('cost_price');
@@ -402,6 +465,15 @@ class ProductResource extends Resource
                             ->prefix('৳')
                             ->live(onBlur: true)
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $val = (float) $state;
+                                if ($cost > 0 && $val < $cost) {
+                                    $set('minimum_selling_price', $cost);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Minimum selling price automatically adjusted to match Supplier Price.')->send();
+                                }
+                            })
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     $cost = (float) $get('cost_price');

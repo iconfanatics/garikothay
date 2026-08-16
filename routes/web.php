@@ -132,6 +132,16 @@ Route::get('/admin/invoice/{invoice}/pdf', function (\App\Models\Invoice $invoic
     ]);
 })->name('invoice.pdf.view')->middleware(['web']);
 
+Route::get('/admin/orders/{order}/vendor-slip/pdf', function (\App\Models\Order $order) {
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.vendor-slip', ['order' => $order]);
+    return response()->stream(function () use ($pdf) {
+        echo $pdf->output();
+    }, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="vendor-slip-'.$order->order_number.'.pdf"',
+    ]);
+})->name('order.vendor-slip.pdf.view')->middleware(['web']);
+
 require __DIR__.'/auth.php';
 
 // Dynamic Page fallback route (Must be at the very bottom)

@@ -80,7 +80,8 @@ class SupplierResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('payment_terms')
                                     ->options([
-                                        'Cash' => 'Cash',
+                                        'Prepaid' => 'Prepaid',
+                                        'Due on Delivery' => 'Due on Delivery',
                                         '7 Days' => '7 Days',
                                         '15 Days' => '15 Days',
                                         '30 Days' => '30 Days',
@@ -88,19 +89,29 @@ class SupplierResource extends Resource
                                 Forms\Components\TextInput::make('minimum_order_quantity')
                                     ->label('MOQ')
                                     ->numeric(),
-                                Forms\Components\TextInput::make('bank_name')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('account_name')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('account_number')
-                                    ->maxLength(255),
-                                Forms\Components\Select::make('mobile_banking_provider')
+                                Forms\Components\Textarea::make('bank_details')
+                                    ->label('Bank Details (Note)')
+                                    ->columnSpanFull(),
+                                Forms\Components\Select::make('personal_mobile_banking_provider')
+                                    ->label('Personal Mobile Banking Provider')
                                     ->options([
                                         'bKash' => 'bKash',
                                         'Nagad' => 'Nagad',
                                         'Rocket' => 'Rocket',
                                     ]),
-                                Forms\Components\TextInput::make('mobile_banking_number')
+                                Forms\Components\TextInput::make('personal_mobile_banking_number')
+                                    ->label('Personal Mobile Banking Number')
+                                    ->tel()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('merchant_mobile_banking_provider')
+                                    ->label('Merchant Mobile Banking Provider')
+                                    ->options([
+                                        'bKash' => 'bKash',
+                                        'Nagad' => 'Nagad',
+                                        'Rocket' => 'Rocket',
+                                    ]),
+                                Forms\Components\TextInput::make('merchant_mobile_banking_number')
+                                    ->label('Merchant Mobile Banking Number')
                                     ->tel()
                                     ->maxLength(255),
                             ])->columns(2),
@@ -250,6 +261,9 @@ class SupplierResource extends Resource
                     ->falseLabel('Non-Preferred Only'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->slideOver()
+                    ->modalWidth(\Filament\Support\Enums\MaxWidth::SevenExtraLarge),
                 Tables\Actions\EditAction::make()
                     ->slideOver()
                     ->modalWidth(\Filament\Support\Enums\MaxWidth::SevenExtraLarge),

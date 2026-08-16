@@ -35,9 +35,10 @@
         </div>
 
         @php
+        @php
             $hasInvoice = isset($invoice) && $invoice;
-            $paymentStatus = $hasInvoice && $invoice->payment_status ? $invoice->payment_status : ($order->payment_status->value ?? 'unpaid');
-            $statusStr = strtolower($paymentStatus);
+            $paymentStatusRaw = $hasInvoice && $invoice->payment_status ? $invoice->payment_status : ($order->payment_status ?? 'unpaid');
+            $statusStr = is_string($paymentStatusRaw) ? strtolower($paymentStatusRaw) : (isset($paymentStatusRaw->value) ? strtolower($paymentStatusRaw->value) : strtolower((string)$paymentStatusRaw));
             if (in_array($statusStr, ['partially_refunded', 'refunded'])) {
                 $statusClass = 'status-unpaid';
             } elseif ($statusStr === 'paid') {
@@ -45,7 +46,8 @@
             } else {
                 $statusClass = 'status-pending';
             }
-            $dueDate = $hasInvoice && $invoice->due_date ? $invoice->due_date->format('M d, Y') : null;
+            $paymentStatus = strtoupper(str_replace('_', ' ', $statusStr));
+            $dueDate = $hasInvoice && $invoice->due_date ? (\Carbon\Carbon::parse($invoice->due_date)->format('M d, Y')) : null;
             $transactionId = $hasInvoice && $invoice->transaction_id ? $invoice->transaction_id : null;
         @endphp
 
@@ -69,7 +71,7 @@
                         <br><strong>Transaction ID:</strong> {{ $transactionId }}
                     @endif
                     <div style="margin-top: 8px;">
-                        <strong>Status:</strong> <span class="status-badge {{ $statusClass }}">{{ strtoupper($paymentStatus) }}</span>
+                        <strong>Status:</strong> <span class="status-badge {{ $statusClass }}">{{ $paymentStatus }}</span>
                     </div>
                 </td>
             </tr>
@@ -112,7 +114,7 @@
                 $taxAmount = $hasInvoice ? $invoice->tax_amount : $order->tax_amount;
                 $totalAmount = $hasInvoice ? $invoice->total : $order->total;
                 $paidAmount = $hasInvoice ? $invoice->paid_amount : ($statusStr === 'paid' ? $order->total : 0);
-                $dueAmount = $hasInvoice ? $invoice->due_amount : ($statusStr === 'paid' ? 0 : $order->total);
+                $dueAmount = max(0, $totalAmount - $paidAmount);
             @endphp
             @if($discountAmount > 0)
             <tr>

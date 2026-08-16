@@ -72,10 +72,11 @@ class CategoryResource extends Resource
                         ->placeholder('None (Top Level)')
                         ->disabled(fn ($record) => $record?->is_locked),
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\TextInput::make('icon')
-                            ->label('Icon Class')
-                            ->maxLength(100)
-                            ->placeholder('heroicon-o-tag')
+                        Forms\Components\FileUpload::make('icon')
+                            ->label('Icon Image')
+                            ->image()
+                            ->directory('categories/icons')
+                            ->maxSize(1024)
                             ->disabled(fn ($record) => $record?->is_locked),
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Sort Order')
@@ -120,6 +121,17 @@ class CategoryResource extends Resource
                             ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished']))
                             ->minDate(now())
                             ->after('published_at')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                $start = $get('published_at');
+                                if ($start && $state && \Carbon\Carbon::parse($state)->isBefore(\Carbon\Carbon::parse($start))) {
+                                    $set('unpublished_at', null);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Unpublish Date & Time cannot be before Publish Date & Time.')->send();
+                                } elseif ($start && $state && \Carbon\Carbon::parse($state)->equalTo(\Carbon\Carbon::parse($start))) {
+                                    $set('unpublished_at', null);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Unpublish Date & Time cannot be the same as Publish Date & Time.')->send();
+                                }
+                            })
                             ->disabled(fn ($record) => $record?->is_locked),
                     ]),
                     Forms\Components\Section::make('Activity Indicator')->schema([
