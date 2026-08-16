@@ -536,7 +536,14 @@
                     <div class="gk-cart-totals">
                         <div class="gk-cart-total-row">
                             <span>{{ __('general.subtotal') }}</span>
-                            <strong>৳{{ number_format($cart->subtotal, 0) }}</strong>
+                            @if($cart->coupon)
+                                <div class="flex items-center gap-2">
+                                    <span class="line-through text-gray-400" style="text-decoration: line-through;">৳{{ number_format($cart->subtotal, 0) }}</span>
+                                    <strong>৳{{ number_format($cart->subtotal - $cart->coupon->calculateDiscount($cart), 0) }}</strong>
+                                </div>
+                            @else
+                                <strong>৳{{ number_format($cart->subtotal, 0) }}</strong>
+                            @endif
                         </div>
 
                         @if($cart->coupon)

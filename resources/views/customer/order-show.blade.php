@@ -72,7 +72,14 @@
         <div class="space-y-2 text-sm">
             <div class="flex justify-between text-gray-600">
                 <span>{{ __('general.subtotal') }}</span>
-                <span>৳{{ number_format($order->subtotal, 2) }}</span>
+                @if($order->discount_amount > 0)
+                    <div class="flex items-center gap-2">
+                        <span class="line-through text-gray-400" style="text-decoration: line-through;">৳{{ number_format($order->subtotal, 2) }}</span>
+                        <span>৳{{ number_format($order->subtotal - $order->discount_amount, 2) }}</span>
+                    </div>
+                @else
+                    <span>৳{{ number_format($order->subtotal, 2) }}</span>
+                @endif
             </div>
             @if($order->discount_amount > 0)
             <div class="flex justify-between text-green-600">
