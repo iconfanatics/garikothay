@@ -55,6 +55,11 @@ class Settings extends Page
             'order_success_message' => $settings->get('order_success_message')?->value ?? '',
             'steadfast_api_key' => $settings->get('steadfast_api_key')?->value ?? '',
             'steadfast_secret_key' => $settings->get('steadfast_secret_key')?->value ?? '',
+            'enable_email_notifications' => (bool) ($settings->get('enable_email_notifications')?->getCastedValue() ?? true),
+            'enable_sms_notifications' => (bool) ($settings->get('enable_sms_notifications')?->getCastedValue() ?? false),
+            'enable_whatsapp_notifications' => (bool) ($settings->get('enable_whatsapp_notifications')?->getCastedValue() ?? false),
+            'notify_admin_on_new_order' => (bool) ($settings->get('notify_admin_on_new_order')?->getCastedValue() ?? true),
+            'notify_customer_on_order_status_change' => (bool) ($settings->get('notify_customer_on_order_status_change')?->getCastedValue() ?? true),
         ]);
     }
 
@@ -160,6 +165,26 @@ class Settings extends Page
                         ->label('Order Success Message')
                         ->placeholder('Thank you for your order. We\'ll start preparing it right away!'),
                 ])->columns(3),
+                Forms\Components\Section::make('Notifications')->schema([
+                    Forms\Components\Toggle::make('enable_email_notifications')
+                        ->label('Email Notifications')
+                        ->helperText('Send emails to customers and admins.')
+                        ->default(true),
+                    Forms\Components\Toggle::make('enable_sms_notifications')
+                        ->label('SMS Notifications')
+                        ->helperText('Send SMS to customers (requires SMS gateway setup).'),
+                    Forms\Components\Toggle::make('enable_whatsapp_notifications')
+                        ->label('WhatsApp Notifications')
+                        ->helperText('Send WhatsApp alerts (requires API setup).'),
+                    Forms\Components\Toggle::make('notify_admin_on_new_order')
+                        ->label('Admin Alert: New Order')
+                        ->helperText('Send an alert to admins when a new order is placed.')
+                        ->default(true),
+                    Forms\Components\Toggle::make('notify_customer_on_order_status_change')
+                        ->label('Customer Alert: Order Status')
+                        ->helperText('Notify customers when their order status is updated (e.g., Shipped).')
+                        ->default(true),
+                ])->columns(3),
             ])
             ->statePath('data');
     }
@@ -196,6 +221,11 @@ class Settings extends Page
             'order_success_message' => ['group' => 'checkout', 'type' => SettingType::Textarea],
             'steadfast_api_key' => ['group' => 'logistics', 'type' => SettingType::Text],
             'steadfast_secret_key' => ['group' => 'logistics', 'type' => SettingType::Text],
+            'enable_email_notifications' => ['group' => 'notifications', 'type' => SettingType::Boolean],
+            'enable_sms_notifications' => ['group' => 'notifications', 'type' => SettingType::Boolean],
+            'enable_whatsapp_notifications' => ['group' => 'notifications', 'type' => SettingType::Boolean],
+            'notify_admin_on_new_order' => ['group' => 'notifications', 'type' => SettingType::Boolean],
+            'notify_customer_on_order_status_change' => ['group' => 'notifications', 'type' => SettingType::Boolean],
         ];
 
         foreach ($data as $key => $value) {
