@@ -187,14 +187,35 @@ class ProductResource extends Resource
                                     'Unpublished' => 'Unpublished',
                                     'Archived' => 'Archived',
                                 ])
-                                ->default('Draft')
+                                ->default('Published')
                                 ->live(),
                             Forms\Components\DateTimePicker::make('published_at')
                                 ->label('Publish Date & Time')
-                                ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published'])),
+                                ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published']))
+                                ->rule(function (Forms\Get $get, ?Product $record) {
+                                    return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                        $valueDate = \Carbon\Carbon::parse($value);
+                                        if (!$record || $record->published_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                            if ($valueDate->isPast()) {
+                                                $fail('Publish date & time cannot be in the past.');
+                                            }
+                                        }
+                                    };
+                                }),
                             Forms\Components\DateTimePicker::make('unpublished_at')
                                 ->label('Unpublish Date & Time')
-                                ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished'])),
+                                ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished']))
+                                ->afterOrEqual('published_at')
+                                ->rule(function (Forms\Get $get, ?Product $record) {
+                                    return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                        $valueDate = \Carbon\Carbon::parse($value);
+                                        if (!$record || $record->unpublished_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                            if ($valueDate->isPast()) {
+                                                $fail('Unpublish date & time cannot be in the past.');
+                                            }
+                                        }
+                                    };
+                                }),
                         ]),
                     ]),
                     Forms\Components\Section::make('Documents')->schema([
@@ -380,7 +401,15 @@ class ProductResource extends Resource
                             ->minValue(0)
                             ->prefix('৳')
                             ->live(onBlur: true)
-                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    if ($cost > 0 && $value < $cost) {
+                                        $fail('Minimum selling price cannot be less than Supplier Price.');
+                                    }
+                                };
+                            }),
                         Forms\Components\Placeholder::make('profit_margin_preview')
                             ->label('Profit Margin')
                             ->content(function (Forms\Get $get): string {
@@ -803,7 +832,15 @@ class ProductResource extends Resource
                                     ->numeric()
                                     ->minValue(0)
                                     ->prefix('৳')
-                                    ->live(onBlur: true),
+                                    ->live(onBlur: true)
+                                    ->rule(function (Forms\Get $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                            $cost = (float) $get('cost_price');
+                                            if ($cost > 0 && $value < $cost) {
+                                                $fail('Minimum selling price cannot be less than Supplier Price.');
+                                            }
+                                        };
+                                    }),
                             ]),
 
                             Forms\Components\Grid::make(3)->schema([
@@ -855,6 +892,11 @@ class ProductResource extends Resource
                         return $record->images->first()?->path;
                     })
                     ->square(),
+                Tables\Columns\TextColumn::make('brand.name')
+                    ->label('Brand')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('translations.name')
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
@@ -892,6 +934,7 @@ class ProductResource extends Resource
                         'primary' => 'Scheduled',
                         'secondary' => 'Unpublished',
                     ])
+                    ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created Date')

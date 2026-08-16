@@ -41,15 +41,41 @@ class LatestOrdersTable extends BaseWidget
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
-                    ->color(fn (OrderStatus $state): string => $state->color()),
+                    ->color(fn (OrderStatus $state): string => $state->color())
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $matchedValues = collect(OrderStatus::cases())
+                            ->filter(fn ($enum) => stripos($enum->label(), $search) !== false)
+                            ->map(fn ($enum) => $enum->value)
+                            ->toArray();
+                        if (!empty($matchedValues)) {
+                            return $query->whereIn('status', $matchedValues);
+                        }
+                        return $query;
+                    }),
                 Tables\Columns\BadgeColumn::make('payment_status')
                     ->label('Payment')
                     ->formatStateUsing(fn (PaymentStatus $state): string => $state->label())
-                    ->color(fn (PaymentStatus $state): string => $state->color()),
+                    ->color(fn (PaymentStatus $state): string => $state->color())
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $matchedValues = collect(PaymentStatus::cases())
+                            ->filter(fn ($enum) => stripos($enum->label(), $search) !== false)
+                            ->map(fn ($enum) => $enum->value)
+                            ->toArray();
+                        if (!empty($matchedValues)) {
+                            return $query->whereIn('payment_status', $matchedValues);
+                        }
+                        return $query;
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Placed')
                     ->dateTime('d M Y, h:i A')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        if ($date = strtotime($search)) {
+                            return $query->whereDate('created_at', date('Y-m-d', $date));
+                        }
+                        return $query;
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('view')

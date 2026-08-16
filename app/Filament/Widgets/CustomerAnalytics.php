@@ -23,16 +23,10 @@ class CustomerAnalytics extends BaseWidget
 
         $newCustomers = User::where('created_at', '>=', $thisMonth)->count();
 
-        $activeCustomers = Order::where('created_at', '>=', $thirtyDaysAgo)
-            ->distinct('user_id')
-            ->count('user_id');
+        $activeCustomers = User::whereHas('orders', fn ($q) => $q->where('created_at', '>=', $thirtyDaysAgo))->count();
 
         // Customers with more than 1 order
-        $returningCustomers = Order::select('user_id')
-            ->groupBy('user_id')
-            ->havingRaw('COUNT(id) > 1')
-            ->get()
-            ->count();
+        $returningCustomers = User::has('orders', '>', 1)->count();
 
         return [
             Stat::make('New Customers (This Month)', (string) $newCustomers)

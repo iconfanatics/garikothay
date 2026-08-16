@@ -192,6 +192,12 @@ public function brand()
                   ->orWhereHas('supplier', function ($q2) {
                       $q2->where('is_active', true);
                   });
+            })
+            ->where(function ($q) {
+                $q->whereNull('brand_id')
+                  ->orWhereHas('brand', function ($q2) {
+                      $q2->where('is_active', true);
+                  });
             });
     }
 

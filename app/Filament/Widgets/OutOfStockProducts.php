@@ -29,7 +29,8 @@ class OutOfStockProducts extends BaseWidget
                     ->formatStateUsing(fn ($record) => $record->name)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU'),
+                    ->label('SKU')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('stock_quantity')
                     ->label('Stock')
                     ->badge()

@@ -27,8 +27,9 @@ class LowStockAlert extends BaseWidget
                     ->orderBy('stock_quantity')
             )
             ->columns([
-                Tables\Columns\ImageColumn::make('primary_image.image')
+                Tables\Columns\ImageColumn::make('primary_image')
                     ->label('Image')
+                    ->state(fn ($record) => $record->primary_image?->path)
                     ->circular()
                     ->defaultImageUrl(asset('images/placeholder.png')),
                 Tables\Columns\TextColumn::make('translations.name')

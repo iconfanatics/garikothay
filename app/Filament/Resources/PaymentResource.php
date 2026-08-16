@@ -115,7 +115,11 @@ class PaymentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('order.order_number')
                     ->label('Order Number')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        return $query->whereHas('order', function (Builder $q) use ($search) {
+                            $q->where('order_number', 'like', "%{$search}%");
+                        });
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('order.user.name')
                     ->label('Customer')
@@ -137,7 +141,13 @@ class PaymentResource extends Resource
                     ]),
                 Tables\Columns\TextColumn::make('paid_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        if ($date = strtotime($search)) {
+                            return $query->whereDate('paid_at', date('Y-m-d', $date));
+                        }
+                        return $query;
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -153,6 +163,7 @@ class PaymentResource extends Resource
                         Forms\Components\DatePicker::make('created_until')
                             ->label('To Date')
                             ->maxDate(now())
+                            ->minDate(fn (Forms\Get $get) => $get('created_from'))
                             ->afterOrEqual('created_from'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
