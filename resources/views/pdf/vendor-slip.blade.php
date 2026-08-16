@@ -4,113 +4,119 @@
     <meta charset="UTF-8">
     <title>Vendor Slip - {{ $order->order_number }}</title>
     <style>
-        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px; color: #333; }
-        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px dashed #aaa; }
-        .header { width: 100%; text-align: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .header h1 { margin: 0; font-size: 24px; color: #111; letter-spacing: 2px; text-transform: uppercase; }
-        .invoice-details { width: 100%; margin-bottom: 30px; border-collapse: collapse; }
-        .invoice-details td { padding: 5px; vertical-align: top; }
-        .status-badge { font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; background-color: #eee; border: 1px solid #ddd; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px; color: #000; margin: 0; padding: 20px; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #000; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .header h1 { margin: 0; font-size: 26px; text-transform: uppercase; font-weight: bold; }
+        .header h2 { margin: 5px 0 10px 0; font-size: 18px; font-weight: normal; }
+        .logo { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
         
-        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .items-table th, .items-table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        .items-table th { background-color: #f8f8f8; font-weight: bold; }
-        .items-table .text-right { text-align: right; }
+        .section-title { font-size: 16px; font-weight: bold; background-color: #f0f0f0; padding: 5px 10px; margin-top: 20px; border: 1px solid #000; border-bottom: none; }
+        .section-content { border: 1px solid #000; padding: 10px; margin-bottom: 20px; }
+        
+        table.info-table { width: 100%; border-collapse: collapse; }
+        table.info-table td { padding: 5px 0; vertical-align: top; }
+        table.info-table td:first-child { width: 150px; font-weight: bold; }
+
+        .items-table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
+        .items-table th, .items-table td { padding: 10px; border: 1px solid #000; text-align: left; }
+        .items-table th { background-color: #f0f0f0; font-weight: bold; text-align: center; }
         .items-table .text-center { text-align: center; }
-        
-        .cod-box { float: right; border: 2px solid #333; padding: 15px; width: 250px; text-align: center; background-color: #f9f9f9; }
-        .cod-box h3 { margin: 0 0 10px 0; color: #d32f2f; font-size: 18px; }
-        .cod-box p { margin: 0; font-size: 24px; font-weight: bold; }
-        
-        .clear { clear: both; }
-        .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #777; }
+
+        .vendor-note { border: 2px dashed #000; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; margin-top: 30px; }
     </style>
 </head>
 <body>
     <div class="invoice-box">
         <div class="header">
-            <h1>PACKING SLIP / VENDOR COPY</h1>
-            <p>{{ \App\Models\Setting::get('site_name', 'Garikothay') }}</p>
+            <h1>VENDOR SLIP</h1>
+            <h2>Seller Copy</h2>
+            <div class="logo">{{ \App\Models\Setting::get('site_name', 'Garikothay.com') }}</div>
         </div>
 
-        <table class="invoice-details">
-            <tr>
-                <td style="width: 50%;">
-                    <strong>Deliver To (Customer):</strong><br>
-                    <span style="font-size: 16px; font-weight: bold;">{{ $order->user->name ?? 'Guest' }}</span><br>
-                    <strong>Phone:</strong> {{ $order->billing_address['phone'] ?? $order->shipping_phone ?? $order->user->phone ?? '' }}<br>
-                    <strong>Address:</strong> {{ $order->billing_address['full_address'] ?? $order->shipping_full_address ?? '' }}
-                </td>
-                <td style="width: 50%; text-align: right;">
-                    <strong>Order #:</strong> {{ $order->order_number }}<br>
-                    <strong>Date:</strong> {{ $order->created_at->format('M d, Y') }}
-                    <div style="margin-top: 8px;">
-                        @php
-                            $pm = $order->payment_method;
-                            $pmStr = $pm instanceof \App\Enums\PaymentMethod ? $pm->label() : (is_string($pm) ? $pm : 'N/A');
-                        @endphp
-                        <strong>Payment Method:</strong> <span class="status-badge">{{ strtoupper($pmStr) }}</span>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="section-title">Order Information</div>
+        <div class="section-content">
+            <table class="info-table">
+                <tr>
+                    <td>Order ID:</td>
+                    <td>{{ $order->order_number }}</td>
+                </tr>
+                <tr>
+                    <td>Order Date:</td>
+                    <td>{{ $order->created_at->format('M d, Y h:i A') }}</td>
+                </tr>
+            </table>
+        </div>
 
-        @php
-            $itemsBySupplier = $order->items->groupBy(function($item) {
-                return $item->product?->supplier_id ?? 'none';
-            });
-        @endphp
-
-        @foreach($itemsBySupplier as $supplierId => $items)
-            @php
-                $supplier = $supplierId !== 'none' ? \App\Models\Supplier::find($supplierId) : null;
-            @endphp
-            
-            <div style="margin-bottom: 10px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ddd;">
-                <strong style="font-size: 16px;">Vendor: {{ $supplier ? $supplier->name : 'In-House / Own Stock' }}</strong><br>
-                @if($supplier)
-                    <strong>Contact:</strong> {{ $supplier->contact_person ? $supplier->contact_person . ' (' . $supplier->contact_number . ')' : $supplier->contact_number }} <br>
-                    <strong>Address:</strong> {{ $supplier->address }}
-                @endif
-            </div>
-
+        <div class="section-title">Product Details</div>
+        <div class="section-content" style="padding: 0; border: none;">
             <table class="items-table">
                 <thead>
                     <tr>
-                        <th style="width: 10%;" class="text-center">#</th>
-                        <th style="width: 70%;">Product Details</th>
-                        <th style="width: 20%;" class="text-center">Quantity</th>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 60%; text-align: left;">Product Name</th>
+                        <th style="width: 20%;">SKU</th>
+                        <th style="width: 15%;">Quantity</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($items as $index => $item)
+                    @foreach($order->items as $index => $item)
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
                         <td>
-                            <strong>{{ $item->product_name }}</strong>
+                            {{ $item->product_name }}
                             @if($item->variant_name)
                                 <br><small>Variant: {{ $item->variant_name }}</small>
                             @endif
                         </td>
+                        <td class="text-center">{{ $item->product_sku ?? 'N/A' }}</td>
                         <td class="text-center" style="font-size: 16px; font-weight: bold;">{{ $item->quantity }}</td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
-        @endforeach
-
-        <div class="cod-box">
-            <h3>COLLECT FROM CUSTOMER (COD)</h3>
-            <p>{{ number_format($order->total, 2) }} BDT</p>
-            @if(strtolower($order->payment_status->value ?? '') === 'paid')
-                <p style="color: green; font-size: 16px; margin-top: 5px;">(ALREADY PAID)</p>
-            @endif
         </div>
-        
-        <div class="clear"></div>
-        
-        <div class="footer">
-            Generated on {{ now()->format('M d, Y h:i A') }}
+
+        <div class="section-title">Customer Delivery Info</div>
+        <div class="section-content">
+            <table class="info-table">
+                <tr>
+                    <td>Customer Name:</td>
+                    <td>{{ $order->shipping_address['full_name'] ?? $order->user->name ?? 'Guest' }}</td>
+                </tr>
+                <tr>
+                    <td>Mobile Number:</td>
+                    <td>{{ $order->shipping_address['phone'] ?? $order->user->phone ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <td>Delivery Address:</td>
+                    <td>
+                        {{ $order->shipping_address['address_line_1'] ?? $order->shipping_full_address ?? 'N/A' }}<br>
+                        @if(isset($order->shipping_address['upazila'])) {{ $order->shipping_address['upazila'] }}, @endif
+                        @if(isset($order->shipping_address['city'])) {{ $order->shipping_address['city'] }}, @endif
+                        @if(isset($order->shipping_address['division'])) {{ $order->shipping_address['division'] }} @endif
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section-title">Dispatch Information</div>
+        <div class="section-content">
+            <table class="info-table">
+                <tr>
+                    <td>Shipping Method:</td>
+                    <td>{{ $order->delivery_method ?? 'Steadfast Courier' }}</td>
+                </tr>
+                <tr>
+                    <td>Tracking ID:</td>
+                    <td>{{ $order->tracking_number ?? $order->steadfast_tracking_code ?? 'N/A' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="vendor-note">
+            Vendor Note<br>
+            <span style="font-size: 24px; color: #d32f2f;">Check Product Before Dispatch</span>
         </div>
     </div>
 </body>
