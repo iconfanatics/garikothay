@@ -50,8 +50,20 @@ class Blog extends Model
             // Auto generate blog_code on creation
             if (empty($blog->blog_code)) {
                 $lastBlog = static::orderBy('id', 'desc')->first();
-                $lastId = $lastBlog ? $lastBlog->id : 0;
-                $blog->blog_code = 'BLG-' . str_pad((string)($lastId + 1), 4, '0', STR_PAD_LEFT);
+                $suffix = 1;
+                
+                if ($lastBlog && preg_match('/BLG-(\d+)/', $lastBlog->blog_code, $matches)) {
+                    $suffix = (int)$matches[1] + 1;
+                } elseif ($lastBlog) {
+                    $suffix = $lastBlog->id + 1;
+                }
+                
+                do {
+                    $code = 'BLG-' . str_pad((string)$suffix, 4, '0', STR_PAD_LEFT);
+                    $suffix++;
+                } while (static::where('blog_code', $code)->exists());
+                
+                $blog->blog_code = $code;
             }
 
             // Auto calculate reading time based on English content
