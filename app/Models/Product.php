@@ -192,12 +192,6 @@ public function brand()
                   ->orWhereHas('supplier', function ($q2) {
                       $q2->where('is_active', true);
                   });
-            })
-            ->where(function ($q) {
-                $q->whereNull('brand_id')
-                  ->orWhereHas('brand', function ($q2) {
-                      $q2->where('is_active', true);
-                  });
             });
     }
 
@@ -338,6 +332,13 @@ public function brand()
 
     public function isInStock(): bool
     {
+        if ($this->brand_id) {
+            if ($this->relationLoaded('brand') && !$this->brand?->is_active) {
+                return false;
+            } elseif (!$this->relationLoaded('brand') && !\App\Models\Brand::where('id', $this->brand_id)->value('is_active')) {
+                return false;
+            }
+        }
         return $this->stock_quantity > 0;
     }
 
