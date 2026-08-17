@@ -1,10 +1,17 @@
-@props(['location' => 'site_wide'])
-
 @php
+    $currentLocation = 'other';
+    if (request()->routeIs('home') || request()->is('/')) {
+        $currentLocation = 'homepage';
+    } elseif (request()->routeIs('shop.*')) {
+        $currentLocation = 'shop';
+    } elseif (request()->routeIs('checkout.*') || request()->is('checkout/*')) {
+        $currentLocation = 'checkout';
+    }
+
     $announcements = \App\Models\Announcement::where('is_active', true)
-        ->where(function($q) use ($location) {
-            $q->where('display_location', $location)
-              ->orWhere('display_location', 'site_wide');
+        ->where(function($q) use ($currentLocation) {
+            $q->where('display_location', $currentLocation)
+              ->orWhereIn('display_location', ['site_wide', 'header_bar']);
         })
         ->where(function($q) {
             $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
