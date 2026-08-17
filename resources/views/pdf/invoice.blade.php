@@ -103,15 +103,18 @@
         </table>
 
         <table class="totals-table">
+            @php
+                $useInvoiceAmounts = $hasInvoice && $invoice->total > 0;
+            @endphp
             <tr>
                 <th>Subtotal:</th>
-                <td>{{ number_format($hasInvoice ? $invoice->subtotal : $order->subtotal, 2) }} BDT</td>
+                <td>{{ number_format($useInvoiceAmounts ? $invoice->subtotal : $order->subtotal, 2) }} BDT</td>
             </tr>
             @php
-                $discountAmount = $hasInvoice ? $invoice->discount_amount : $order->discount_amount;
-                $shippingAmount = $hasInvoice ? $invoice->shipping_amount : $order->shipping_amount;
-                $taxAmount = $hasInvoice ? $invoice->tax_amount : $order->tax_amount;
-                $totalAmount = $hasInvoice ? $invoice->total : $order->total;
+                $discountAmount = $useInvoiceAmounts ? $invoice->discount_amount : $order->discount_amount;
+                $shippingAmount = $useInvoiceAmounts ? $invoice->shipping_amount : $order->shipping_amount;
+                $taxAmount = $useInvoiceAmounts ? $invoice->tax_amount : $order->tax_amount;
+                $totalAmount = $useInvoiceAmounts ? $invoice->total : $order->total;
                 $paidAmount = ($hasInvoice && $invoice->paid_amount > 0) ? $invoice->paid_amount : ($statusStr === 'paid' ? $totalAmount : 0);
                 $dueAmount = max(0, $totalAmount - $paidAmount);
             @endphp
