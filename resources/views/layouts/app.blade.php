@@ -156,6 +156,9 @@
         </template>
     </div>
 
+    <!-- Popup Banner -->
+    <x-popup-banner />
+
     <x-footer />
     @stack('scripts')
     <script>
