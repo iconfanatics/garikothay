@@ -336,46 +336,16 @@
     }
 
     .gk-subcategory-list {
-        display: none;
+        display: grid;
         gap: 0.2rem;
         border-left: 2px solid #ffe4e6;
         margin: 0 0 0.55rem 1rem;
         padding-left: 0.6rem;
     }
 
-    .gk-category-row.is-open .gk-subcategory-list,
-    .gk-category-row:hover .gk-subcategory-list {
-        display: grid;
-    }
-
     @media (min-width: 1024px) {
         .gk-category-row {
             position: relative;
-        }
-        .gk-subcategory-list {
-            position: absolute;
-            top: -1px;
-            left: 100%;
-            min-width: 220px;
-            background: #ffffff;
-            border: 1px solid var(--shop-line);
-            border-radius: 6px;
-            box-shadow: 10px 10px 25px rgba(0,0,0,0.08);
-            padding: 0.75rem;
-            z-index: 100;
-            margin: 0;
-            border-left: none;
-            /* Give it a tiny gap so it doesn't overlap borders awkwardly */
-            margin-left: 2px;
-        }
-        /* Create a pseudo-element bridge to prevent hover loss when moving mouse to submenu */
-        .gk-subcategory-list::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -10px;
-            bottom: 0;
-            width: 10px;
         }
     }
 
@@ -708,17 +678,23 @@
                                     $parentIsActive = $currentCategory?->id === $category->id
                                         || $currentCategory?->parent_id === $category->id;
                                 @endphp
-                                <li class="gk-category-row">
-                                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                                       class="gk-category-link {{ $parentIsActive ? 'is-active' : '' }}">
-                                        <span style="color:var(--shop-red);">{{ $category->icon ?? '⚙' }}</span>
-                                        <span>{{ $category->name }}</span>
+                                <li class="gk-category-row" x-data="{ open: {{ $parentIsActive ? 'true' : 'false' }} }">
+                                    <div class="flex items-center w-full">
+                                        <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                                           class="gk-category-link flex-1 {{ $parentIsActive ? 'is-active' : '' }}">
+                                            <span style="color:var(--shop-red);">{{ $category->icon ?? '⚙' }}</span>
+                                            <span>{{ $category->name }}</span>
+                                        </a>
                                         @if($category->children->isNotEmpty())
-                                            <span class="gk-category-arrow">›</span>
+                                            <button type="button" @click.prevent="open = !open" class="p-2 text-gray-400 hover:text-[var(--shop-red)]">
+                                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
                                         @endif
-                                    </a>
+                                    </div>
                                     @if($category->children->isNotEmpty())
-                                        <div class="gk-subcategory-list">
+                                        <div class="gk-subcategory-list" x-show="open" x-transition>
                                             @foreach($category->children as $child)
                                                 <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
                                                    class="gk-subcategory-link {{ $currentCategory?->id === $child->id ? 'is-active' : '' }}">
