@@ -321,6 +321,9 @@ class OrderResource extends Resource
                                     $set('shipping_address.full_name', $user->name);
                                     $set('shipping_address.phone', $user->phone);
                                 }
+                            } else {
+                                $set('shipping_address.full_name', null);
+                                $set('shipping_address.phone', null);
                             }
                         })
                         ->disabled($isWebsiteOrder),
@@ -332,6 +335,16 @@ class OrderResource extends Resource
                     Forms\Components\TextInput::make('shipping_address.phone')
                         ->label('Phone Number')
                         ->required()
+                        ->live(debounce: 500)
+                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                            if ($state) {
+                                $user = \App\Models\User::where('phone', $state)->first();
+                                if ($user) {
+                                    $set('user_id', $user->id);
+                                    $set('shipping_address.full_name', $user->name);
+                                }
+                            }
+                        })
                         ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || filled($get('user_id')))
                         ->dehydrated(),
                     Forms\Components\TextInput::make('shipping_address.address_line_1')
