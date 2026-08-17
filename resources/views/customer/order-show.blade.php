@@ -3,7 +3,7 @@
 @section('title', __('general.order_details') . ' ' . $order->order_number)
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data>
 
     <!-- Header -->
     <div class="flex items-center gap-3 mb-8">
@@ -56,7 +56,7 @@
                         $hasReviewed = \App\Models\Review::where('user_id', auth()->id())->where('product_id', $item->product_id)->exists();
                     @endphp
                     @if(!$hasReviewed)
-                        <button type="button" @click="$dispatch('open-review-modal', { productId: {{ $item->product_id }}, productName: '{{ addslashes($item->product_name) }}' })" class="text-sm font-medium text-rose-600 hover:text-rose-700 mt-1 inline-block">Write Review</button>
+                        <button type="button" @click="$dispatch('open-review-modal', { productId: {{ $item->product_id }}, productName: '{{ addslashes($item->product_name) }}' })" class="mt-2 inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">Write Review</button>
                     @else
                         <span class="text-sm text-green-600 mt-1 inline-block">Reviewed</span>
                     @endif
