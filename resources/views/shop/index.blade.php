@@ -645,8 +645,10 @@
                         <span class="gk-category-card-icon">
                             @if($category->image)
                                 <img src="{{ Storage::url($category->image) }}" alt="{{ $category->name }}">
+                            @elseif($category->icon)
+                                <img src="{{ Storage::url($category->icon) }}" alt="{{ $category->name }}" style="padding:0.3rem;">
                             @else
-                                {{ $category->icon ?? '⚙' }}
+                                ⚙
                             @endif
                         </span>
                         <span class="gk-category-card-name">{{ $category->name }}</span>
@@ -681,9 +683,15 @@
                                 <li class="gk-category-row" x-data="{ open: {{ $parentIsActive ? 'true' : 'false' }} }">
                                     <div class="flex items-center w-full">
                                         <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                                           class="gk-category-link flex-1 {{ $parentIsActive ? 'is-active' : '' }}">
-                                            <span style="color:var(--shop-red);">{{ $category->icon ?? '⚙' }}</span>
-                                            <span>{{ $category->name }}</span>
+                                           class="gk-category-link flex-1 overflow-hidden {{ $parentIsActive ? 'is-active' : '' }}">
+                                            <span style="color:var(--shop-red); flex-shrink: 0;">
+                                                @if($category->icon)
+                                                    <img src="{{ Storage::url($category->icon) }}" class="w-4 h-4 object-contain" alt="">
+                                                @else
+                                                    ⚙
+                                                @endif
+                                            </span>
+                                            <span class="truncate">{{ $category->name }}</span>
                                         </a>
                                         @if($category->children->isNotEmpty())
                                             <button type="button" @click.prevent="open = !open" class="p-2 text-gray-400 hover:text-[var(--shop-red)]">
