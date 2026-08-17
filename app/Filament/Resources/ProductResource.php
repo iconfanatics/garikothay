@@ -192,6 +192,7 @@ class ProductResource extends Resource
                             Forms\Components\DateTimePicker::make('published_at')
                                 ->label('Publish Date & Time')
                                 ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published']))
+                                ->minDate(fn (?Product $record) => $record && $record->published_at && $record->published_at->isPast() ? $record->published_at : now())
                                 ->rule(function (Forms\Get $get, ?Product $record) {
                                     return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
                                         $valueDate = \Carbon\Carbon::parse($value);
@@ -205,7 +206,8 @@ class ProductResource extends Resource
                             Forms\Components\DateTimePicker::make('unpublished_at')
                                 ->label('Unpublish Date & Time')
                                 ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished']))
-                                ->afterOrEqual('published_at')
+                                ->minDate(fn (?Product $record) => $record && $record->unpublished_at && $record->unpublished_at->isPast() ? $record->unpublished_at : now())
+                                ->after('published_at')
                                 ->rule(function (Forms\Get $get, ?Product $record) {
                                     return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
                                         $valueDate = \Carbon\Carbon::parse($value);
