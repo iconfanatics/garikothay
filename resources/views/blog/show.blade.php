@@ -72,7 +72,7 @@
 
         <!-- Comments Section -->
         <div class="mt-16 pt-8 border-t border-gray-200">
-            <h3 class="text-2xl font-bold text-gray-900 mb-8">{{ __('general.comments', default: 'Comments') }} ({{ $blog->comments->count() }})</h3>
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">{{ __('general.comments') }} ({{ $blog->comments->count() }})</h3>
 
             @if(session('success'))
                 <div class="bg-green-50 text-green-700 p-4 rounded-lg mb-8">
@@ -96,31 +96,31 @@
                         </div>
                     </div>
                 @empty
-                    <p class="text-gray-500 italic">{{ __('general.no_comments_yet', default: 'No comments yet. Be the first to share your thoughts!') }}</p>
+                    <p class="text-gray-500 italic">{{ __('general.no_comments_yet') }}</p>
                 @endforelse
             </div>
 
             <!-- Comment Form -->
             <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100">
-                <h4 class="text-xl font-bold text-gray-900 mb-6">{{ __('general.leave_a_comment', default: 'Leave a Comment') }}</h4>
+                <h4 class="text-xl font-bold text-gray-900 mb-6">{{ __('general.leave_a_comment') }}</h4>
                 <form action="{{ route('blog.comment', $blog) }}" method="POST" class="space-y-4">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.name', default: 'Name') }} *</label>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.name') }} *</label>
                             <input type="text" name="name" id="name" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500" value="{{ auth()->check() ? auth()->user()->name : '' }}">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.email', default: 'Email') }} *</label>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.email') }} *</label>
                             <input type="email" name="email" id="email" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500" value="{{ auth()->check() ? auth()->user()->email : '' }}">
                         </div>
                     </div>
                     <div>
-                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.comment', default: 'Comment') }} *</label>
+                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.comment') }} *</label>
                         <textarea name="comment" id="comment" rows="4" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
                     </div>
                     <button type="submit" class="px-6 py-2.5 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition-colors">
-                        {{ __('general.post_comment', default: 'Post Comment') }}
+                        {{ __('general.post_comment') }}
                     </button>
                 </form>
             </div>

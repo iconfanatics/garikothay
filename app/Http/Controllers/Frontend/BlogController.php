@@ -54,6 +54,6 @@ class BlogController extends Controller
             'is_approved' => false,
         ]);
 
-        return back()->with('success', __('general.comment_submitted_for_approval', default: 'Your comment has been submitted and is waiting for approval.'));
+        return back()->with('success', __('general.comment_submitted_for_approval'));
     }
 }
