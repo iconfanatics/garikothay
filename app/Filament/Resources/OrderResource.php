@@ -264,9 +264,11 @@ class OrderResource extends Resource
                             'Website' => 'Website',
                             'WhatsApp' => 'WhatsApp',
                             'Call' => 'Call',
+                            'Facebook' => 'Facebook',
                         ] : [
                             'WhatsApp' => 'WhatsApp',
                             'Call' => 'Call',
+                            'Facebook' => 'Facebook',
                         ])
                         ->disabled($isWebsiteOrder)
                         ->default('Call'),

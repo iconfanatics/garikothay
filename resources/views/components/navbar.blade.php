@@ -33,7 +33,7 @@
     }
 
     $selectedSearchCategoryLabel = $selectedSearchCategory?->name ?? 'All Categories';
-    $headerLogo = \App\Models\Setting::get('theme1_header_logo');
+    $headerLogo = \App\Models\Setting::get('site_logo') ?: \App\Models\Setting::get('theme1_header_logo');
 @endphp
 
 <style>
@@ -282,7 +282,7 @@
             @else
                 <span class="gk-brand-mark">G</span>
                 <span class="hidden sm:block leading-tight">
-                    <span class="gk-brand-title">Gari Kothay</span>
+                    <span class="gk-brand-title">{{ $siteName }}</span>
                     <span class="gk-brand-subtitle">Auto Marketplace</span>
                 </span>
             @endif
@@ -442,7 +442,7 @@
                     @else
                         <span class="gk-brand-mark">G</span>
                         <span class="leading-tight">
-                            <span class="gk-brand-title">Gari Kothay</span>
+                            <span class="gk-brand-title">{{ $siteName }}</span>
                         </span>
                     @endif
                 </a>

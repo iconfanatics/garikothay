@@ -29,6 +29,7 @@ class Settings extends Page
         $legacyShippingCharge = $settings->get('shipping_charge')?->value ?? '150';
 
         $this->form->fill([
+            'site_logo' => $settings->get('site_logo')?->value ?? '',
             'site_name' => $settings->get('site_name')?->value ?? '',
             'site_tagline' => $settings->get('site_tagline')?->value ?? '',
             'trade_license_number' => $settings->get('trade_license_number')?->value ?? '',
@@ -71,6 +72,11 @@ class Settings extends Page
         return $form
             ->schema([
                 Forms\Components\Section::make('General')->schema([
+                    Forms\Components\FileUpload::make('site_logo')
+                        ->label('Site Logo')
+                        ->image()
+                        ->directory('settings')
+                        ->columnSpanFull(),
                     Forms\Components\TextInput::make('site_name')->label('Site Name'),
                     Forms\Components\TextInput::make('site_tagline')->label('Site Tagline'),
                     Forms\Components\TextInput::make('trade_license_number')
@@ -199,6 +205,7 @@ class Settings extends Page
         $data = $this->form->getState();
 
         $settingsMeta = [
+            'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
             'site_tagline' => ['group' => 'general', 'type' => SettingType::Text],
             'trade_license_number' => ['group' => 'general', 'type' => SettingType::Text],

@@ -731,6 +731,25 @@
                 selectedVariant: null,
                 adding: false,
                 tab: 'desc',
+                basePrice: {{ $product->selling_price }},
+                baseOriginalPrice: {{ $product->original_price }},
+                variants: @json($product->variants->where('is_active', true)->values()->map(function($v) { return ['id' => $v->id, 'price_modifier' => (float)$v->price_modifier]; })),
+                activePrice() {
+                    let price = this.basePrice;
+                    if (this.selectedVariant) {
+                        const variant = this.variants.find(v => v.id === this.selectedVariant);
+                        if (variant) price += variant.price_modifier;
+                    }
+                    return price;
+                },
+                activeOriginalPrice() {
+                    let price = this.baseOriginalPrice;
+                    if (this.selectedVariant) {
+                        const variant = this.variants.find(v => v.id === this.selectedVariant);
+                        if (variant) price += variant.price_modifier;
+                    }
+                    return price;
+                },
                 setZoom(event) {
                     const rect = event.currentTarget.getBoundingClientRect();
                     const x = ((event.clientX - rect.left) / rect.width) * 100;
@@ -801,9 +820,9 @@
                     </div>
 
                     <div class="gk-price-box">
-                        <span class="gk-price">৳{{ number_format($product->selling_price, 0) }}</span>
+                        <span class="gk-price">৳<span x-text="activePrice().toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})"></span></span>
                         @if($product->original_price > $product->selling_price)
-                            <span class="gk-old-price">৳{{ number_format($product->original_price, 0) }}</span>
+                            <span class="gk-old-price">৳<span x-text="activeOriginalPrice().toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})"></span></span>
                             <span class="gk-save">SAVE {{ $product->discount_percentage }}%</span>
                         @endif
                     </div>
@@ -839,7 +858,7 @@
 
                         @if($product->isInStock() || $product->is_preorder)
                             <button type="button" @click="addToCart(false)" :disabled="adding" class="gk-product-btn gk-product-btn-primary">
-                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ $product->is_preorder ? 'Pre-order' : __('general.add_to_cart') }}'"></span>
+                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ ($product->is_preorder && !$product->isInStock()) ? 'Pre-order' : __('general.add_to_cart') }}'"></span>
                             </button>
                         @else
                             <span class="gk-product-btn gk-product-btn-primary" style="background:#9ca3af;">{{ __('general.out_of_stock') }}</span>
@@ -859,7 +878,7 @@
                     </div>
 
                         @if($product->isInStock() || $product->is_preorder)
-                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ $product->is_preorder ? 'Pre-order Now' : 'Buy Now' }}</button>
+                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ ($product->is_preorder && !$product->isInStock()) ? 'Pre-order Now' : 'Buy Now' }}</button>
                         @endif
 
                     <div class="gk-share-actions">
@@ -882,12 +901,66 @@
                         <div><span>🛡</span>100% Genuine</div>
                         <div><span>↻</span>7-day returns</div>
                     </div>
+
+                    @if(!empty($product->highlights) || !empty($product->certifications) || !empty($product->collections))
+                        <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+                            @if(!empty($product->collections))
+                                <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                                    @foreach($product->collections as $collection)
+                                        <span style="background:#e11d48; color:#fff; font-size:0.7rem; font-weight:800; padding:0.2rem 0.5rem; border-radius:4px; text-transform:uppercase;">{{ $collection }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if(!empty($product->highlights))
+                                <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+                                    @foreach($product->highlights as $hl)
+                                        <div style="display:flex; align-items:center; gap:0.35rem; background:#f9fafb; border:1px solid #e5e7eb; padding:0.4rem 0.6rem; border-radius:6px;">
+                                            @if(!empty($hl['icon']))
+                                                <img src="{{ asset('storage/' . $hl['icon']) }}" alt="{{ $hl['text'] ?? '' }}" style="width:1.5rem; height:1.5rem; object-fit:contain;">
+                                            @endif
+                                            @if(!empty($hl['text']))
+                                                <span style="font-size:0.75rem; font-weight:800; color:#374151;">{{ $hl['text'] }}</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            @if(!empty($product->certifications))
+                                <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+                                    @foreach($product->certifications as $cert)
+                                        <div style="display:flex; align-items:center; gap:0.35rem; background:#fff; border:1px solid #e5e7eb; padding:0.4rem 0.6rem; border-radius:6px;" title="{{ $cert['name'] ?? '' }}">
+                                            @if(!empty($cert['image']))
+                                                <img src="{{ asset('storage/' . $cert['image']) }}" alt="{{ $cert['name'] ?? '' }}" style="height:1.5rem; width:auto; object-fit:contain;">
+                                            @endif
+                                            @if(!empty($cert['name']))
+                                                <span style="font-size:0.75rem; font-weight:800; color:#374151;">{{ $cert['name'] }}</span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 </div>
 
                 <div class="gk-product-tabs" style="grid-column:1 / -1;">
+                    @php
+                        $tabs = [
+                            'desc' => 'Description',
+                            'features' => empty($product->features) ? null : 'Features',
+                            'specs' => 'Specifications',
+                            'shipping' => empty($product->shipping_returns) ? null : 'Shipping & Returns',
+                            'video' => empty($product->video_url) ? null : 'Video',
+                            'docs' => empty($product->documents) ? null : 'Documents',
+                            'faqs' => empty($product->faqs) ? null : 'Product FAQ',
+                            'reviews' => 'Reviews (' . $approvedReviews->count() . ')',
+                        ];
+                        $tabs = array_filter($tabs);
+                    @endphp
                     <div class="gk-tab-list">
-                        @foreach(['desc' => 'Description', 'specs' => 'Specifications', 'faqs' => 'Product FAQ', 'reviews' => 'Reviews (' . $approvedReviews->count() . ')'] as $key => $label)
-                            @if($key === 'faqs' && empty($product->faqs)) @continue @endif
+                        @foreach($tabs as $key => $label)
                             <button type="button" class="gk-tab-button" :class="{ 'is-active': tab === '{{ $key }}' }" @click="tab = '{{ $key }}'">{{ $label }}</button>
                         @endforeach
                     </div>
@@ -896,22 +969,46 @@
                         {!! $product->description ?: '<p>The ' . e($product->name) . ' delivers reliable performance and lasting durability. Includes quality support from Garikothay.</p>' !!}
                     </div>
 
+                    @if(!empty($product->features))
+                    <div class="gk-tab-panel" :class="{ 'is-active': tab === 'features' }">
+                        <ul style="list-style-type:disc; padding-left:1.5rem; display:flex; flex-direction:column; gap:0.5rem; color:#4b5563; font-size:0.85rem;">
+                            @foreach($product->features as $f)
+                                <li>{{ is_array($f) ? ($f['feature'] ?? '') : $f }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'specs' }">
                         @if($product->specifications)
-                            <div class="prose max-w-none text-sm text-gray-700">
+                            <div class="prose max-w-none text-sm text-gray-700 mb-6">
                                 {!! $product->specifications !!}
                             </div>
-                        @else
-                            <table class="gk-spec-table">
-                                <tbody>
-                                    @if($brandName)
-                                        <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
-                                    @endif
-                                    <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
-                                    <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
-                                </tbody>
-                            </table>
                         @endif
+                        
+                        <table class="gk-spec-table">
+                            <tbody>
+                                @if($brandName)
+                                    <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
+                                @endif
+                                <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
+                                <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
+                                @if($product->weight_grams)
+                                    <tr><td>Weight</td><td>{{ $product->weight_grams >= 1000 ? ($product->weight_grams / 1000) . ' kg' : $product->weight_grams . ' g' }}</td></tr>
+                                @endif
+                                @if($product->warranty_type && $product->warranty_type !== 'none')
+                                    <tr><td>Warranty</td><td>{{ ucwords(str_replace('_', ' ', $product->warranty_type)) }} {{ $product->warranty_duration ? ' - ' . $product->warranty_duration : '' }}</td></tr>
+                                    @if($product->warranty_claim_process)
+                                        <tr><td>Warranty Claim</td><td>{{ $product->warranty_claim_process }}</td></tr>
+                                    @endif
+                                @endif
+                                @if(!empty($product->custom_fields))
+                                    @foreach($product->custom_fields as $key => $val)
+                                        <tr><td>{{ $key }}</td><td>{{ $val }}</td></tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'reviews' }">
@@ -951,6 +1048,44 @@
                     </div>
                     @endif
 
+                    @if(!empty($product->shipping_returns))
+                    <div class="gk-tab-panel" :class="{ 'is-active': tab === 'shipping' }">
+                        <div class="prose max-w-none text-sm text-gray-700">
+                            {!! $product->shipping_returns !!}
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!empty($product->video_url))
+                    <div class="gk-tab-panel" :class="{ 'is-active': tab === 'video' }">
+                        <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px; max-width:800px; margin:0 auto;">
+                            @php
+                                $videoUrl = $product->video_url;
+                                if (str_contains($videoUrl, 'youtube.com/watch?v=')) {
+                                    $videoUrl = str_replace('youtube.com/watch?v=', 'youtube.com/embed/', $videoUrl);
+                                    // Remove extra params if needed
+                                    $videoUrl = explode('&', $videoUrl)[0];
+                                } elseif (str_contains($videoUrl, 'youtu.be/')) {
+                                    $videoUrl = str_replace('youtu.be/', 'youtube.com/embed/', $videoUrl);
+                                }
+                            @endphp
+                            <iframe src="{{ $videoUrl }}" style="position:absolute; top:0; left:0; width:100%; height:100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!empty($product->documents))
+                    <div class="gk-tab-panel" :class="{ 'is-active': tab === 'docs' }">
+                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                            @foreach($product->documents as $doc)
+                                <a href="{{ asset('storage/' . $doc) }}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.75rem 1rem; border:1px solid #e5e7eb; border-radius:6px; text-decoration:none; color:#111827; font-weight:800; font-size:0.85rem; max-width:max-content; background:#f9fafb;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                    {{ basename($doc) }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
 
                 </div>
             </div>
