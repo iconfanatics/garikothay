@@ -81,7 +81,7 @@
             @endif
 
             <!-- Comments List -->
-            <div class="space-y-8 mb-12">
+            <div class="space-y-8 mb-8">
                 @forelse($blog->comments as $comment)
                     <div class="flex gap-4">
                         <div class="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0 flex items-center justify-center text-gray-500 font-bold text-xl uppercase">
@@ -101,7 +101,7 @@
             </div>
 
             <!-- Comment Form -->
-            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100">
+            <div class="mt-8 bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100">
                 <h4 class="text-xl font-bold text-gray-900 mb-6">{{ __('general.leave_a_comment') }}</h4>
                 <form action="{{ route('blog.comment', $blog) }}" method="POST" class="space-y-4">
                     @csrf
