@@ -517,7 +517,7 @@ class OrderResource extends Resource
                 ]),
                 Forms\Components\Select::make('coupon_id')
                     ->label('Coupon (Optional)')
-                    ->relationship('coupon', 'code')
+                    ->relationship('coupon', 'code', fn ($query) => $query->active())
                     ->searchable()
                     ->preload()
                     ->nullable()
