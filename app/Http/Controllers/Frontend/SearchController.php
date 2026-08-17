@@ -28,7 +28,8 @@ class SearchController extends Controller
                 ->active()
                 ->where(function($q) use ($query) {
                     $q->whereHas('translations', fn ($tq) => $tq->where('name', 'like', "%{$query}%"))
-                      ->orWhere('sku', 'like', "%{$query}%");
+                      ->orWhere('sku', 'like', "%{$query}%")
+                      ->orWhereHas('variants', fn ($vq) => $vq->where('sku', 'like', "%{$query}%"));
                 });
 
             if ($selectedCategory) {
