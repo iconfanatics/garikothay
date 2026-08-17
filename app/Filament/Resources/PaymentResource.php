@@ -143,15 +143,31 @@ class PaymentResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->searchable(query: function (Builder $query, string $search) {
-                        if ($date = strtotime($search)) {
-                            return $query->whereDate('paid_at', date('Y-m-d', $date));
-                        }
+                        try {
+                            if (strlen($search) > 3 && !is_numeric($search)) {
+                                $date = \Carbon\Carbon::parse($search);
+                                if ($date->isValid()) {
+                                    $query->whereDate('paid_at', $date->toDateString());
+                                }
+                            }
+                        } catch (\Exception $e) {}
                         return $query;
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(query: function (Builder $query, string $search) {
+                        try {
+                            if (strlen($search) > 3 && !is_numeric($search)) {
+                                $date = \Carbon\Carbon::parse($search);
+                                if ($date->isValid()) {
+                                    $query->whereDate('created_at', $date->toDateString());
+                                }
+                            }
+                        } catch (\Exception $e) {}
+                        return $query;
+                    }),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

@@ -505,7 +505,18 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Order Date & Time')
                     ->dateTime('d M Y, h:i A')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        try {
+                            if (strlen($search) > 3 && !is_numeric($search)) {
+                                $date = \Carbon\Carbon::parse($search);
+                                if ($date->isValid()) {
+                                    $query->whereDate('created_at', $date->toDateString());
+                                }
+                            }
+                        } catch (\Exception $e) {}
+                        return $query;
+                    }),
                 Tables\Columns\TextColumn::make('assignedStaff.name')
                     ->label('Assigned Staff')
                     ->sortable()
