@@ -41,6 +41,7 @@ class Category extends Model
     }
 
     protected $fillable = [
+        'translations',
         'parent_id', 'slug', 'icon', 'image', 'sort_order', 'is_active',
         'cover_image', 'banner_image', 'mobile_banner', 'is_featured',
         'publish_status', 'published_at', 'unpublished_at', 'is_locked',

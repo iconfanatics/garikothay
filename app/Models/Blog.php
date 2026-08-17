@@ -18,6 +18,7 @@ class Blog extends Model
     use HasFactory, LogsActivity, HasTranslations;
 
     protected $fillable = [
+        'translations',
         'blog_category_id',
         'slug',
         'featured_image',

@@ -14,7 +14,7 @@ class Banner extends Model
     use HasTranslations;
 
     protected $fillable = [
-        'type', 'image', 'mobile_image', 'link', 'sort_order', 'starts_at', 'expires_at', 'is_active',
+        'type', 'image', 'mobile_image', 'link', 'sort_order', 'starts_at', 'expires_at', 'is_active', 'translations'
     ];
 
     protected function casts(): array

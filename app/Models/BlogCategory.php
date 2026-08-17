@@ -14,7 +14,7 @@ class BlogCategory extends Model
 
     protected $fillable = [
         'slug', 'is_active', 'image',
-        'meta_title', 'meta_description', 'sort_order', 'is_featured', 'show_on_homepage'
+        'meta_title', 'meta_description', 'sort_order', 'is_featured', 'show_on_homepage', 'translations'
     ];
 
     public function translations(): HasMany

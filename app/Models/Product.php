@@ -50,6 +50,7 @@ class Product extends Model
     }
 
     protected $fillable = [
+        'translations',
         'brand_id', 'unit_id', 'brand', 'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
         'cost_price', 'stock_quantity', 'reserved_stock', 'is_preorder', 'low_stock_threshold', 'weight_grams',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',

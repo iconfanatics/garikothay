@@ -966,7 +966,7 @@
             'tag' => $banner->type->label(),
             'title' => $banner->title,
             'subtitle' => $banner->getTranslation('subtitle', app()->getLocale(), false),
-            'button' => 'Explore',
+            'button' => $banner->getTranslation('button_text', app()->getLocale(), false) ?: __('general.explore'),
             'link' => $banner->link ?? '#',
             'image' => $banner->image ? asset('storage/' . $banner->image) : '',
             'btn2' => null,

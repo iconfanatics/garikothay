@@ -43,6 +43,9 @@ class BannerResource extends Resource
                         Forms\Components\Textarea::make('translations.en.subtitle')
                             ->label('Subtitle (English)')
                             ->rows(2),
+                        Forms\Components\TextInput::make('translations.en.button_text')
+                            ->label('Button Text (English)')
+                            ->maxLength(255),
                     ]),
                     Forms\Components\Tabs\Tab::make('বাংলা')->schema([
                         Forms\Components\TextInput::make('translations.bn.title')
@@ -51,6 +54,9 @@ class BannerResource extends Resource
                         Forms\Components\Textarea::make('translations.bn.subtitle')
                             ->label('সাবটাইটেল (বাংলা)')
                             ->rows(2),
+                        Forms\Components\TextInput::make('translations.bn.button_text')
+                            ->label('বাটন টেক্সট (বাংলা)')
+                            ->maxLength(255),
                     ]),
                 ]),
                 Forms\Components\TextInput::make('link')
