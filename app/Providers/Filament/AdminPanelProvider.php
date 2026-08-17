@@ -155,9 +155,9 @@ class AdminPanelProvider extends PanelProvider
                     .dark .fi-ta-header-cell, .dark .fi-ta-table thead tr { background-color: rgb(24 24 27) !important; }
                     .trix-content p, .prose p, .fi-fo-rich-editor-content p { margin-top: 0.25em !important; margin-bottom: 0.25em !important; }
                     /* Custom Sidebar Hover */
-                    html:not(.dark) .fi-sidebar-item-button:hover { background-color: rgba(45, 106, 79, 0.08) !important; color: #2D6A4F !important; }
-                    html:not(.dark) .fi-sidebar-item-button:hover .fi-sidebar-item-icon { color: #2D6A4F !important; }
-                    .dark .fi-sidebar-item-button:hover { background-color: rgba(45, 106, 79, 0.25) !important; color: #4ade80 !important; }
+                    html:not(.dark) .fi-sidebar-item-button:hover { background-color: rgba(45, 106, 79, 0.15) !important; color: #1f4f3a !important; }
+                    html:not(.dark) .fi-sidebar-item-button:hover .fi-sidebar-item-icon { color: #1f4f3a !important; }
+                    .dark .fi-sidebar-item-button:hover { background-color: rgba(45, 106, 79, 0.4) !important; color: #4ade80 !important; }
                     .dark .fi-sidebar-item-button:hover .fi-sidebar-item-icon { color: #4ade80 !important; }
                 </style>
                 <script>
