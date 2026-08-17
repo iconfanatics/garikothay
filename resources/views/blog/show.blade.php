@@ -108,16 +108,16 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.name') }} *</label>
-                            <input type="text" name="name" id="name" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500" value="{{ auth()->check() ? auth()->user()->name : '' }}">
+                            <input type="text" name="name" id="name" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block p-2.5" value="{{ auth()->check() ? auth()->user()->name : '' }}">
                         </div>
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.email') }} *</label>
-                            <input type="email" name="email" id="email" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500" value="{{ auth()->check() ? auth()->user()->email : '' }}">
+                            <input type="email" name="email" id="email" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block p-2.5" value="{{ auth()->check() ? auth()->user()->email : '' }}">
                         </div>
                     </div>
                     <div>
                         <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.comment') }} *</label>
-                        <textarea name="comment" id="comment" rows="4" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
+                        <textarea name="comment" id="comment" rows="4" required class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block p-2.5"></textarea>
                     </div>
                     <button type="submit" class="px-6 py-2.5 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition-colors">
                         {{ __('general.post_comment') }}
