@@ -279,6 +279,10 @@ class OrderResource extends Resource
                         ->options([
                             'Retail' => 'Retail',
                             'Wholesale' => 'Wholesale',
+                            'Individual' => 'Individual',
+                            'Business' => 'Business',
+                            'Government' => 'Government',
+                            'Corporate' => 'Corporate',
                         ])
                         ->disabled($isWebsiteOrder)
                         ->default('Retail'),
