@@ -80,7 +80,7 @@ class ActivityResource extends Resource
                             ->live(),
                         Forms\Components\DatePicker::make('until')
                             ->label('Date To')
-                            ->minDate(fn (Forms\Get $get) => $get('from')),
+                            ->minDate(fn (Forms\Get $get) => $get('from') ? \Carbon\Carbon::parse($get('from'))->addDay()->format('Y-m-d') : null),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -110,7 +110,7 @@ class ActivityResource extends Resource
                                 return [];
                             })
                             ->searchable()
-                            ->disabled(fn (Forms\Get $get) => empty($get('causer_type'))),
+                            ->visible(fn (Forms\Get $get) => filled($get('causer_type'))),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
