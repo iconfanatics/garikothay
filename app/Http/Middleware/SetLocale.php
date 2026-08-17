@@ -16,7 +16,7 @@ class SetLocale
 
     public function handle(Request $request, Closure $next): Response
     {
-        $isAdmin = $request->is('admin*');
+        $isAdmin = $request->is('admin*') || ($request->is('livewire*') && str_contains($request->header('referer', ''), '/admin'));
         $sessionKey = $isAdmin ? 'admin_locale' : 'locale';
 
         $locale = $this->resolveLocale($request, $sessionKey, $isAdmin);
