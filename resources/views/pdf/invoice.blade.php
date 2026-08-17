@@ -35,7 +35,6 @@
         </div>
 
         @php
-        @php
             $hasInvoice = isset($invoice) && $invoice;
             $paymentStatusRaw = $hasInvoice && $invoice->payment_status ? $invoice->payment_status : ($order->payment_status ?? 'unpaid');
             $statusStr = is_string($paymentStatusRaw) ? strtolower($paymentStatusRaw) : (isset($paymentStatusRaw->value) ? strtolower($paymentStatusRaw->value) : strtolower((string)$paymentStatusRaw));
