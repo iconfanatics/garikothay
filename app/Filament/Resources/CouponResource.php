@@ -141,12 +141,13 @@ class CouponResource extends Resource
                         ->live()
                         ->disabled(fn (Forms\Get $get) => $get('is_first_order_only'))
                         ->helperText("How many times a single customer can use this coupon. Example: 1, 2, 3"),
-                ]),
-                Forms\Components\Select::make("applicable_type")
-                    ->label("Applicable Products/Categories")
+                        Forms\Components\Select::make("applicable_type")
+                    ->label("Applicability")
                     ->options([
                         'all' => 'All Products',
-                        'specific' => 'Specific Products/Categories',
+                        'products' => 'Specific Products',
+                        'categories' => 'Specific Categories',
+                        'specific' => 'Specific Products & Categories',
                     ])
                     ->default('all')
                     ->reactive()
@@ -155,7 +156,7 @@ class CouponResource extends Resource
                     ->label("Specific Products")
                     ->relationship('products', 'id')
                     ->getOptionLabelFromRecordUsing(fn (\Illuminate\Database\Eloquent\Model $record) => $record->name . ' (' . $record->sku . ')')
-                    ->getSearchResultsUsing(fn (string $search): array => 
+                    ->getSearchResultsUsing(fn (string $search): array =>
                         \App\Models\Product::whereHas('translations', fn($q) => $q->where('name', 'like', "%{$search}%"))
                             ->orWhere('sku', 'like', "%{$search}%")
                             ->limit(50)
@@ -166,13 +167,13 @@ class CouponResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'specific')
-                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'specific' && empty($get("categories"))),
+                    ->hidden(fn(Forms\Get $get): bool => !in_array($get("applicable_type"), ['specific', 'products']))
+                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'products' || ($get("applicable_type") === 'specific' && empty($get("categories")))),
                 Forms\Components\Select::make("categories")
                     ->label("Specific Categories")
                     ->relationship('categories', 'id')
                     ->getOptionLabelFromRecordUsing(fn (\Illuminate\Database\Eloquent\Model $record) => $record->name)
-                    ->getSearchResultsUsing(fn (string $search): array => 
+                    ->getSearchResultsUsing(fn (string $search): array =>
                         \App\Models\Category::whereHas('translations', fn($q) => $q->where('name', 'like', "%{$search}%"))
                             ->limit(50)
                             ->get()
@@ -182,8 +183,8 @@ class CouponResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->hidden(fn(Forms\Get $get): bool => $get("applicable_type") !== 'specific')
-                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'specific' && empty($get("products"))),
+                    ->hidden(fn(Forms\Get $get): bool => !in_array($get("applicable_type"), ['specific', 'categories']))
+                    ->required(fn(Forms\Get $get): bool => $get("applicable_type") === 'categories' || ($get("applicable_type") === 'specific' && empty($get("products")))),
             ]),
         ]);
     }
