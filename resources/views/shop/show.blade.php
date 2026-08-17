@@ -867,12 +867,16 @@
                             <button type="button" @click="quantity++">+</button>
                         </div>
 
-                        @if($product->isInStock() || $product->is_preorder)
+                        @if($product->isInStock())
                             <button type="button" @click="addToCart(false)" :disabled="adding" class="gk-product-btn gk-product-btn-primary">
-                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ ($product->is_preorder && !$product->isInStock()) ? 'Pre-order' : __('general.add_to_cart') }}'"></span>
+                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ __('general.add_to_cart') ?? 'Add to cart' }}'"></span>
+                            </button>
+                        @elseif($product->is_preorder)
+                            <button type="button" @click="addToCart(false)" :disabled="adding" class="gk-product-btn gk-product-btn-primary">
+                                🛒 <span x-text="adding ? '{{ __('general.adding') }}' : 'Pre-order'"></span>
                             </button>
                         @else
-                            <span class="gk-product-btn gk-product-btn-primary" style="background:#9ca3af;">{{ __('general.out_of_stock') }}</span>
+                            <span class="gk-product-btn gk-product-btn-primary" style="background:#9ca3af; cursor:not-allowed;">{{ __('general.out_of_stock') ?? 'Out of stock' }}</span>
                         @endif
 
                         @auth
@@ -888,8 +892,10 @@
                         @endauth
                     </div>
 
-                        @if($product->isInStock() || $product->is_preorder)
-                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ ($product->is_preorder && !$product->isInStock()) ? 'Pre-order Now' : 'Buy Now' }}</button>
+                        @if($product->isInStock())
+                            <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ __('general.buy_now') ?? 'Buy Now' }}</button>
+                        @elseif($product->is_preorder)
+                            <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">Pre-order Now</button>
                         @endif
 
                     <div class="gk-share-actions">
@@ -962,7 +968,7 @@
                             'desc' => 'Description',
                             'features' => empty($product->features) ? null : 'Features',
                             'specs' => 'Specifications',
-                            'shipping' => empty($product->shipping_returns) ? null : 'Shipping & Returns',
+                            'shipping' => ($product->supplier_shipping_charge || $product->supplier_delivery_time || $product->shipping_restriction || $product->has_return_support || !empty($product->shipping_returns)) ? 'Shipping & Returns' : null,
                             'video' => empty($product->video_url) ? null : 'Video',
                             'docs' => empty($product->documents) ? null : 'Documents',
                             'faqs' => empty($product->faqs) ? null : 'Product FAQ',
@@ -984,7 +990,7 @@
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'features' }">
                         <ul style="list-style-type:disc; padding-left:1.5rem; display:flex; flex-direction:column; gap:0.5rem; color:#4b5563; font-size:0.85rem;">
                             @foreach($product->features as $f)
-                                <li>{{ is_array($f) ? ($f['feature'] ?? '') : $f }}</li>
+                                <li>{{ is_array($f) ? ($f['feature'] ?? $f['text'] ?? '') : $f }}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -1014,8 +1020,14 @@
                                     @endif
                                 @endif
                                 @if(!empty($product->custom_fields))
-                                    @foreach($product->custom_fields as $key => $val)
-                                        <tr><td>{{ $key }}</td><td>{{ $val }}</td></tr>
+                                    @foreach($product->custom_fields as $cf)
+                                        @if(is_array($cf) && isset($cf['key']) && isset($cf['value']))
+                                            <tr><td>{{ $cf['key'] }}</td><td>{{ $cf['value'] }}</td></tr>
+                                        @elseif(is_array($cf))
+                                            @foreach($cf as $key => $val)
+                                                <tr><td>{{ $key }}</td><td>{{ $val }}</td></tr>
+                                            @endforeach
+                                        @endif
                                     @endforeach
                                 @endif
                             </tbody>
@@ -1059,10 +1071,33 @@
                     </div>
                     @endif
 
-                    @if(!empty($product->shipping_returns))
+                    @if($product->supplier_shipping_charge || $product->supplier_delivery_time || $product->shipping_restriction || $product->has_return_support || !empty($product->shipping_returns))
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'shipping' }">
                         <div class="prose max-w-none text-sm text-gray-700">
-                            {!! $product->shipping_returns !!}
+                            @if(!empty($product->shipping_returns))
+                                {!! $product->shipping_returns !!}
+                            @else
+                                <ul style="list-style-type: disc; padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; color: #4b5563; font-size: 0.85rem;">
+                                    @if($product->supplier_delivery_time)
+                                        <li><strong>Delivery Time:</strong> {{ $product->supplier_delivery_time }}</li>
+                                    @endif
+                                    @if($product->supplier_shipping_charge)
+                                        <li><strong>Shipping Charge:</strong> ৳{{ $product->supplier_shipping_charge }}</li>
+                                    @elseif($product->is_free_shipping_eligible)
+                                        <li><strong>Shipping Charge:</strong> Free Shipping</li>
+                                    @endif
+                                    @if($product->supplier_delivery_partner)
+                                        <li><strong>Delivery Partner:</strong> {{ $product->supplier_delivery_partner }}</li>
+                                    @endif
+                                    @if($product->shipping_restriction)
+                                        <li><strong>Shipping Restrictions:</strong> {{ $product->shipping_restriction }}</li>
+                                    @endif
+                                    <li><strong>Returns:</strong> {{ $product->has_return_support ? 'Eligible for return within the specified period.' : 'Not eligible for return.' }}</li>
+                                    @if($product->has_special_handling)
+                                        <li><strong>Special Handling:</strong> {{ $product->handling_type }}</li>
+                                    @endif
+                                </ul>
+                            @endif
                         </div>
                     </div>
                     @endif
