@@ -56,7 +56,7 @@
                         $hasReviewed = \App\Models\Review::where('user_id', auth()->id())->where('product_id', $item->product_id)->exists();
                     @endphp
                     @if(!$hasReviewed)
-                        <button type="button" @click="$dispatch('open-review-modal', { productId: {{ $item->product_id }}, productName: '{{ addslashes($item->product_name) }}' })" class="mt-2 inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">Write Review</button>
+                        <button type="button" @click="$dispatch('open-review-modal', { productId: {{ $item->product_id }}, productName: {{ \Illuminate\Support\Js::from($item->product_name) }} })" class="mt-2 inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">Write Review</button>
                     @else
                         <span class="text-sm text-green-600 mt-1 inline-block">Reviewed</span>
                     @endif
@@ -120,7 +120,7 @@
     </div>
 
     <!-- Review Modal -->
-    <div x-data="{ open: false, productId: null, productName: '', rating: 5 }" 
+    <div x-data="{ open: {{ $errors->any() ? 'true' : 'false' }}, productId: '{{ old('product_id') }}', productName: '{{ old('product_name') }}', rating: {{ old('rating', 5) }} }" 
          @open-review-modal.window="open = true; productId = $event.detail.productId; productName = $event.detail.productName; rating = 5"
          x-show="open" 
          class="fixed inset-0 z-50 overflow-y-auto" 
@@ -143,9 +143,20 @@
                         <h3 class="text-lg font-medium leading-6 text-gray-900">Write a Review</h3>
                         <p class="text-sm text-gray-500" x-text="productName"></p>
                         
+                        @if ($errors->any())
+                            <div class="mt-2 bg-red-50 text-red-600 p-3 rounded text-sm">
+                                <ul class="list-disc list-inside">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        
                         <form action="{{ route('reviews.store') }}" method="POST" class="mt-4">
                             @csrf
                             <input type="hidden" name="product_id" :value="productId">
+                            <input type="hidden" name="product_name" :value="productName">
                             
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700">Rating</label>
