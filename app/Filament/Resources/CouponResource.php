@@ -88,6 +88,7 @@ class CouponResource extends Resource
                     Forms\Components\DateTimePicker::make("starts_at")
                         ->label("Starts At")
                         ->nullable()
+                        ->live(onBlur: true)
                         ->minDate(fn (?Coupon $record) => $record && $record->starts_at && $record->starts_at->isPast() ? $record->starts_at : now())
                         ->rule(function (Forms\Get $get, ?Coupon $record) {
                             return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
@@ -102,11 +103,26 @@ class CouponResource extends Resource
                     Forms\Components\DateTimePicker::make("expires_at")
                         ->label("Expires At")
                         ->nullable()
-                        ->minDate(fn (?Coupon $record) => $record && $record->expires_at && $record->expires_at->isPast() ? $record->expires_at : now())
+                        ->minDate(function (Forms\Get $get, ?Coupon $record) {
+                            $startsAt = $get('starts_at');
+                            if ($startsAt) {
+                                return \Carbon\Carbon::parse($startsAt)->addMinute();
+                            }
+                            return $record && $record->expires_at && $record->expires_at->isPast() ? $record->expires_at : now();
+                        })
                         ->after("starts_at")
                         ->rule(function (Forms\Get $get, ?Coupon $record) {
                             return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
                                 $valueDate = \Carbon\Carbon::parse($value);
+                                
+                                $startsAt = $get('starts_at');
+                                if ($startsAt) {
+                                    $startsAtDate = \Carbon\Carbon::parse($startsAt);
+                                    if ($valueDate->lessThanOrEqualTo($startsAtDate)) {
+                                        $fail('Expires at date & time must be strictly after Starts At.');
+                                    }
+                                }
+                                
                                 if (!$record || $record->expires_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
                                     if ($valueDate->isPast()) {
                                         $fail('Expires at date & time cannot be in the past.');
