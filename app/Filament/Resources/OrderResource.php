@@ -232,6 +232,7 @@ class OrderResource extends Resource
                         ->options(\App\Enums\PaymentStatus::class)
                         ->default(\App\Enums\PaymentStatus::Unpaid->value)
                         ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || ($record && $record->getOriginal('payment_status')?->value === 'paid'))
+                        ->live()
                         ->required(),
                     Forms\Components\Select::make('payment_method')
                         ->label('Payment Method')
@@ -242,7 +243,8 @@ class OrderResource extends Resource
                             'bkash' => 'bKash',
                         ])
                         ->default('cod')
-                        ->disabled(fn (?Order $record) => $isWebsiteOrder($record) || $record !== null)
+                        ->disabled(fn (Forms\Get $get, ?Order $record) => $isWebsiteOrder($record) || $record !== null || $get('payment_status') === 'unpaid')
+                        ->dehydrated()
                         ->required(),
                     Forms\Components\TextInput::make('order_number')
                         ->label('Order Number')
