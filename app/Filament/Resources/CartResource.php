@@ -148,12 +148,17 @@ class CartResource extends Resource
                         ->label('Send Reminder')
                         ->icon('heroicon-o-paper-airplane')
                         ->color('primary')
-                        ->action(function (Cart $record) {
-                            $record->timestamps = false;
-                            $record->update([
-                                'is_reminder_sent' => true,
-                                'reminder_sent_at' => now(),
-                            ]);
+                        ->action(function (\App\Models\Cart $record) {
+                            if ($record->user && $record->user->email) {
+                                \Illuminate\Support\Facades\Mail::to($record->user->email)->send(new \App\Mail\AbandonedCartReminderMail($record));
+                            }
+                            
+                            \Illuminate\Support\Facades\DB::table('carts')
+                                ->where('id', $record->id)
+                                ->update([
+                                    'is_reminder_sent' => true,
+                                    'reminder_sent_at' => now(),
+                                ]);
                         })
                         ->requiresConfirmation(),
                     Tables\Actions\DeleteAction::make(),
