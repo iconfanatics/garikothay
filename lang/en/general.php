@@ -228,4 +228,12 @@ return [
     'please_correct_errors' => 'Please correct the errors below:',
     'delivery_method' => 'Delivery Method',
     'tracking_number' => 'Tracking Number',
+    'comments' => 'Comments',
+    'no_comments_yet' => 'No comments yet. Be the first to share your thoughts!',
+    'leave_a_comment' => 'Leave a Comment',
+    'name' => 'Name',
+    'email' => 'Email',
+    'comment' => 'Comment',
+    'post_comment' => 'Post Comment',
+    'comment_submitted_for_approval' => 'Your comment has been submitted and is waiting for approval.',
 ];
