@@ -659,7 +659,7 @@
     </section>
 
     <div class="gk-shop-container gk-shop-body">
-        <aside style="position: relative; z-index: 40;">
+        <aside style="position: relative;">
             <div class="gk-filter-stack" :class="{ 'is-open': filtersOpen }">
                 <div class="flex justify-between items-center lg:hidden mb-2">
                     <h2 style="font-size:1.1rem; font-weight:900; margin:0;">Filters</h2>
