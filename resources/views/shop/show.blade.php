@@ -724,52 +724,57 @@
             </div>
         </aside>
 
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('productPage', () => ({
+                    activeImage: '{!! addslashes($imageUrl) !!}',
+                    quantity: 1,
+                    selectedVariant: null,
+                    adding: false,
+                    tab: 'desc',
+                    basePrice: {{ $product->selling_price }},
+                    baseOriginalPrice: {{ $product->original_price }},
+                    variants: @json($product->variants->where('is_active', true)->values()->map(function($v) { return ['id' => $v->id, 'price_modifier' => (float)$v->price_modifier]; })),
+                    activePrice() {
+                        let price = this.basePrice;
+                        if (this.selectedVariant) {
+                            const variant = this.variants.find(v => v.id === this.selectedVariant);
+                            if (variant) price += variant.price_modifier;
+                        }
+                        return price;
+                    },
+                    activeOriginalPrice() {
+                        let price = this.baseOriginalPrice;
+                        if (this.selectedVariant) {
+                            const variant = this.variants.find(v => v.id === this.selectedVariant);
+                            if (variant) price += variant.price_modifier;
+                        }
+                        return price;
+                    },
+                    setZoom(event) {
+                        const rect = event.currentTarget.getBoundingClientRect();
+                        const x = ((event.clientX - rect.left) / rect.width) * 100;
+                        const y = ((event.clientY - rect.top) / rect.height) * 100;
+                        event.currentTarget.querySelector('img').style.transformOrigin = `${x}% ${y}%`;
+                    },
+                    addToCart(redirect = false) {
+                        this.adding = true;
+                        fetch('/cart/add', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                            body: JSON.stringify({product_id: {{ $product->id }}, quantity: this.quantity, variant_id: this.selectedVariant})
+                        }).then(r => r.json()).then(d => {
+                            this.adding = false;
+                            document.querySelectorAll('.cart-count').forEach(el => el.textContent = d.cart_count);
+                            this.$dispatch('toast', { message: '{{ __('general.added_to_cart') }}' });
+                            if (redirect) window.location.href = '{{ route('cart.index') }}';
+                        }).catch(() => { this.adding = false; });
+                    }
+                }));
+            });
+        </script>
         <main style="min-width:0;">
-            <div class="gk-product-main-grid" x-data="{
-                activeImage: '{{ $imageUrl }}',
-                quantity: 1,
-                selectedVariant: null,
-                adding: false,
-                tab: 'desc',
-                basePrice: {{ $product->selling_price }},
-                baseOriginalPrice: {{ $product->original_price }},
-                variants: @json($product->variants->where('is_active', true)->values()->map(function($v) { return ['id' => $v->id, 'price_modifier' => (float)$v->price_modifier]; })),
-                activePrice() {
-                    let price = this.basePrice;
-                    if (this.selectedVariant) {
-                        const variant = this.variants.find(v => v.id === this.selectedVariant);
-                        if (variant) price += variant.price_modifier;
-                    }
-                    return price;
-                },
-                activeOriginalPrice() {
-                    let price = this.baseOriginalPrice;
-                    if (this.selectedVariant) {
-                        const variant = this.variants.find(v => v.id === this.selectedVariant);
-                        if (variant) price += variant.price_modifier;
-                    }
-                    return price;
-                },
-                setZoom(event) {
-                    const rect = event.currentTarget.getBoundingClientRect();
-                    const x = ((event.clientX - rect.left) / rect.width) * 100;
-                    const y = ((event.clientY - rect.top) / rect.height) * 100;
-                    event.currentTarget.querySelector('img').style.transformOrigin = `${x}% ${y}%`;
-                },
-                addToCart(redirect = false) {
-                    this.adding = true;
-                    fetch('/cart/add', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                        body: JSON.stringify({product_id: {{ $product->id }}, quantity: this.quantity, variant_id: this.selectedVariant})
-                    }).then(r => r.json()).then(d => {
-                        this.adding = false;
-                        document.querySelectorAll('.cart-count').forEach(el => el.textContent = d.cart_count);
-                        this.$dispatch('toast', { message: '{{ __('general.added_to_cart') }}' });
-                        if (redirect) window.location.href = '{{ route('cart.index') }}';
-                    }).catch(() => { this.adding = false; });
-                }
-            }">
+            <div class="gk-product-main-grid" x-data="productPage()">
                 <div>
                     <div class="gk-gallery-main" @mousemove="setZoom($event)">
                         <img :src="activeImage" alt="{{ $product->name }}" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}';">
