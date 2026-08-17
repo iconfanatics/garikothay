@@ -345,7 +345,7 @@
 
 @section('content')
 @php
-    $whatsapp = preg_replace('/\D+/', '', (string) \App\Models\Setting::get('whatsapp', $phone));
+    $whatsapp = preg_replace('/[^0-9+]/', '', (string) \App\Models\Setting::get('whatsapp', $phone));
 @endphp
 
 <div class="gk-contact">
@@ -379,7 +379,7 @@
                     <span class="gk-contact-icon">☎</span>
                     <div>
                         <span class="gk-contact-method-label">{{ __('general.call_us') }}</span>
-                        <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}" class="gk-contact-method-value">{{ $phone }}</a>
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone) }}" class="gk-contact-method-value">{{ $phone }}</a>
                         <span class="gk-contact-note">Saturday - Thursday, 9am - 8pm</span>
                     </div>
                 </div>

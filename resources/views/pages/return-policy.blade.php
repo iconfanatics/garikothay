@@ -44,7 +44,7 @@
                    class="inline-block bg-white text-rose-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-rose-50 transition text-sm">
                     {{ __('general.contact_us') }}
                 </a>
-                <a href="https://wa.me/{{ \App\Models\Setting::get('whatsapp') }}"
+                <a href="https://wa.me/{{ preg_replace('/[^0-9+]/', '', (string)\App\Models\Setting::get('whatsapp')) }}"
                    target="_blank" rel="noopener"
                    class="inline-block bg-green-500 hover:bg-green-400 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
                     WhatsApp Us
