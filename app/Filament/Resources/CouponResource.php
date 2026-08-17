@@ -87,11 +87,33 @@ class CouponResource extends Resource
                 Forms\Components\Grid::make(2)->schema([
                     Forms\Components\DateTimePicker::make("starts_at")
                         ->label("Starts At")
-                        ->nullable(),
+                        ->nullable()
+                        ->minDate(fn (?Coupon $record) => $record && $record->starts_at && $record->starts_at->isPast() ? $record->starts_at : now())
+                        ->rule(function (Forms\Get $get, ?Coupon $record) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                $valueDate = \Carbon\Carbon::parse($value);
+                                if (!$record || $record->starts_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                    if ($valueDate->isPast()) {
+                                        $fail('Starts at date & time cannot be in the past.');
+                                    }
+                                }
+                            };
+                        }),
                     Forms\Components\DateTimePicker::make("expires_at")
                         ->label("Expires At")
                         ->nullable()
-                        ->after("starts_at"),
+                        ->minDate(fn (?Coupon $record) => $record && $record->expires_at && $record->expires_at->isPast() ? $record->expires_at : now())
+                        ->after("starts_at")
+                        ->rule(function (Forms\Get $get, ?Coupon $record) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                $valueDate = \Carbon\Carbon::parse($value);
+                                if (!$record || $record->expires_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                    if ($valueDate->isPast()) {
+                                        $fail('Expires at date & time cannot be in the past.');
+                                    }
+                                }
+                            };
+                        }),
                 ]),
                 Forms\Components\Toggle::make("is_active")
                     ->label("Active")
