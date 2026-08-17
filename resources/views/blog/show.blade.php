@@ -70,8 +70,64 @@
             {!! $blog->getTranslation('content') !!}
         </div>
 
+        <!-- Comments Section -->
+        <div class="mt-16 pt-8 border-t border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">{{ __('general.comments', default: 'Comments') }} ({{ $blog->comments->count() }})</h3>
+
+            @if(session('success'))
+                <div class="bg-green-50 text-green-700 p-4 rounded-lg mb-8">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <!-- Comments List -->
+            <div class="space-y-8 mb-12">
+                @forelse($blog->comments as $comment)
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0 flex items-center justify-center text-gray-500 font-bold text-xl uppercase">
+                            {{ substr($comment->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="font-bold text-gray-900">{{ $comment->name }}</h4>
+                                <span class="text-sm text-gray-400">{{ $comment->created_at->format('M d, Y') }}</span>
+                            </div>
+                            <p class="text-gray-700">{{ $comment->comment }}</p>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-gray-500 italic">{{ __('general.no_comments_yet', default: 'No comments yet. Be the first to share your thoughts!') }}</p>
+                @endforelse
+            </div>
+
+            <!-- Comment Form -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100">
+                <h4 class="text-xl font-bold text-gray-900 mb-6">{{ __('general.leave_a_comment', default: 'Leave a Comment') }}</h4>
+                <form action="{{ route('blog.comment', $blog) }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.name', default: 'Name') }} *</label>
+                            <input type="text" name="name" id="name" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500" value="{{ auth()->check() ? auth()->user()->name : '' }}">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.email', default: 'Email') }} *</label>
+                            <input type="email" name="email" id="email" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500" value="{{ auth()->check() ? auth()->user()->email : '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">{{ __('general.comment', default: 'Comment') }} *</label>
+                        <textarea name="comment" id="comment" rows="4" required class="w-full rounded-lg border-gray-300 focus:border-rose-500 focus:ring-rose-500"></textarea>
+                    </div>
+                    <button type="submit" class="px-6 py-2.5 bg-rose-600 text-white font-medium rounded-lg hover:bg-rose-700 transition-colors">
+                        {{ __('general.post_comment', default: 'Post Comment') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- Footer nav -->
-        <div class="mt-12 pt-8 border-t border-gray-200 flex justify-between items-center">
+        <div class="mt-12 pt-8 flex justify-between items-center">
             <a href="{{ route('blog.index') }}"
                class="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-medium">
                 ← {{ __('general.blog') }}

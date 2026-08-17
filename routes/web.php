@@ -67,6 +67,7 @@ Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store
 Route::prefix('blog')->name('blog.')->group(function () {
     Route::get('/', [BlogController::class, 'index'])->name('index');
     Route::get('/{slug}', [BlogController::class, 'show'])->name('show');
+    Route::post('/{blog}/comment', [BlogController::class, 'comment'])->name('comment');
 });
 
 // Search

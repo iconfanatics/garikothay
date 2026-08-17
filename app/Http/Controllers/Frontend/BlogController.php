@@ -28,11 +28,32 @@ class BlogController extends Controller
 
     public function show(string $slug): View
     {
-        $blog = Blog::with(['translations', 'author', 'category.translations'])
+        $blog = Blog::with(['translations', 'author', 'category.translations', 'comments' => function ($query) {
+            $query->where('is_approved', true)->latest();
+        }])
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
 
         return view('blog.show', compact('blog'));
+    }
+
+    public function comment(Request $request, Blog $blog)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $blog->comments()->create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'comment' => $request->comment,
+            'status' => 'Pending',
+            'is_approved' => false,
+        ]);
+
+        return back()->with('success', __('general.comment_submitted_for_approval', default: 'Your comment has been submitted and is waiting for approval.'));
     }
 }
