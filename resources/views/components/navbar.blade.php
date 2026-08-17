@@ -271,7 +271,7 @@
     </div>
     @endif
 
-<nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }" x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''">
+<nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }" x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''; document.documentElement.style.overflow = mobileOpen ? 'hidden' : '';">
     <!-- Desktop Header Row -->
     <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:grid">
 

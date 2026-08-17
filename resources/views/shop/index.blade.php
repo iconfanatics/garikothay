@@ -598,7 +598,7 @@
 @endpush
 
 @section('content')
-<div class="gk-shop" x-data="{ filtersOpen: false }">
+<div class="gk-shop" x-data="{ filtersOpen: false }" x-effect="document.body.style.overflow = filtersOpen ? 'hidden' : ''; document.documentElement.style.overflow = filtersOpen ? 'hidden' : '';">
     <div class="gk-filter-overlay" :class="{ 'is-open': filtersOpen }" @click="filtersOpen = false"></div>
 
     <nav class="gk-shop-breadcrumb">
