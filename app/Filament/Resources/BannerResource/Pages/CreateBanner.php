@@ -15,4 +15,20 @@ class CreateBanner extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        unset($data['translations']);
+        return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        $record = $this->getRecord();
+        $translations = $this->data['translations'] ?? [];
+
+        foreach ($translations as $locale => $translationData) {
+            $record->setTranslation($locale, $translationData);
+        }
+    }
 }
