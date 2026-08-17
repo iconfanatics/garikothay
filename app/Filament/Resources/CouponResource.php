@@ -157,7 +157,8 @@ class CouponResource extends Resource
                         ->live()
                         ->disabled(fn (Forms\Get $get) => $get('is_first_order_only'))
                         ->helperText("How many times a single customer can use this coupon. Example: 1, 2, 3"),
-                        Forms\Components\Select::make("applicable_type")
+                ]),
+                Forms\Components\Select::make("applicable_type")
                     ->label("Applicability")
                     ->options([
                         'all' => 'All Products',
