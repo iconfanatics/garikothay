@@ -398,6 +398,9 @@
                     <div>
                         <span class="gk-contact-method-label">{{ __('general.visit_us') }}</span>
                         <span class="gk-contact-method-value">{{ $address }}</span>
+                        @if(isset($address_2) && $address_2)
+                        <span class="gk-contact-method-value mt-1">{{ $address_2 }}</span>
+                        @endif
                     </div>
                 </div>
             </div>

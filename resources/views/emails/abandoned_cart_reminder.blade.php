@@ -7,7 +7,7 @@ You left some items in your cart! Don't miss out on completing your purchase.
 | Product       | Quantity         | Price  |
 | :--------- | :------------- | :-------- |
 @foreach($cart->items as $item)
-| {{ $item->product->name ?? 'Product' }} | {{ $item->quantity }} | BDT {{ number_format($item->total_price, 2) }} |
+| {{ $item->product->name ?? 'Product' }} | {{ $item->quantity }} | BDT {{ number_format($item->total, 2) }} |
 @endforeach
 </x-mail::table>
 

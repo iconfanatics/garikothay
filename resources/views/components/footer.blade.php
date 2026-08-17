@@ -97,6 +97,9 @@
                 <li>✉ <a href="mailto:{{ $email3 }}" class="hover:text-rose-400 transition">{{ $email3 }}</a></li>
                 @endif
                 <li>📍 {{ \App\Models\Setting::get('address', 'House 24, Road 7, Banani, Dhaka 1213, Bangladesh') }}</li>
+                @if(\App\Models\Setting::get('address_2'))
+                <li class="pl-5">{{ \App\Models\Setting::get('address_2') }}</li>
+                @endif
                 @if(\App\Models\Setting::get('trade_license_number'))
                 <li>📝 Trade License: {{ \App\Models\Setting::get('trade_license_number') }}</li>
                 @endif

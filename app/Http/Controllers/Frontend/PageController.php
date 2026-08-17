@@ -27,6 +27,7 @@ class PageController extends Controller
             'phone' => Setting::get('phone', '+880 1700-000000'),
             'email' => Setting::get('email', 'support@garikothay.com'),
             'address' => Setting::get('address', 'Dhaka, Bangladesh'),
+            'address_2' => Setting::get('address_2'),
         ]);
     }
 
