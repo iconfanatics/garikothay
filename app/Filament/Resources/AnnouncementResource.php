@@ -69,10 +69,12 @@ class AnnouncementResource extends Resource
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\DateTimePicker::make('starts_at')
                             ->label('Starts At (Optional)')
-                            ->minDate(fn (string $context) => $context === 'create' ? now() : null)
-                            ->before('expires_at'),
+                            ->minDate(fn (?Announcement $record) => $record && $record->starts_at && $record->starts_at->isPast() ? $record->starts_at : now())
+                            ->before('expires_at')
+                            ->live(onBlur: true),
                         Forms\Components\DateTimePicker::make('expires_at')
                             ->label('Expires At (Optional)')
+                            ->minDate(fn (\Filament\Forms\Get $get) => $get('starts_at') ?: now())
                             ->after('starts_at'),
                     ]),
                 ])->columns(2),
