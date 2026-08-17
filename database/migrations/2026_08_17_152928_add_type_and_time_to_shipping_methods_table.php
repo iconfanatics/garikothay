@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('shipping_methods', function (Blueprint $table) {
+            $table->string('shipping_type')->nullable()->after('name');
+            $table->string('estimated_delivery_time')->nullable()->after('free_shipping_threshold');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('shipping_methods', function (Blueprint $table) {
+            $table->dropColumn(['shipping_type', 'estimated_delivery_time']);
+        });
+    }
+};

@@ -11,7 +11,7 @@ class ShippingMethod extends Model
     use HasFactory;
 
     protected $fillable = [
-        'shipping_zone_id', 'name', 'base_charge', 'free_shipping_threshold', 'is_active'
+        'shipping_zone_id', 'name', 'shipping_type', 'base_charge', 'free_shipping_threshold', 'estimated_delivery_time', 'is_active'
     ];
 
     protected function casts(): array

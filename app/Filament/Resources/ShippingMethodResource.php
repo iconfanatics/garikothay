@@ -27,6 +27,7 @@ class ShippingMethodResource extends Resource
                 Forms\Components\Section::make('Method Details')->schema([
                     Forms\Components\Select::make('shipping_zone_id')
                         ->relationship('shippingZone', 'name')
+                        ->label('Available Shipping Zone')
                         ->required()
                         ->searchable()
                         ->preload(),
@@ -34,10 +35,22 @@ class ShippingMethodResource extends Resource
                         ->label('Method Name (e.g. Standard, Express)')
                         ->required()
                         ->maxLength(255),
+                    Forms\Components\Select::make('shipping_type')
+                        ->label('Shipping Type')
+                        ->options([
+                            'Home Delivery' => 'Home Delivery',
+                            'Pickup Point' => 'Pickup Point',
+                            'Courier Service' => 'Courier Service',
+                        ])
+                        ->nullable(),
+                    Forms\Components\TextInput::make('estimated_delivery_time')
+                        ->label('Estimated Delivery Time')
+                        ->placeholder('e.g. 2-3 Days')
+                        ->maxLength(255),
                 ])->columns(2),
                 Forms\Components\Section::make('Pricing Rules')->schema([
                     Forms\Components\TextInput::make('base_charge')
-                        ->label('Base Charge (BDT)')
+                        ->label('Shipping Charge (BDT)')
                         ->numeric()
                         ->default(0.00)
                         ->required(),
@@ -60,16 +73,22 @@ class ShippingMethodResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('shippingZone.name')
-                    ->label('Zone')
+                    ->label('Available Shipping Zone')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Method')
+                    ->label('Method Name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('shipping_type')
+                    ->label('Shipping Type')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('base_charge')
-                    ->label('Base Charge')
+                    ->label('Shipping Charge')
                     ->money('BDT')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('estimated_delivery_time')
+                    ->label('Estimated Delivery Time')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('free_shipping_threshold')
                     ->label('Free Shipping Over')
