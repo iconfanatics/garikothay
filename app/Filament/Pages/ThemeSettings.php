@@ -179,7 +179,7 @@ class ThemeSettings extends Page
                                     ->numeric()
                                     ->default(12)
                                     ->minValue(1)
-                                    ->maxValue(300)
+                                    ->maxValue(500)
                                     ->helperText('Lower number means faster scrolling. Default is 12.')
                                     ->visible(fn (\Filament\Forms\Get $get): bool => $get('theme1_top_ticker_style') === 'slide'),
                                 Forms\Components\Repeater::make('theme1_top_ticker')
