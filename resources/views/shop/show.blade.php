@@ -922,16 +922,28 @@
                     @if(!empty($product->highlights) || !empty($product->certifications) || !empty($product->collections))
                         <div style="margin-top:1.5rem; display:flex; flex-direction:column; gap:1rem;">
                             @if(!empty($product->collections))
+                                @php
+                                    $colls = is_string($product->collections) ? (json_decode($product->collections, true) ?? [$product->collections]) : (is_iterable($product->collections) ? $product->collections : [$product->collections]);
+                                @endphp
+                                @if(is_iterable($colls) && count((array)$colls) > 0)
                                 <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-                                    @foreach($product->collections as $collection)
+                                    @foreach($colls as $collection)
+                                        @if(is_string($collection))
                                         <span style="background:#e11d48; color:#fff; font-size:0.7rem; font-weight:800; padding:0.2rem 0.5rem; border-radius:4px; text-transform:uppercase;">{{ $collection }}</span>
+                                        @endif
                                     @endforeach
                                 </div>
+                                @endif
                             @endif
 
                             @if(!empty($product->highlights))
+                                @php
+                                    $hls = is_string($product->highlights) ? (json_decode($product->highlights, true) ?? []) : (is_iterable($product->highlights) ? $product->highlights : []);
+                                @endphp
+                                @if(is_iterable($hls) && count((array)$hls) > 0)
                                 <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
-                                    @foreach($product->highlights as $hl)
+                                    @foreach($hls as $hl)
+                                        @if(is_array($hl))
                                         <div style="display:flex; align-items:center; gap:0.35rem; background:#f9fafb; border:1px solid #e5e7eb; padding:0.4rem 0.6rem; border-radius:6px;">
                                             @if(!empty($hl['icon']))
                                                 <img src="{{ asset('storage/' . $hl['icon']) }}" alt="{{ $hl['text'] ?? '' }}" style="width:1.5rem; height:1.5rem; object-fit:contain;">
@@ -940,13 +952,20 @@
                                                 <span style="font-size:0.75rem; font-weight:800; color:#374151;">{{ $hl['text'] }}</span>
                                             @endif
                                         </div>
+                                        @endif
                                     @endforeach
                                 </div>
+                                @endif
                             @endif
 
                             @if(!empty($product->certifications))
+                                @php
+                                    $certs = is_string($product->certifications) ? (json_decode($product->certifications, true) ?? []) : (is_iterable($product->certifications) ? $product->certifications : []);
+                                @endphp
+                                @if(is_iterable($certs) && count((array)$certs) > 0)
                                 <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
-                                    @foreach($product->certifications as $cert)
+                                    @foreach($certs as $cert)
+                                        @if(is_array($cert))
                                         <div style="display:flex; align-items:center; gap:0.35rem; background:#fff; border:1px solid #e5e7eb; padding:0.4rem 0.6rem; border-radius:6px;" title="{{ $cert['name'] ?? '' }}">
                                             @if(!empty($cert['image']))
                                                 <img src="{{ asset('storage/' . $cert['image']) }}" alt="{{ $cert['name'] ?? '' }}" style="height:1.5rem; width:auto; object-fit:contain;">
@@ -955,8 +974,10 @@
                                                 <span style="font-size:0.75rem; font-weight:800; color:#374151;">{{ $cert['name'] }}</span>
                                             @endif
                                         </div>
+                                        @endif
                                     @endforeach
                                 </div>
+                                @endif
                             @endif
                         </div>
                     @endif
@@ -987,13 +1008,18 @@
                     </div>
 
                     @if(!empty($product->features))
+                    @php
+                        $features = is_string($product->features) ? (json_decode($product->features, true) ?? []) : (is_iterable($product->features) ? $product->features : []);
+                    @endphp
+                    @if(is_iterable($features) && count((array)$features) > 0)
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'features' }">
                         <ul style="list-style-type:disc; padding-left:1.5rem; display:flex; flex-direction:column; gap:0.5rem; color:#4b5563; font-size:0.85rem;">
-                            @foreach($product->features as $f)
+                            @foreach($features as $f)
                                 <li>{{ is_array($f) ? ($f['feature'] ?? $f['text'] ?? '') : $f }}</li>
                             @endforeach
                         </ul>
                     </div>
+                    @endif
                     @endif
 
                     <div class="gk-tab-panel" :class="{ 'is-active': tab === 'specs' }">
@@ -1020,7 +1046,11 @@
                                     @endif
                                 @endif
                                 @if(!empty($product->custom_fields))
-                                    @foreach($product->custom_fields as $cf)
+                                    @php
+                                        $customFields = is_string($product->custom_fields) ? (json_decode($product->custom_fields, true) ?? []) : (is_iterable($product->custom_fields) ? $product->custom_fields : []);
+                                    @endphp
+                                    @if(is_iterable($customFields) && count((array)$customFields) > 0)
+                                    @foreach($customFields as $cf)
                                         @if(is_array($cf) && isset($cf['key']) && isset($cf['value']))
                                             <tr><td>{{ $cf['key'] }}</td><td>{{ $cf['value'] }}</td></tr>
                                         @elseif(is_array($cf))
@@ -1029,6 +1059,7 @@
                                             @endforeach
                                         @endif
                                     @endforeach
+                                    @endif
                                 @endif
                             </tbody>
                         </table>
