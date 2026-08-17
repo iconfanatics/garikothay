@@ -59,6 +59,12 @@ class AuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        if ($request->filled('phone')) {
+            $request->merge([
+                'phone' => preg_replace('/^(?:\+?88|0088)?(01[3-9]\d{8}|096\d{8})$/', '$1', $request->input('phone'))
+            ]);
+        }
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [

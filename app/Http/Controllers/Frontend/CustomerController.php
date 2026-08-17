@@ -147,6 +147,12 @@ class CustomerController extends Controller
 
     public function storeAddress(Request $request): RedirectResponse
     {
+        if ($request->filled('phone')) {
+            $request->merge([
+                'phone' => preg_replace('/^(?:\+?88|0088)?(01[3-9]\d{8}|096\d{8})$/', '$1', $request->input('phone'))
+            ]);
+        }
+
         $validated = $request->validate([
             'label' => 'required|string',
             'full_name' => 'required|string|max:255',
@@ -172,6 +178,12 @@ class CustomerController extends Controller
     public function updateAddress(Request $request, Address $address): RedirectResponse
     {
         abort_if($address->user_id !== auth()->id(), 403);
+
+        if ($request->filled('phone')) {
+            $request->merge([
+                'phone' => preg_replace('/^(?:\+?88|0088)?(01[3-9]\d{8}|096\d{8})$/', '$1', $request->input('phone'))
+            ]);
+        }
 
         $validated = $request->validate([
             'label' => 'required|string',

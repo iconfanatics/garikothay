@@ -16,6 +16,15 @@ class CheckoutRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('phone')) {
+            $this->merge([
+                'phone' => preg_replace('/^(?:\+?88|0088)?(01[3-9]\d{8}|096\d{8})$/', '$1', $this->input('phone')),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $emailRules = ['nullable', 'email', 'max:255'];
