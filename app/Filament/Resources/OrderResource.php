@@ -414,13 +414,13 @@ class OrderResource extends Resource
                                 ->label('Product')
                                 ->searchable()
                                 ->getSearchResultsUsing(function (string $search, Forms\Get $get): array {
-                                    $selectedProductIds = collect($get('../../items'))->pluck('product_id')->reject(fn($id) => $id === $get('product_id'))->filter()->toArray();
                                     return \App\Models\Product::where('stock_quantity', '>', 0)
-                                        ->when(count($selectedProductIds) > 0, fn($q) => $q->whereNotIn('id', $selectedProductIds))
+                                        ->where('is_active', true)
+                                        ->where('publish_status', 'Published')
                                         ->where(function($q) use ($search) {
                                             $q->where('sku', 'like', "%{$search}%")
                                               ->orWhereHas('translations', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
-                                              ->orWhereHas('variants', fn ($q3) => $q3->where('sku', 'like', "%{$search}%"));
+                                              ->orWhereHas('variants', fn ($q3) => $q3->where('sku', 'like', "%{$search}%")->where('stock_quantity', '>', 0));
                                         })
                                         ->limit(50)
                                         ->get()
@@ -450,19 +450,22 @@ class OrderResource extends Resource
                                 ->options(function (Forms\Get $get) {
                                     $productId = $get('product_id');
                                     if (! $productId) return [];
-                                    return \App\Models\ProductVariant::where('product_id', $productId)->get()->mapWithKeys(function ($v) {
-                                        $name = $v->name;
-                                        if (!$name) {
-                                            $v->loadMissing(['variantType.translations', 'variantValue.translations']);
-                                            if ($v->variantType && $v->variantValue) {
-                                                $name = $v->variantType->name . ': ' . $v->variantValue->name;
-                                            } else {
-                                                $name = 'Variant #' . $v->id;
+                                    return \App\Models\ProductVariant::where('product_id', $productId)
+                                        ->where('stock_quantity', '>', 0)
+                                        ->get()
+                                        ->mapWithKeys(function ($v) {
+                                            $name = $v->name;
+                                            if (!$name) {
+                                                $v->loadMissing(['variantType.translations', 'variantValue.translations']);
+                                                if ($v->variantType && $v->variantValue) {
+                                                    $name = $v->variantType->name . ': ' . $v->variantValue->name;
+                                                } else {
+                                                    $name = 'Variant #' . $v->id;
+                                                }
                                             }
-                                        }
-                                        $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
-                                        return [$v->id => (string) ($name . $skuText)];
-                                    });
+                                            $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
+                                            return [$v->id => (string) ($name . $skuText)];
+                                        });
                                 })
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
