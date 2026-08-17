@@ -72,11 +72,10 @@ class CategoryResource extends Resource
                         ->placeholder('None (Top Level)')
                         ->disabled(fn ($record) => $record?->is_locked),
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\FileUpload::make('icon')
-                            ->label('Icon Image')
-                            ->image()
-                            ->directory('categories/icons')
-                            ->maxSize(1024)
+                        Forms\Components\TextInput::make('icon')
+                            ->label('Icon Class (URL or Class name)')
+                            ->maxLength(255)
+                            ->placeholder('e.g. flaticon-car or https://...')
                             ->disabled(fn ($record) => $record?->is_locked),
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Sort Order')
