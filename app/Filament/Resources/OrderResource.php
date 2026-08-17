@@ -419,7 +419,8 @@ class OrderResource extends Resource
                                         ->when(count($selectedProductIds) > 0, fn($q) => $q->whereNotIn('id', $selectedProductIds))
                                         ->where(function($q) use ($search) {
                                             $q->where('sku', 'like', "%{$search}%")
-                                              ->orWhereHas('translations', fn ($q2) => $q2->where('name', 'like', "%{$search}%"));
+                                              ->orWhereHas('translations', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
+                                              ->orWhereHas('variants', fn ($q3) => $q3->where('sku', 'like', "%{$search}%"));
                                         })
                                         ->limit(50)
                                         ->get()
@@ -449,7 +450,19 @@ class OrderResource extends Resource
                                 ->options(function (Forms\Get $get) {
                                     $productId = $get('product_id');
                                     if (! $productId) return [];
-                                    return \App\Models\ProductVariant::where('product_id', $productId)->get()->mapWithKeys(fn ($v) => [$v->id => (string) ($v->name ?? 'Variant #'.$v->id)]);
+                                    return \App\Models\ProductVariant::where('product_id', $productId)->get()->mapWithKeys(function ($v) {
+                                        $name = $v->name;
+                                        if (!$name) {
+                                            $v->loadMissing(['variantType.translations', 'variantValue.translations']);
+                                            if ($v->variantType && $v->variantValue) {
+                                                $name = $v->variantType->name . ': ' . $v->variantValue->name;
+                                            } else {
+                                                $name = 'Variant #' . $v->id;
+                                            }
+                                        }
+                                        $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
+                                        return [$v->id => (string) ($name . $skuText)];
+                                    });
                                 })
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
