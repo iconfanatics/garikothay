@@ -177,7 +177,7 @@ class BlogResource extends Resource
                     Forms\Components\DateTimePicker::make("published_at")
                         ->label("Publish At")
                         ->nullable()
-                        ->rule(fn (string $context) => $context === 'create' ? 'after_or_equal:today' : null)
+                        ->minDate(fn (?Blog $record) => $record && $record->published_at && $record->published_at->isPast() ? $record->published_at : now())
                         ->visible(
                             fn(Forms\Get $get): bool => (bool) $get(
                                 "is_published",
