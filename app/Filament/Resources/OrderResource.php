@@ -407,7 +407,19 @@ class OrderResource extends Resource
                             Forms\Components\Select::make('product_id')
                                 ->label('Product')
                                 ->searchable()
-                                ->getSearchResultsUsing(fn (string $search): array => \App\Models\Product::where('sku', 'like', "%{$search}%")->orWhereHas('translations', fn ($q) => $q->where('name', 'like', "%{$search}%"))->limit(50)->get()->mapWithKeys(fn ($p) => [$p->id => $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '')])->toArray())
+                                ->getSearchResultsUsing(function (string $search, Forms\Get $get): array {
+                                    $selectedProductIds = collect($get('../../items'))->pluck('product_id')->reject(fn($id) => $id === $get('product_id'))->filter()->toArray();
+                                    return \App\Models\Product::where('stock_quantity', '>', 0)
+                                        ->when(count($selectedProductIds) > 0, fn($q) => $q->whereNotIn('id', $selectedProductIds))
+                                        ->where(function($q) use ($search) {
+                                            $q->where('sku', 'like', "%{$search}%")
+                                              ->orWhereHas('translations', fn ($q2) => $q2->where('name', 'like', "%{$search}%"));
+                                        })
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(fn ($p) => [$p->id => $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '')])
+                                        ->toArray();
+                                })
                                 ->getOptionLabelUsing(fn ($value): ?string => ($p = \App\Models\Product::find($value)) ? $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '') : null)
                                 ->preload()
                                 ->required()
