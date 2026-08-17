@@ -692,8 +692,14 @@
                             <li class="gk-category-row">
                                 <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
                                    class="gk-category-link {{ $parentIsActive ? 'is-active' : '' }}">
-                                    <span style="color:#e11d48;">{{ $category->icon ?? '⚙' }}</span>
-                                    <span>{{ $category->name }}</span>
+                                    <span style="color:#e11d48; flex-shrink: 0;">
+                                        @if($category->icon)
+                                            <img src="{{ Storage::url($category->icon) }}" class="w-4 h-4 object-contain" alt="">
+                                        @else
+                                            ⚙
+                                        @endif
+                                    </span>
+                                    <span class="truncate">{{ $category->name }}</span>
                                     @if($category->children->isNotEmpty())
                                         <span class="gk-category-arrow">›</span>
                                     @endif
