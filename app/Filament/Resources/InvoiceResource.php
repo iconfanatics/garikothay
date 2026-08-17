@@ -112,36 +112,46 @@ class InvoiceResource extends Resource
                 Forms\Components\Section::make('Financial Summary')->schema([
                     Forms\Components\TextInput::make('subtotal')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('discount_amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('shipping_amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('tax_amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('total')
                         ->label('Grand Total')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('paid_amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('due_amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                 ])->columns(3),
 
                 Forms\Components\Section::make('Payment Information')->schema([
                     Forms\Components\TextInput::make('payment_status')
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('payment_method')
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('transaction_id')
                         ->label('Transaction ID / Reference')
-                        ->readOnly(),
+                        ->readOnly()
+                        ->dehydrated(),
                 ])->columns(3),
 
                 Forms\Components\Section::make('Notes')->schema([
