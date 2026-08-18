@@ -41,10 +41,10 @@ class SetLocale
 
         // 3. Authenticated user preference
         if (!$isAdmin && $user = $request->user()) {
-            return in_array($user->locale, $this->supportedLocales) ? $user->locale : 'bn';
+            return in_array($user->locale, $this->supportedLocales) ? $user->locale : 'en';
         }
 
-        // Default: Admin defaults to English, frontend to Bangla
-        return $isAdmin ? 'en' : 'bn';
+        // Default: Admin defaults to English, frontend to English
+        return 'en';
     }
 }
