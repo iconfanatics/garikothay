@@ -21,7 +21,8 @@ class HomeController extends Controller
 
     public function index(): View
     {
-        $data = \Illuminate\Support\Facades\Cache::remember('homepage_data', 3600, function () {
+        $locale = app()->getLocale();
+        $data = \Illuminate\Support\Facades\Cache::remember("homepage_data_{$locale}", 3600, function () {
             return [
                 'heroBanners' => Banner::with('translations')->active()->where('type', 'hero_slider')->orderBy('sort_order')->get(),
                 'promoBanners' => Banner::with('translations')->active()->where('type', 'promotional')->orderBy('sort_order')->get(),

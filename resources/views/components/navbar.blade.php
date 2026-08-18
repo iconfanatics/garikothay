@@ -1,7 +1,8 @@
 @props(['siteName'])
 
 @php
-    $topMenuItems = \Illuminate\Support\Facades\Cache::remember('navbar_top_menu', 3600, function () {
+    $locale = app()->getLocale();
+    $topMenuItems = \Illuminate\Support\Facades\Cache::remember("navbar_top_menu_{$locale}", 3600, function () {
         return \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
             ? \App\Models\NavigationItem::with('translations')
                 ->where('group', 'top_nav')
@@ -12,7 +13,7 @@
             : collect();
     });
 
-    $searchCategories = \Illuminate\Support\Facades\Cache::remember('navbar_categories', 3600, function () {
+    $searchCategories = \Illuminate\Support\Facades\Cache::remember("navbar_categories_{$locale}", 3600, function () {
         return \Illuminate\Support\Facades\Schema::hasTable('categories')
             ? \App\Models\Category::query()
                 ->with(['translations', 'children' => fn ($query) => $query

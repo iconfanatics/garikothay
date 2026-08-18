@@ -38,9 +38,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Global cache clearing hooks
         $clearFrontendCache = function () {
-            \Illuminate\Support\Facades\Cache::forget('homepage_data');
-            \Illuminate\Support\Facades\Cache::forget('navbar_categories');
-            \Illuminate\Support\Facades\Cache::forget('navbar_top_menu');
+            foreach (['en', 'bn'] as $locale) {
+                \Illuminate\Support\Facades\Cache::forget("homepage_data_{$locale}");
+                \Illuminate\Support\Facades\Cache::forget("navbar_categories_{$locale}");
+                \Illuminate\Support\Facades\Cache::forget("navbar_top_menu_{$locale}");
+            }
         };
 
         \App\Models\Banner::saved($clearFrontendCache);
