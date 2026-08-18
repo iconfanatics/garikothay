@@ -328,7 +328,7 @@ public function brand()
         if (array_key_exists('reviews_avg_rating', $this->attributes)) {
             return round((float) ($this->attributes['reviews_avg_rating'] ?? 0), 1);
         }
-        return round($this->reviews()->where('is_approved', true)->avg('rating') ?? 0, 1);
+        return round((float) ($this->reviews()->where('is_approved', true)->avg('rating') ?? 0), 1);
     }
 
     public function isInStock(): bool
