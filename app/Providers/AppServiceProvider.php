@@ -47,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
 
         \App\Models\Banner::saved($clearFrontendCache);
         \App\Models\Banner::deleted($clearFrontendCache);
+        \App\Models\BannerTranslation::saved($clearFrontendCache);
+        \App\Models\BannerTranslation::deleted($clearFrontendCache);
         
         \App\Models\Category::saved($clearFrontendCache);
         \App\Models\Category::deleted($clearFrontendCache);
