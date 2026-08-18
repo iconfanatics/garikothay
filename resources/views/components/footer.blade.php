@@ -107,38 +107,42 @@
 
         </div>
 
+        @php
+            $locale = app()->getLocale();
+            $footerLinks = \Illuminate\Support\Facades\Cache::rememberForever("footer_links_{$locale}", function () {
+                return \App\Models\NavigationItem::with('translations')
+                    ->where('is_active', true)
+                    ->whereIn('group', ['footer_company', 'footer_business', 'footer_help', 'footer_legal'])
+                    ->orderBy('sort_order')
+                    ->get()
+                    ->groupBy('group');
+            });
+        @endphp
+
         <div>
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Company</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
-                <li><a href="{{ route('page.show', 'about-us') }}" class="hover:text-rose-400 transition">About Us</a></li>
-                <li><a href="{{ route('page.show', 'our-team') }}" class="hover:text-rose-400 transition">Our Team</a></li>
-                <li><a href="{{ route('page.show', 'careers') }}" class="hover:text-rose-400 transition">Careers</a></li>
-                <li><a href="{{ route('page.contact') }}" class="hover:text-rose-400 transition">Contact Us</a></li>
-                <li><a href="{{ route('page.show', 'press-and-media') }}" class="hover:text-rose-400 transition">Press & Media</a></li>
-                <li><a href="{{ route('page.show', 'partners') }}" class="hover:text-rose-400 transition">Partners</a></li>
+                @foreach($footerLinks->get('footer_company', []) as $link)
+                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                @endforeach
             </ul>
         </div>
         
         <div>
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Business</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
-                <li><a href="{{ route('page.show', 'why-list-with-us') }}" class="hover:text-rose-400 transition">Why List With Us</a></li>
-                <li><a href="{{ route('page.show', 'advertise-with-us') }}" class="hover:text-rose-400 transition">Advertise With Us</a></li>
-                <li><a href="{{ route('page.show', 'trust-and-verification') }}" class="hover:text-rose-400 transition">Trust & Verification</a></li>
-                <li><a href="{{ route('page.show', 'business-listing-plans') }}" class="hover:text-rose-400 transition">Business Listing Plans</a></li>
-                <li><a href="{{ route('page.show', 'partner-with-us') }}" class="hover:text-rose-400 transition">Partner With Us</a></li>
+                @foreach($footerLinks->get('footer_business', []) as $link)
+                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                @endforeach
             </ul>
         </div>
 
         <div>
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Help & Information</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
-                <li><a href="{{ route('page.show', 'feedback') }}" class="hover:text-rose-400 transition">Feedback</a></li>
-                <li><a href="{{ route('page.show', 'tips-and-guide') }}" class="hover:text-rose-400 transition">Tips & Guide</a></li>
-                <li><a href="{{ route('page.show', 'faq') }}" class="hover:text-rose-400 transition uppercase">FAQ</a></li>
-                <li><a href="{{ route('page.show', 'help-center') }}" class="hover:text-rose-400 transition">Help Center</a></li>
-                <li><a href="{{ route('page.show', 'report-a-problem') }}" class="hover:text-rose-400 transition">Report A Problem</a></li>
-                <li><a href="{{ route('page.show', 'safe-shopping-guidelines') }}" class="hover:text-rose-400 transition">Safe Shopping Guidelines</a></li>
+                @foreach($footerLinks->get('footer_help', []) as $link)
+                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                @endforeach
                 <li>🚚 Delivery Time: Inside Dhaka 5 Days, Outside Dhaka 10 Days</li>
             </ul>
         </div>
@@ -146,14 +150,9 @@
         <div>
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Legal & Policies</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
-                <li><a href="{{ route('page.show', 'privacy-policy') }}" class="hover:text-rose-400 transition">Privacy Policy</a></li>
-                <li><a href="{{ route('page.show', 'terms-and-conditions') }}" class="hover:text-rose-400 transition">Terms & Condition</a></li>
-                <li><a href="{{ route('page.show', 'delivery-policy') }}" class="hover:text-rose-400 transition">Delivery Policy</a></li>
-                <li><a href="{{ route('page.show', 'refund-and-return-policy') }}" class="hover:text-rose-400 transition">Refund & Return Policy</a></li>
-                <li><a href="{{ route('page.show', 'exchange-policy') }}" class="hover:text-rose-400 transition">Exchange Policy</a></li>
-                <li><a href="{{ route('page.show', 'cancellation-policy') }}" class="hover:text-rose-400 transition">Cancellation Policy</a></li>
-                <li><a href="{{ route('page.show', 'warranty-policy') }}" class="hover:text-rose-400 transition">Warranty Policy</a></li>
-                <li><a href="{{ route('page.show', 'emi-and-payment-policy') }}" class="hover:text-rose-400 transition uppercase">EMI & Payment Policy</a></li>
+                @foreach($footerLinks->get('footer_legal', []) as $link)
+                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                @endforeach
             </ul>
 
             @php $socialLinks = \App\Models\Setting::get('theme1_social_links'); @endphp

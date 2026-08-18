@@ -42,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
                 \Illuminate\Support\Facades\Cache::forget("homepage_data_{$locale}");
                 \Illuminate\Support\Facades\Cache::forget("navbar_categories_{$locale}");
                 \Illuminate\Support\Facades\Cache::forget("navbar_top_menu_{$locale}");
+                \Illuminate\Support\Facades\Cache::forget("footer_links_{$locale}");
             }
         };
 

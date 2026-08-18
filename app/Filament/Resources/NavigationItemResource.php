@@ -27,8 +27,10 @@ class NavigationItemResource extends Resource
                     Forms\Components\Select::make('group')
                         ->options([
                             'top_nav' => 'Top Navigation',
-                            'footer_quick_links' => 'Footer Quick Links',
-                            'footer_customer_service' => 'Footer Customer Service',
+                            'footer_company' => 'Footer: Company',
+                            'footer_business' => 'Footer: Business',
+                            'footer_help' => 'Footer: Help & Information',
+                            'footer_legal' => 'Footer: Legal & Policies',
                         ])
                         ->required()
                         ->default('top_nav'),
@@ -127,8 +129,10 @@ class NavigationItemResource extends Resource
                     ->label('Menu Location')
                     ->options([
                         'top_nav' => 'Top Navigation',
-                        'footer_quick_links' => 'Footer Quick Links',
-                        'footer_customer_service' => 'Footer Customer Service',
+                        'footer_company' => 'Footer: Company',
+                        'footer_business' => 'Footer: Business',
+                        'footer_help' => 'Footer: Help & Information',
+                        'footer_legal' => 'Footer: Legal & Policies',
                     ]),
                 Tables\Filters\Filter::make('created_at')
                     ->label('Date Range (Created)')
