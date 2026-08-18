@@ -1,26 +1,30 @@
 @props(['siteName'])
 
 @php
-    $topMenuItems = \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
-        ? \App\Models\NavigationItem::with('translations')
-            ->where('group', 'top_nav')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get()
-            ->map(fn($item) => ['label' => $item->label, 'href' => url($item->url ?? '#')])
-        : collect();
+    $topMenuItems = \Illuminate\Support\Facades\Cache::remember('navbar_top_menu', 3600, function () {
+        return \Illuminate\Support\Facades\Schema::hasTable('navigation_items') 
+            ? \App\Models\NavigationItem::with('translations')
+                ->where('group', 'top_nav')
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get()
+                ->map(fn($item) => ['label' => $item->label, 'href' => url($item->url ?? '#')])
+            : collect();
+    });
 
-    $searchCategories = \Illuminate\Support\Facades\Schema::hasTable('categories')
-        ? \App\Models\Category::query()
-            ->with(['translations', 'children' => fn ($query) => $query
-                ->with('translations')
+    $searchCategories = \Illuminate\Support\Facades\Cache::remember('navbar_categories', 3600, function () {
+        return \Illuminate\Support\Facades\Schema::hasTable('categories')
+            ? \App\Models\Category::query()
+                ->with(['translations', 'children' => fn ($query) => $query
+                    ->with('translations')
+                    ->active()
+                    ->orderBy('sort_order')])
+                ->whereNull('parent_id')
                 ->active()
-                ->orderBy('sort_order')])
-            ->whereNull('parent_id')
-            ->active()
-            ->orderBy('sort_order')
-            ->get()
-        : collect();
+                ->orderBy('sort_order')
+                ->get()
+            : collect();
+    });
 
     $requestedSearchCategory = request()->query('category');
     $selectedSearchCategorySlug = is_string($requestedSearchCategory) ? trim($requestedSearchCategory) : '';

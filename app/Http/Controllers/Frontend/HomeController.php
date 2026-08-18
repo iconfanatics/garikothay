@@ -21,14 +21,18 @@ class HomeController extends Controller
 
     public function index(): View
     {
-        return view('home', [
-            'heroBanners' => Banner::with('translations')->active()->where('type', 'hero_slider')->orderBy('sort_order')->get(),
-            'promoBanners' => Banner::with('translations')->active()->where('type', 'promotional')->orderBy('sort_order')->get(),
-            'categories' => $this->categoryRepository->getWithProductCount(),
-            'featured' => $this->productRepository->getFeatured(8),
-            'newArrivals' => $this->productRepository->getNewArrivals(8),
-            'reviews' => Review::with(['user', 'product.translations', 'product.images'])->approved()->latest()->limit(6)->get(),
-            'blogs' => Blog::with(['translations', 'category.translations'])->published()->latest()->limit(3)->get(),
-        ]);
+        $data = \Illuminate\Support\Facades\Cache::remember('homepage_data', 3600, function () {
+            return [
+                'heroBanners' => Banner::with('translations')->active()->where('type', 'hero_slider')->orderBy('sort_order')->get(),
+                'promoBanners' => Banner::with('translations')->active()->where('type', 'promotional')->orderBy('sort_order')->get(),
+                'categories' => $this->categoryRepository->getWithProductCount(),
+                'featured' => $this->productRepository->getFeatured(8),
+                'newArrivals' => $this->productRepository->getNewArrivals(8),
+                'reviews' => Review::with(['user', 'product.translations', 'product.images'])->approved()->latest()->limit(6)->get(),
+                'blogs' => Blog::with(['translations', 'category.translations'])->published()->latest()->limit(3)->get(),
+            ];
+        });
+
+        return view('home', $data);
     }
 }

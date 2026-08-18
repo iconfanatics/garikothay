@@ -36,6 +36,33 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(UserRegistered::class, SendWelcomeEmail::class);
         Event::listen(\Illuminate\Auth\Events\Login::class, \App\Listeners\UpdateLastLogin::class);
 
+        // Global cache clearing hooks
+        $clearFrontendCache = function () {
+            \Illuminate\Support\Facades\Cache::forget('homepage_data');
+            \Illuminate\Support\Facades\Cache::forget('navbar_categories');
+            \Illuminate\Support\Facades\Cache::forget('navbar_top_menu');
+        };
+
+        \App\Models\Banner::saved($clearFrontendCache);
+        \App\Models\Banner::deleted($clearFrontendCache);
+        
+        \App\Models\Category::saved($clearFrontendCache);
+        \App\Models\Category::deleted($clearFrontendCache);
+        
+        \App\Models\Product::saved($clearFrontendCache);
+        \App\Models\Product::deleted($clearFrontendCache);
+        
+        \App\Models\Review::saved($clearFrontendCache);
+        \App\Models\Review::deleted($clearFrontendCache);
+        
+        \App\Models\Blog::saved($clearFrontendCache);
+        \App\Models\Blog::deleted($clearFrontendCache);
+        
+        if (class_exists(\App\Models\NavigationItem::class)) {
+            \App\Models\NavigationItem::saved($clearFrontendCache);
+            \App\Models\NavigationItem::deleted($clearFrontendCache);
+        }
+
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability, $arguments = []) {
             if ($user instanceof \App\Models\Admin && $user->is_super_admin) {
                 if (in_array($ability, ['delete', 'forceDelete']) && isset($arguments[0])) {
