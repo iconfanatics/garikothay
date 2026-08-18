@@ -455,14 +455,6 @@ class OrderResource extends Resource
                                         ->get()
                                         ->mapWithKeys(function ($v) {
                                             $name = $v->name;
-                                            if (!$name) {
-                                                $v->loadMissing(['variantType.translations', 'variantValue.translations']);
-                                                if ($v->variantType && $v->variantValue) {
-                                                    $name = $v->variantType->name . ': ' . $v->variantValue->name;
-                                                } else {
-                                                    $name = 'Variant #' . $v->id;
-                                                }
-                                            }
                                             $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
                                             return [$v->id => (string) ($name . $skuText)];
                                         });

@@ -45,6 +45,26 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function getNameAttribute($value): string
+    {
+        if ($value) {
+            return $value;
+        }
+
+        if ($this->relationLoaded('variantType') && $this->relationLoaded('variantValue')) {
+            if ($this->variantType && $this->variantValue) {
+                return $this->variantType->name . ': ' . $this->variantValue->name;
+            }
+        } else {
+            $this->loadMissing(['variantType', 'variantValue']);
+            if ($this->variantType && $this->variantValue) {
+                return $this->variantType->name . ': ' . $this->variantValue->name;
+            }
+        }
+
+        return 'Variant #' . $this->id;
+    }
+
     public function getActiveDiscountAmountAttribute(): float
     {
         if (!$this->discount_amount || !$this->discount_type) {
