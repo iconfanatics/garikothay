@@ -81,6 +81,17 @@ class ProductRepository implements ProductRepositoryInterface
 
         if ($decrement) {
             $product->decrement('stock_quantity', $quantity);
+            
+            // Check if stock is 5 or below and alert admin
+            if ($product->stock_quantity <= 5) {
+                try {
+                    $adminEmail = \App\Models\Setting::get('email', 'support@garikothay.com');
+                    \Illuminate\Support\Facades\Notification::route('mail', $adminEmail)
+                        ->notify(new \App\Notifications\LowStockAdminNotification($product));
+                } catch (\Throwable $e) {
+                    // Silently fail
+                }
+            }
         } else {
             $product->increment('stock_quantity', $quantity);
         }

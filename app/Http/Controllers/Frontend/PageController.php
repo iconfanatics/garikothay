@@ -40,12 +40,25 @@ class PageController extends Controller
             'message' => 'required|string|max:2000',
         ]);
 
-        // Queue a simple notification email if mail is configured
+        $ticketNumber = 'TKT-' . strtoupper(\Illuminate\Support\Str::random(6));
+
+        // Send Auto-Responder to User
+        try {
+            Mail::to($data['email'])->send(new \App\Mail\ContactAutoResponderMail(
+                ticketNumber: $ticketNumber,
+                customerName: $data['name'],
+                messageSubject: $data['subject']
+            ));
+        } catch (\Throwable) {
+            // Silently fail
+        }
+
+        // Send raw notification to Admin
         try {
             Mail::raw(
-                "Name: {$data['name']}\nEmail: {$data['email']}\n\n{$data['message']}",
+                "Name: {$data['name']}\nEmail: {$data['email']}\nTicket: {$ticketNumber}\n\n{$data['message']}",
                 fn ($m) => $m->to(Setting::get('email', 'support@garikothay.com'))
-                             ->subject('Contact: ' . $data['subject'])
+                             ->subject("[{$ticketNumber}] Contact: " . $data['subject'])
             );
         } catch (\Throwable) {
             // Silently fail if mail not configured in dev

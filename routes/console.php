@@ -31,3 +31,9 @@ Schedule::call(function () {
         \Illuminate\Support\Facades\Log::warning("Low stock: {$product->name} has {$product->stock_quantity} remaining.");
     });
 })->dailyAt('08:00')->name('low-stock-alerts');
+
+// Send product review requests daily at 10am
+Schedule::command('app:send-review-requests')->dailyAt('10:00');
+
+// Send re-engagement special offers daily at 11am
+Schedule::command('app:send-reengagement-offer')->dailyAt('11:00');
