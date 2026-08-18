@@ -126,9 +126,9 @@
          class="fixed inset-0 z-50 overflow-y-auto" 
          style="display: none;">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" @click="open = false" aria-hidden="true"></div>
+            <div class="fixed inset-0 transition-opacity bg-gray-900/50 backdrop-blur-sm z-0" @click="open = false" aria-hidden="true"></div>
             
-            <div class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6" role="dialog" aria-modal="true">
+            <div class="relative z-10 inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6" role="dialog" aria-modal="true">
                 <div class="absolute top-0 right-0 pt-4 pr-4">
                     <button type="button" @click="open = false" class="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none">
                         <span class="sr-only">Close</span>
