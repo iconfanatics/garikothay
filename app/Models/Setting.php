@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Cache;
 class Setting extends Model
 {
     protected $fillable = ['group', 'key', 'value', 'type'];
+    
+    protected static ?\Illuminate\Support\Collection $loadedSettings = null;
 
     protected function casts(): array
     {
@@ -23,10 +25,17 @@ class Setting extends Model
     public static function get(string $key, mixed $default = null): mixed
     {
         try {
-            return Cache::remember("setting:{$key}", 3600, function () use ($key, $default) {
-                $setting = static::where('key', $key)->first();
-                return $setting ? $setting->getCastedValue() : $default;
-            });
+            if (self::$loadedSettings === null) {
+                self::$loadedSettings = Cache::remember('all_settings', 3600, function () {
+                    return static::all()->keyBy('key');
+                });
+            }
+
+            if (self::$loadedSettings->has($key)) {
+                return self::$loadedSettings->get($key)->getCastedValue();
+            }
+
+            return $default;
         } catch (QueryException) {
             return $default;
         }
@@ -35,7 +44,9 @@ class Setting extends Model
     public static function set(string $key, mixed $value): void
     {
         static::updateOrCreate(['key' => $key], ['value' => (string) $value]);
-        Cache::forget("setting:{$key}");
+        self::$loadedSettings = null;
+        Cache::forget('all_settings');
+        Cache::forget("setting:{$key}"); // Legacy fallback if needed
     }
 
     public function getCastedValue(): mixed

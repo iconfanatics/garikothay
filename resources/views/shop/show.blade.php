@@ -740,22 +740,45 @@
                     tab: 'desc',
                     basePrice: {{ $product->selling_price }},
                     baseOriginalPrice: {{ $product->original_price }},
-                    variants: @json($product->variants->where('is_active', true)->values()->map(function($v) { return ['id' => $v->id, 'price_modifier' => (float)$v->price_modifier]; })),
+                    variants: {!! json_encode($product->variants->where('is_active', true)->values()->map(function($v) {
+                        return [
+                            'id'             => $v->id,
+                            'selling_price'  => (float) $v->selling_price,
+                            'original_price' => (float) $v->original_price,
+                            'has_own_price'  => $v->price > 0,
+                            'price_modifier' => (float) $v->price_modifier,
+                            'images'         => $v->image_gallery ?? [],
+                        ];
+                    })) !!},
                     activePrice() {
-                        let price = this.basePrice;
                         if (this.selectedVariant) {
                             const variant = this.variants.find(v => v.id === this.selectedVariant);
-                            if (variant) price += variant.price_modifier;
+                            if (variant) {
+                                // If variant has its own absolute price, use it directly
+                                if (variant.has_own_price) return variant.selling_price;
+                                // Otherwise base + modifier
+                                return this.basePrice + variant.price_modifier;
+                            }
                         }
-                        return price;
+                        return this.basePrice;
                     },
                     activeOriginalPrice() {
-                        let price = this.baseOriginalPrice;
                         if (this.selectedVariant) {
                             const variant = this.variants.find(v => v.id === this.selectedVariant);
-                            if (variant) price += variant.price_modifier;
+                            if (variant) {
+                                if (variant.has_own_price) return variant.original_price;
+                                return this.baseOriginalPrice + variant.price_modifier;
+                            }
                         }
-                        return price;
+                        return this.baseOriginalPrice;
+                    },
+                    activeDiscountPct() {
+                        const orig = this.activeOriginalPrice();
+                        const sell = this.activePrice();
+                        if (orig > 0 && orig > sell) {
+                            return Math.round(((orig - sell) / orig) * 100);
+                        }
+                        return 0;
                     },
                     setZoom(event) {
                         const rect = event.currentTarget.getBoundingClientRect();
@@ -832,10 +855,12 @@
 
                     <div class="gk-price-box">
                         <span class="gk-price">৳<span x-text="activePrice().toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})"></span></span>
-                        @if($product->original_price > $product->selling_price)
+                        <template x-if="activeOriginalPrice() > activePrice()">
                             <span class="gk-old-price">৳<span x-text="activeOriginalPrice().toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})"></span></span>
-                            <span class="gk-save">SAVE {{ $product->discount_percentage }}%</span>
-                        @endif
+                        </template>
+                        <template x-if="activeDiscountPct() > 0">
+                            <span class="gk-save" x-text="'SAVE ' + activeDiscountPct() + '%'"></span>
+                        </template>
                     </div>
 
                     <p class="gk-short-copy">
@@ -847,12 +872,16 @@
                             <label style="display:block; margin-bottom:0.55rem; font-size:0.85rem; font-weight:900;">{{ __('general.select_variant') }}</label>
                             <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
                                 @foreach($product->variants->where('is_active', true) as $variant)
-                                    <button type="button" @click="selectedVariant = {{ $variant->id }}"
+                                    <button type="button"
+                                        @click="selectedVariant = {{ $variant->id }}"
                                         :class="{ 'is-active': selectedVariant === {{ $variant->id }} }"
                                         class="gk-variant-button">
                                         {{ $variant->name }}
-                                        @if($variant->price_modifier != 0)
-                                            ({{ $variant->price_modifier > 0 ? '+' : '' }}৳{{ number_format($variant->price_modifier, 0) }})
+                                        @if($variant->price > 0)
+                                            {{-- variant has its own absolute price --}}
+                                            <span style="font-size:0.78rem; opacity:0.8;"> — ৳{{ number_format($variant->selling_price, 0) }}</span>
+                                        @elseif($variant->price_modifier != 0)
+                                            <span style="font-size:0.78rem; opacity:0.8;">({{ $variant->price_modifier > 0 ? '+' : '' }}৳{{ number_format($variant->price_modifier, 0) }})</span>
                                         @endif
                                     </button>
                                 @endforeach

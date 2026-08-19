@@ -90,26 +90,26 @@ class ProductVariant extends Model
 
     public function getSellingPriceAttribute(): float
     {
-        $basePrice = $this->price > 0 ? $this->price : $this->product->selling_price + $this->price_modifier;
+        $basePrice = $this->price > 0 ? (float)$this->price : (float)$this->product->selling_price + (float)$this->price_modifier;
         
         if ($this->active_discount_amount > 0) {
-            $basePrice = $this->price > 0 ? $this->price : $this->product->price + $this->price_modifier;
-            return max(0, $basePrice - $this->active_discount_amount);
+            $basePrice = $this->price > 0 ? (float)$this->price : (float)$this->product->price + (float)$this->price_modifier;
+            return (float) max(0, $basePrice - $this->active_discount_amount);
         }
 
-        return max(0, $basePrice);
+        return (float) max(0, $basePrice);
     }
 
     public function getOriginalPriceAttribute(): float
     {
-        $basePrice = $this->price > 0 ? $this->price : $this->product->price + $this->price_modifier;
+        $basePrice = $this->price > 0 ? (float)$this->price : (float)$this->product->price + (float)$this->price_modifier;
 
         if ($this->active_discount_amount > 0) {
-            return $this->compare_price > $basePrice ? (float) $this->compare_price : $basePrice;
+            return $this->compare_price > $basePrice ? (float) $this->compare_price : (float)$basePrice;
         }
 
         if (!($this->price > 0) && $this->product->active_discount_amount > 0) {
-            return $this->product->original_price + $this->price_modifier;
+            return (float)$this->product->original_price + (float)$this->price_modifier;
         }
 
         return (float) ($this->compare_price ?? $basePrice);
