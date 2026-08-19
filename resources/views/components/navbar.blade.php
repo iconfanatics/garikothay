@@ -239,6 +239,11 @@
         background: transparent !important;
     }
 
+    .gk-main-menu a.is-active {
+        color: #fb7185 !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+
     .gk-main-menu .gk-menu-head {
         background: #e11d48;
         color: #ffffff !important;
@@ -493,8 +498,12 @@
         <div class="gk-nav-container">
             <div class="flex items-center gap-1 overflow-x-auto">
                 @foreach($topMenuItems as $item)
+                    @php
+                        $currentUrl = request()->url();
+                        $isActive = $currentUrl === $item['href'] || ($item['href'] !== url('/') && str_starts_with($currentUrl, $item['href']));
+                    @endphp
                     <a href="{{ $item['href'] }}"
-                        class="shrink-0 rounded-md px-3 py-3 text-sm font-medium transition">
+                        class="shrink-0 rounded-md px-3 py-3 text-sm font-medium transition {{ $isActive ? 'is-active' : '' }}">
                         {{ $item['label'] }}
                     </a>
                 @endforeach
@@ -540,14 +549,19 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
                 <div class="space-y-1">
+                    @php
+                        $isHomeActive = request()->url() === route('home');
+                    @endphp
                     <a href="{{ route('home') }}"
-                        class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ $isHomeActive ? 'bg-red-50 text-[var(--gk-red)]' : 'text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)]' }}">
+                        <svg class="w-5 h-5 {{ $isHomeActive ? 'text-[var(--gk-red)]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         {{ __('general.home') }}
                     </a>
                     
                     @foreach($topMenuItems as $item)
                         @php
+                            $currentUrl = request()->url();
+                            $isActive = $currentUrl === $item['href'] || ($item['href'] !== url('/') && str_starts_with($currentUrl, $item['href']));
                             // Skip duplicates if they added Shop or Blog to the top menu
                             $isShop = strtolower($item['label']) === 'shop' || strtolower($item['label']) === 'products';
                             $icon = $isShop 
@@ -555,8 +569,8 @@
                                 : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />';
                         @endphp
                         <a href="{{ $item['href'] }}"
-                            class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $icon !!}</svg>
+                            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ $isActive ? 'bg-red-50 text-[var(--gk-red)]' : 'text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)]' }}">
+                            <svg class="w-5 h-5 {{ $isActive ? 'text-[var(--gk-red)]' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $icon !!}</svg>
                             {{ $item['label'] }}
                         </a>
                     @endforeach
