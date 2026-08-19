@@ -463,16 +463,29 @@ class OrderResource extends Resource
                                 ->label('Variant (Optional)')
                                 ->options(function (Forms\Get $get) {
                                     $productId = $get('product_id');
-                                    if (! $productId) return [];
-                                    return \App\Models\ProductVariant::with(['variantType', 'variantValue'])
+                                    if (! $productId) {
+                                        return ['' => 'Debug: No Product ID. Select product first.'];
+                                    }
+                                    
+                                    $allVariants = \App\Models\ProductVariant::with(['variantType', 'variantValue'])
                                         ->where('product_id', $productId)
-                                        ->where('stock_quantity', '>', 0)
-                                        ->get()
-                                        ->mapWithKeys(function ($v) {
-                                            $name = $v->name;
-                                            $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
-                                            return [$v->id => (string) ($name . $skuText)];
-                                        });
+                                        ->get();
+                                    
+                                    if ($allVariants->isEmpty()) {
+                                        return ['' => 'Debug: Product ' . $productId . ' has 0 variants in DB'];
+                                    }
+
+                                    $inStockVariants = $allVariants->filter(fn($v) => $v->stock_quantity > 0);
+                                    
+                                    if ($inStockVariants->isEmpty()) {
+                                        return ['' => 'Debug: Found ' . $allVariants->count() . ' variants, but all have 0 stock!'];
+                                    }
+
+                                    return $inStockVariants->mapWithKeys(function ($v) {
+                                        $name = $v->name;
+                                        $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
+                                        return [$v->id => (string) ($name . $skuText)];
+                                    })->toArray();
                                 })
                                 ->live()
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
