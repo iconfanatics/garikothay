@@ -161,11 +161,8 @@ class AdminPanelProvider extends PanelProvider
                     .dark .fi-sidebar-item-button:hover { background-color: rgba(74, 222, 128, 0.8) !important; color: #111827 !important; }
                     .dark .fi-sidebar-item-button:hover .fi-sidebar-item-icon { color: #111827 !important; }
                     /* Prevent mobile background scroll bleed */
-                    aside.fi-sidebar { overscroll-behavior: contain !important; }
-                    div[x-show="isSidebarOpen"] { touch-action: none !important; overscroll-behavior: none !important; }
-                    @media (max-width: 1024px) {
-                        body:has(aside.fi-sidebar[style*="translate(0"]) { overflow: hidden !important; touch-action: pan-y !important; }
-                    }
+                    aside.fi-sidebar { overscroll-behavior: contain !important; touch-action: pan-y !important; }
+                    .fi-body-locked { overflow: hidden !important; touch-action: none !important; }
                 </style>
                 <script>
                     function saveTableScroll() {
@@ -184,45 +181,30 @@ class AdminPanelProvider extends PanelProvider
                         }
                     }
                     
-                    // Bulletproof prevent background scrolling for mobile sidebar (iOS Safari fix)
-                    let startY = 0;
-                    document.addEventListener("touchstart", function(e) {
-                        const nav = e.target.closest("aside.fi-sidebar .fi-sidebar-nav");
-                        if (nav) startY = e.touches[0].pageY;
-                    }, { passive: true });
-
-                    function preventMobileScroll() {
-                        document.addEventListener("touchmove", function(e) {
-                            const overlay = document.querySelector(".fi-sidebar-close-overlay");
-                            // Check if overlay is visible (sidebar is open on mobile)
-                            if (!overlay || window.getComputedStyle(overlay).display === "none") return;
-
-                            const nav = e.target.closest("aside.fi-sidebar .fi-sidebar-nav");
-                            if (!nav) {
-                                // Touching overlay or outside nav -> prevent scroll
-                                e.preventDefault();
-                                return;
+                    // Bulletproof prevent background scrolling for mobile sidebar using Alpine Store
+                    document.addEventListener("alpine:init", () => {
+                        Alpine.effect(() => {
+                            const sidebar = Alpine.store("sidebar");
+                            if (sidebar && sidebar.isOpen && window.innerWidth < 1024) {
+                                document.body.classList.add("fi-body-locked");
+                            } else {
+                                document.body.classList.remove("fi-body-locked");
                             }
-
-                            // Prevent scroll chaining within the nav
-                            const currentY = e.touches[0].pageY;
-                            const isScrollingUp = currentY > startY; 
-                            
-                            // 1px tolerance for exact bounds
-                            if (isScrollingUp && nav.scrollTop <= 1) {
-                                e.preventDefault();
-                            } else if (!isScrollingUp && nav.scrollTop + nav.clientHeight >= nav.scrollHeight - 1) {
-                                e.preventDefault();
+                        });
+                        
+                        window.addEventListener("resize", () => {
+                            const sidebar = Alpine.store("sidebar");
+                            if (sidebar && sidebar.isOpen && window.innerWidth >= 1024) {
+                                document.body.classList.remove("fi-body-locked");
+                            } else if (sidebar && sidebar.isOpen && window.innerWidth < 1024) {
+                                document.body.classList.add("fi-body-locked");
                             }
-                        }, { passive: false });
-                    }
+                        });
+                    });
                     
                     window.addEventListener("beforeunload", saveTableScroll);
                     document.addEventListener("livewire:navigating", saveTableScroll);
-                    document.addEventListener("DOMContentLoaded", () => {
-                        restoreTableScroll();
-                        preventMobileScroll();
-                    });
+                    document.addEventListener("DOMContentLoaded", restoreTableScroll);
                     document.addEventListener("livewire:navigated", restoreTableScroll);
                 </script>'
             );
