@@ -192,15 +192,13 @@ class ProductResource extends Resource
                             Forms\Components\DateTimePicker::make('published_at')
                                 ->label('Publish Date & Time')
                                 ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published']))
-                                ->minDate(fn (Forms\Get $get, ?Product $record) => $get('publish_status') === 'Scheduled' ? now() : null)
+                                ->minDate(now())
                                 ->rule(function (Forms\Get $get, ?Product $record) {
                                     return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
-                                        if ($get('publish_status') === 'Scheduled') {
-                                            $valueDate = \Carbon\Carbon::parse($value);
-                                            if (!$record || $record->published_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
-                                                if ($valueDate->isPast()) {
-                                                    $fail('Publish date & time cannot be in the past for Scheduled status.');
-                                                }
+                                        $valueDate = \Carbon\Carbon::parse($value);
+                                        if (!$record || $record->published_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                            if ($valueDate->isPast()) {
+                                                $fail('Publish date & time cannot be in the past.');
                                             }
                                         }
                                     };
@@ -208,16 +206,14 @@ class ProductResource extends Resource
                             Forms\Components\DateTimePicker::make('unpublished_at')
                                 ->label('Unpublish Date & Time')
                                 ->visible(fn (Forms\Get $get) => in_array($get('publish_status'), ['Scheduled', 'Published', 'Unpublished']))
-                                ->minDate(fn (Forms\Get $get, ?Product $record) => in_array($get('publish_status'), ['Scheduled', 'Published']) ? now() : null)
+                                ->minDate(now())
                                 ->after('published_at')
                                 ->rule(function (Forms\Get $get, ?Product $record) {
                                     return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
-                                        if (in_array($get('publish_status'), ['Scheduled', 'Published'])) {
-                                            $valueDate = \Carbon\Carbon::parse($value);
-                                            if (!$record || $record->unpublished_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
-                                                if ($valueDate->isPast()) {
-                                                    $fail('Unpublish date & time cannot be in the past.');
-                                                }
+                                        $valueDate = \Carbon\Carbon::parse($value);
+                                        if (!$record || $record->unpublished_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                            if ($valueDate->isPast()) {
+                                                $fail('Unpublish date & time cannot be in the past.');
                                             }
                                         }
                                     };
