@@ -440,6 +440,35 @@ class OrderResource extends Resource
                                         ->toArray();
                                 })
                                 ->getOptionLabelUsing(fn ($value): ?string => ($p = \App\Models\Product::find($value)) ? $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '') : null)
+                                ->disableOptionWhen(function (string $value, $state, Forms\Get $get) {
+                                    $items = $get('../../items') ?? [];
+                                    if ((string)$value === (string)$state) return false;
+                                    
+                                    $occurrences = 0;
+                                    foreach ($items as $item) {
+                                        if (($item['product_id'] ?? null) == $value) {
+                                            $occurrences++;
+                                        }
+                                    }
+                                    
+                                    if ($occurrences === 0) return false;
+                                    
+                                    $product = \App\Models\Product::withCount(['variants' => function($q) {
+                                        $q->where('is_active', true);
+                                    }])->find($value);
+                                    
+                                    if (!$product) return false;
+                                    
+                                    if ($product->variants_count === 0) {
+                                        return true; // Simple product, already added
+                                    }
+                                    
+                                    if ($occurrences >= $product->variants_count) {
+                                        return true; // All variants have been exhausted
+                                    }
+                                    
+                                    return false;
+                                })
                                 ->preload()
                                 ->required()
                                 ->live()
