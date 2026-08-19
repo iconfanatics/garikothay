@@ -283,7 +283,7 @@
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
             @if($headerLogo)
-                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto object-contain">
+                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-14 w-auto max-w-[220px] object-contain">
             @else
                 <span class="gk-brand-mark">G</span>
                 <span class="hidden sm:block leading-tight">
@@ -448,7 +448,7 @@
             <div class="w-1/3 flex justify-center">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
                     @if($headerLogo)
-                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-8 w-auto object-contain">
+                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto max-w-[160px] object-contain">
                     @else
                         <span class="gk-brand-mark">G</span>
                         <span class="leading-tight">
@@ -524,7 +524,7 @@
             <div class="flex items-center justify-between p-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
                     @if($headerLogo)
-                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-8 w-auto object-contain">
+                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto max-w-[150px] object-contain">
                     @else
                         <span class="gk-brand-mark">G</span>
                         <span class="font-bold text-lg text-gray-900">Menu</span>
