@@ -59,18 +59,10 @@
 
 <!-- Footer -->
 <footer class="bg-gray-900 text-gray-300 mt-16 py-12">
-    <div class="gk-footer-inner grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-6 md:gap-8">
-        <div class="md:col-span-2">
+    <div class="gk-footer-inner grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
+        <div class="min-w-0">
             <h3 class="text-white text-lg font-bold mb-4">
-                @php 
-                    $logo = \App\Models\Setting::get('theme1_footer_logo'); 
-                    if (is_string($logo) && str_starts_with($logo, '["')) {
-                        $decoded = json_decode($logo, true);
-                        if (is_array($decoded) && count($decoded) > 0) {
-                            $logo = $decoded[0];
-                        }
-                    }
-                @endphp
+                @php $logo = \App\Models\Setting::get('theme1_footer_logo'); @endphp
                 @if($logo)
                     <img src="{{ asset('storage/' . $logo) }}" alt="{{ config('app.name') }}"
                         class="h-10 w-auto object-contain">

@@ -38,16 +38,7 @@
     }
 
     $selectedSearchCategoryLabel = $selectedSearchCategory?->name ?? 'All Categories';
-        $headerLogo = \App\Models\Setting::get('theme1_header_logo') ?: \App\Models\Setting::get('site_logo');
-    if (is_string($headerLogo) && str_starts_with($headerLogo, '["')) {
-        $decoded = json_decode($headerLogo, true);
-        if (is_array($decoded) && count($decoded) > 0) {
-            $headerLogo = $decoded[0];
-        }
-    }
-    
-    // Debug info
-    // \Illuminate\Support\Facades\Log::info('Header Logo Check: ' . json_encode($headerLogo));
+    $headerLogo = \App\Models\Setting::get('site_logo') ?: \App\Models\Setting::get('theme1_header_logo');
 @endphp
 
 <style>
@@ -248,11 +239,6 @@
         background: transparent !important;
     }
 
-    .gk-main-menu a.is-active {
-        color: #ffffff !important;
-        background: #e11d48 !important;
-    }
-
     .gk-main-menu .gk-menu-head {
         background: #e11d48;
         color: #ffffff !important;
@@ -294,8 +280,46 @@
     <!-- Desktop Header Row -->
     <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:flex bg-gray-100 rounded-lg mt-2 mb-2">
 
-        <!-- Left section (Nav links & Icons) -->
-        <div class="hidden md:flex items-center justify-start gap-4 shrink-0">
+        <!-- Logo -->
+        <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
+            @if($headerLogo)
+                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-14 w-auto max-w-[220px] object-contain">
+            @else
+                <span class="gk-brand-mark">G</span>
+                <span class="hidden sm:block leading-tight">
+                    <span class="gk-brand-title">{{ $siteName }}</span>
+                    <span class="gk-brand-subtitle">Auto Marketplace</span>
+                </span>
+            @endif
+        </a>
+        <!-- Search (desktop) -->
+        <form action="{{ route('search.index') }}" method="GET"
+            class="relative hidden md:flex w-full max-w-2xl mx-4"
+            x-data="{
+                categoryOpen: false,
+                selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
+                selectedCategoryLabel: {{ \Illuminate\Support\Js::from($selectedSearchCategoryLabel) }}
+            }">
+            <div class="gk-search-box flex w-full transition">
+                <!-- Category dropdown removed as requested -->
+                <input type="hidden" name="category" x-model="selectedCategory">
+                <input type="text" name="q" value="{{ request('q') }}"
+                    placeholder="Search for car parts, brands, services..."
+                    required minlength="2"
+                    oninvalid="this.setCustomValidity('Please type something to search.')"
+                    oninput="this.setCustomValidity('')"
+                    class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
+                <button type="submit" class="gk-search-button rounded-r-[4px] text-white px-4 py-2 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <!-- Desktop right section -->
+        <div class="hidden md:flex items-center justify-end gap-4">
             <!-- Nav links -->
             <a href="{{ route('home') }}"
                 class="hidden gk-link text-sm font-medium text-gray-700 transition">
@@ -353,15 +377,15 @@
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @endif
-                        <span class="whitespace-nowrap truncate max-w-[120px]">{{ auth()->user()->name }}</span>
-                        <svg class="w-3 h-3 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                        <span>{{ auth()->user()->name }}</span>
+                        <svg class="w-3 h-3" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
                     <div x-show="open" x-cloak @click.away="open = false" x-transition
-                        class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
                         <a href="{{ route('customer.dashboard') }}"
                             class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -407,48 +431,10 @@
                 </a>
             @endauth
         </div>
-
-        <!-- Search (desktop) -->
-        <form action="{{ route('search.index') }}" method="GET"
-            class="relative hidden md:flex w-full max-w-2xl mx-4"
-            x-data="{
-                categoryOpen: false,
-                selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
-                selectedCategoryLabel: {{ \Illuminate\Support\Js::from($selectedSearchCategoryLabel) }}
-            }">
-            <div class="gk-search-box flex w-full transition">
-                <input type="hidden" name="category" x-model="selectedCategory">
-                <input type="text" name="q" value="{{ request('q') }}"
-                    placeholder="Search for car parts, brands, services..."
-                    required minlength="2"
-                    oninvalid="this.setCustomValidity('Please type something to search.')"
-                    oninput="this.setCustomValidity('')"
-                    class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
-                <button type="submit" class="gk-search-button rounded-r-[4px] text-white px-4 py-2 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
-            </div>
-        </form>
-
-        <!-- Logo -->
-        <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
-            @if($headerLogo)
-                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-14 w-auto max-w-[220px] object-contain" style="height: 56px; max-width: 220px;">
-            @else
-                <span class="gk-brand-mark">G</span>
-                <span class="hidden sm:block leading-tight text-right">
-                    <span class="gk-brand-title block">{{ $siteName }}</span>
-                    <span class="gk-brand-subtitle block">Auto Marketplace</span>
-                </span>
-            @endif
-        </a>
     </div>
 
     <!-- Mobile Header Container -->
-    <div class="md:hidden flex flex-col bg-gray-100">
+    <div class="md:hidden flex flex-col">
         <!-- Top Row: Hamburger, Logo, Cart -->
         <div class="flex items-center justify-between px-4 py-3">
             <div class="w-1/3 flex justify-start">
@@ -462,7 +448,7 @@
             <div class="w-1/3 flex justify-center">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
                     @if($headerLogo)
-                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto max-w-[160px] object-contain" style="height: 40px; max-width: 160px;">
+                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto max-w-[160px] object-contain">
                     @else
                         <span class="gk-brand-mark">G</span>
                         <span class="leading-tight">
@@ -507,12 +493,8 @@
         <div class="gk-nav-container">
             <div class="flex items-center gap-1 overflow-x-auto">
                 @foreach($topMenuItems as $item)
-                    @php
-                        $currentUrl = request()->url();
-                        $isActive = $currentUrl === $item['href'] || ($item['href'] !== url('/') && str_starts_with($currentUrl, $item['href']));
-                    @endphp
                     <a href="{{ $item['href'] }}"
-                        class="shrink-0 rounded-md px-3 py-3 text-sm font-medium transition {{ $isActive ? 'is-active' : '' }}">
+                        class="shrink-0 rounded-md px-3 py-3 text-sm font-medium transition">
                         {{ $item['label'] }}
                     </a>
                 @endforeach
@@ -542,7 +524,7 @@
             <div class="flex items-center justify-between p-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
                     @if($headerLogo)
-                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto max-w-[150px] object-contain" style="height: 40px; max-width: 150px;">
+                        <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-10 w-auto max-w-[150px] object-contain">
                     @else
                         <span class="gk-brand-mark">G</span>
                         <span class="font-bold text-lg text-gray-900">Menu</span>
@@ -558,19 +540,14 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
                 <div class="space-y-1">
-                    @php
-                        $isHomeActive = request()->url() === route('home');
-                    @endphp
                     <a href="{{ route('home') }}"
-                        class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ $isHomeActive ? 'bg-[var(--gk-red)] text-white' : 'text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)]' }}">
-                        <svg class="w-5 h-5 {{ $isHomeActive ? 'text-white' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         {{ __('general.home') }}
                     </a>
                     
                     @foreach($topMenuItems as $item)
                         @php
-                            $currentUrl = request()->url();
-                            $isActive = $currentUrl === $item['href'] || ($item['href'] !== url('/') && str_starts_with($currentUrl, $item['href']));
                             // Skip duplicates if they added Shop or Blog to the top menu
                             $isShop = strtolower($item['label']) === 'shop' || strtolower($item['label']) === 'products';
                             $icon = $isShop 
@@ -578,8 +555,8 @@
                                 : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />';
                         @endphp
                         <a href="{{ $item['href'] }}"
-                            class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ $isActive ? 'bg-[var(--gk-red)] text-white' : 'text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)]' }}">
-                            <svg class="w-5 h-5 {{ $isActive ? 'text-white' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $icon !!}</svg>
+                            class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $icon !!}</svg>
                             {{ $item['label'] }}
                         </a>
                     @endforeach
