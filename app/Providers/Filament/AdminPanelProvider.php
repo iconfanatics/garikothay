@@ -184,18 +184,35 @@ class AdminPanelProvider extends PanelProvider
                         }
                     }
                     
-                    // Prevent background scrolling when mobile sidebar is open
+                    // Bulletproof prevent background scrolling for mobile sidebar (iOS Safari fix)
+                    let startY = 0;
+                    document.addEventListener("touchstart", function(e) {
+                        const nav = e.target.closest("aside.fi-sidebar .fi-sidebar-nav");
+                        if (nav) startY = e.touches[0].pageY;
+                    }, { passive: true });
+
                     function preventMobileScroll() {
                         document.addEventListener("touchmove", function(e) {
-                            const sidebar = document.querySelector("aside.fi-sidebar");
-                            // If sidebar is open (checking if it has translate-x-0 or similar open class)
-                            // Filament v3 usually puts x-show overlay
-                            const overlay = document.querySelector(".fi-sidebar-overlay");
-                            if (overlay && window.getComputedStyle(overlay).display !== "none") {
-                                // If the touch is on the overlay itself, prevent it
-                                if (e.target.closest(".fi-sidebar-overlay")) {
-                                    e.preventDefault();
-                                }
+                            const overlay = document.querySelector(".fi-sidebar-close-overlay");
+                            // Check if overlay is visible (sidebar is open on mobile)
+                            if (!overlay || window.getComputedStyle(overlay).display === "none") return;
+
+                            const nav = e.target.closest("aside.fi-sidebar .fi-sidebar-nav");
+                            if (!nav) {
+                                // Touching overlay or outside nav -> prevent scroll
+                                e.preventDefault();
+                                return;
+                            }
+
+                            // Prevent scroll chaining within the nav
+                            const currentY = e.touches[0].pageY;
+                            const isScrollingUp = currentY > startY; 
+                            
+                            // 1px tolerance for exact bounds
+                            if (isScrollingUp && nav.scrollTop <= 1) {
+                                e.preventDefault();
+                            } else if (!isScrollingUp && nav.scrollTop + nav.clientHeight >= nav.scrollHeight - 1) {
+                                e.preventDefault();
                             }
                         }, { passive: false });
                     }
