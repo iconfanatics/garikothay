@@ -459,12 +459,9 @@ class OrderResource extends Resource
                                     
                                     if (!$product) return false;
                                     
-                                    if ($product->variants_count === 0) {
-                                        return true; // Simple product, already added
-                                    }
-                                    
-                                    if ($occurrences >= $product->variants_count) {
-                                        return true; // All variants have been exhausted
+                                    // A product can be added as many times as its variants + 1 (for the base product itself)
+                                    if ($occurrences > $product->variants_count) {
+                                        return true; // All combinations exhausted
                                     }
                                     
                                     return false;
