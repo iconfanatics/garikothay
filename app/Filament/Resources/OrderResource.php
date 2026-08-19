@@ -487,6 +487,13 @@ class OrderResource extends Resource
                                             $set('total_price', $price * (float) $get('quantity'));
                                             $updateParentTotals($get, $set);
                                         }
+                                    } else {
+                                        $product = \App\Models\Product::find($get('product_id'));
+                                        if ($product) {
+                                            $set('unit_price', $product->selling_price);
+                                            $set('total_price', $product->selling_price * (float) $get('quantity'));
+                                            $updateParentTotals($get, $set);
+                                        }
                                     }
                                 }),
                             Forms\Components\TextInput::make('quantity')
