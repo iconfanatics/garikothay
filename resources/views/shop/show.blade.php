@@ -887,13 +887,15 @@
                                         @click="selectedVariant = (selectedVariant === {{ $variant->id }} ? null : {{ $variant->id }})"
                                         :class="{ 'is-active': selectedVariant === {{ $variant->id }} }"
                                         class="gk-variant-button">
-                                        {{ $variant->name }}
-                                        @if($variant->price > 0)
-                                            {{-- variant has its own absolute price --}}
-                                            <span style="font-size:0.78rem; opacity:0.8;"> — ৳{{ number_format($variant->selling_price, 0) }}</span>
-                                        @elseif($variant->price_modifier != 0)
-                                            <span style="font-size:0.78rem; opacity:0.8;">({{ $variant->price_modifier > 0 ? '+' : '' }}৳{{ number_format($variant->price_modifier, 0) }})</span>
-                                        @endif
+                                        @php
+                                            $displayName = $variant->name;
+                                            if ($variant->variantValue) {
+                                                $displayName = $variant->variantValue->name;
+                                            } else if (str_contains($displayName, ':')) {
+                                                $displayName = trim(explode(':', $displayName)[1]);
+                                            }
+                                        @endphp
+                                        {{ $displayName }}
                                     </button>
                                 @endforeach
                             </div>
