@@ -5,9 +5,19 @@
         $siteName = $meta['siteName'];
     @endphp
 
-    @push('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        /* Force hide the default Filament header and logo on this custom page */
+        header.fi-simple-header,
+        .fi-simple-header,
+        .fi-logo {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+        }
+        
         .fi-simple-main {
             background: transparent !important;
             box-shadow: none !important;
@@ -19,12 +29,6 @@
         }
         .fi-simple-main-ctn {
             padding: 0 !important;
-        }
-        .fi-simple-header {
-            display: none !important;
-        }
-        .fi-logo {
-            display: none !important;
         }
         .fi-simple-layout {
             background-color: #f8fafc;
@@ -292,7 +296,6 @@
             background: #be123c;
         }
     </style>
-    @endpush
 
     <x-navbar :site-name="$siteName" />
 
