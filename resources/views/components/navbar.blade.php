@@ -38,7 +38,13 @@
     }
 
     $selectedSearchCategoryLabel = $selectedSearchCategory?->name ?? 'All Categories';
-    $headerLogo = \App\Models\Setting::get('site_logo') ?: \App\Models\Setting::get('theme1_header_logo');
+    $headerLogo = \App\Models\Setting::get('theme1_header_logo') ?: \App\Models\Setting::get('site_logo');
+    if (is_string($headerLogo) && str_starts_with($headerLogo, '["')) {
+        $decoded = json_decode($headerLogo, true);
+        if (is_array($decoded) && count($decoded) > 0) {
+            $headerLogo = $decoded[0];
+        }
+    }
 @endphp
 
 <style>
