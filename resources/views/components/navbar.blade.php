@@ -99,10 +99,10 @@
     }
 
     .gk-desktop-header {
-        display: grid;
-        grid-template-columns: auto minmax(260px, 1fr) auto;
+        display: flex;
+        justify-content: center;
         align-items: center;
-        gap: 1.5rem;
+        gap: 2rem;
     }
 
     .gk-nav-container {
@@ -292,7 +292,7 @@
 
 <nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }" x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''; document.documentElement.style.overflow = mobileOpen ? 'hidden' : '';">
     <!-- Desktop Header Row -->
-    <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:grid bg-gray-100 rounded-lg mt-2 mb-2">
+    <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:flex bg-gray-100 rounded-lg mt-2 mb-2">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
@@ -308,7 +308,7 @@
         </a>
         <!-- Search (desktop) -->
         <form action="{{ route('search.index') }}" method="GET"
-            class="relative hidden md:flex w-full max-w-2xl mr-auto ml-2"
+            class="relative hidden md:flex w-full max-w-2xl mx-4"
             x-data="{
                 categoryOpen: false,
                 selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
@@ -333,7 +333,7 @@
         </form>
 
         <!-- Desktop right section -->
-        <div class="hidden md:flex items-center justify-end gap-4">
+        <div class="hidden md:flex items-center justify-end gap-4 shrink-0">
             <!-- Nav links -->
             <a href="{{ route('home') }}"
                 class="hidden gk-link text-sm font-medium text-gray-700 transition">

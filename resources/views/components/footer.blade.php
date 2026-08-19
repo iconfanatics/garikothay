@@ -62,7 +62,15 @@
     <div class="gk-footer-inner grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 lg:gap-8">
         <div class="lg:col-span-2">
             <h3 class="text-white text-lg font-bold mb-4">
-                @php $logo = \App\Models\Setting::get('theme1_footer_logo'); @endphp
+                @php 
+                    $logo = \App\Models\Setting::get('theme1_footer_logo'); 
+                    if (is_string($logo) && str_starts_with($logo, '["')) {
+                        $decoded = json_decode($logo, true);
+                        if (is_array($decoded) && count($decoded) > 0) {
+                            $logo = $decoded[0];
+                        }
+                    }
+                @endphp
                 @if($logo)
                     <img src="{{ asset('storage/' . $logo) }}" alt="{{ config('app.name') }}"
                         class="h-10 w-auto object-contain">
