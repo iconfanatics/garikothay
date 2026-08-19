@@ -53,6 +53,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors(["primary" => Color::hex("#2D6A4F")])
             ->brandName(\App\Models\Setting::get('site_name', 'Garikothay') . ' Admin')
             ->brandLogo(fn () => \App\Models\Setting::get('site_logo') ? asset('storage/' . \App\Models\Setting::get('site_logo')) : null)
+            ->brandLogoHeight('3rem')
             ->authGuard("admin")
             ->userMenuItems([
                 MenuItem::make()
