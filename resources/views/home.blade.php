@@ -918,50 +918,7 @@
 
 @section('content')
 @php
-    $fallbackSlides = collect([
-        [
-            'tag' => 'Mega Sale',
-            'title' => 'Car Parts Mega Sale',
-            'subtitle' => 'Up to 50% off on genuine engine, brake & suspension parts.',
-            'button' => 'Shop Sale',
-            'link' => route('shop.index'),
-            'image' => 'https://loremflickr.com/1200/600/car%2Cparts%2Cgarage?lock=1567',
-        ],
-        [
-            'tag' => 'Genuine Only',
-            'title' => '100% Genuine Parts Collection',
-            'subtitle' => 'Original parts from Brembo, Bosch, NGK, Mobil 1 & more.',
-            'button' => 'Explore Brands',
-            'link' => route('shop.index'),
-            'image' => 'https://loremflickr.com/1200/600/car%2Cengine%2Cparts?lock=1582',
-        ],
-        [
-            'tag' => 'Service',
-            'title' => 'Garage Services Near You',
-            'subtitle' => 'Book trusted garages with verified ratings & live availability.',
-            'button' => 'Find Garages',
-            'link' => '#vehicle-services',
-            'image' => 'https://loremflickr.com/1200/600/car%2Cmechanic%2Cgarage?lock=1837',
-        ],
-        [
-            'tag' => 'Track Live',
-            'title' => 'GPS Tracking Solutions',
-            'subtitle' => 'Devices + installation + 24/7 monitoring plans.',
-            'button' => 'See Plans',
-            'link' => '#vehicle-services',
-            'image' => 'https://loremflickr.com/1200/600/car%2Cdashboard%2Ctracker?lock=2082',
-        ],
-        [
-            'tag' => 'Detailing',
-            'title' => 'Car Wash & Detailing',
-            'subtitle' => 'Book a wash, get a sparkle. Packages from ৳299.',
-            'button' => 'Book Wash',
-            'link' => '#vehicle-services',
-            'image' => 'https://loremflickr.com/1200/600/car%2Cwash%2Cdetailing?lock=1778',
-        ],
-    ]);
-
-    $slides = $heroBanners->isEmpty() ? $fallbackSlides : $heroBanners->map(function($banner) {
+    $slides = $heroBanners->map(function($banner) {
         return [
             'tag' => $banner->type->label(),
             'title' => $banner->title,
@@ -1073,7 +1030,7 @@
 @endphp
 
 <div class="gk-page">
-    @if(\App\Models\Setting::get('theme1_show_hero', true))
+    @if(\App\Models\Setting::get('theme1_show_hero', true) && $slides->isNotEmpty())
     <section class="gk-hero-wrap">
         <div class="gk-container gk-hero-grid">
             <!-- Sidebar categories removed -->
