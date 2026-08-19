@@ -342,11 +342,16 @@
 
             <!-- Wishlist -->
             <a href="{{ auth()->check() ? route('wishlist.index') : route('login') }}"
-                class="gk-icon-link relative text-gray-600 transition">
+                class="gk-icon-link relative text-gray-600 transition"
+                x-data="{ count: {{ auth()->check() ? auth()->user()->wishlists()->count() : 0 }} }"
+                @wishlist-updated.window="count = $event.detail.count">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
+                <span x-show="count > 0" x-text="count" x-cloak
+                    class="absolute -top-2 -right-2 bg-[var(--gk-red)] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                </span>
             </a>
 
             <!-- Cart -->

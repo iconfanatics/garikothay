@@ -30,7 +30,11 @@ class WishlistController extends Controller
 
         if ($existing) {
             $existing->delete();
-            return response()->json(['added' => false, 'message' => 'Removed from wishlist']);
+            return response()->json([
+                'added' => false, 
+                'message' => 'Removed from wishlist',
+                'count' => auth()->user()->wishlists()->count()
+            ]);
         }
 
         Wishlist::create([
@@ -38,6 +42,10 @@ class WishlistController extends Controller
             'product_id' => $request->integer('product_id'),
         ]);
 
-        return response()->json(['added' => true, 'message' => 'Added to wishlist']);
+        return response()->json([
+            'added' => true, 
+            'message' => 'Added to wishlist',
+            'count' => auth()->user()->wishlists()->count()
+        ]);
     }
 }

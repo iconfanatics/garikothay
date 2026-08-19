@@ -909,13 +909,24 @@
                         @endif
 
                         @auth
-                            <button type="button" class="gk-product-btn gk-product-btn-icon" @click="
-                                fetch('/wishlist/toggle', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                                    body: JSON.stringify({product_id: {{ $product->id }}})
-                                }).then(r => r.json()).then(() => this.$dispatch('toast', { message: 'Wishlist updated' }));
-                            ">♡</button>
+                            <button type="button" class="gk-product-btn gk-product-btn-icon" 
+                                x-data="{ inWishlist: {{ auth()->user()->wishlists()->where('product_id', $product->id)->exists() ? 'true' : 'false' }} }"
+                                @click="
+                                    fetch('/wishlist/toggle', {
+                                        method: 'POST',
+                                        headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                                        body: JSON.stringify({product_id: {{ $product->id }}})
+                                    }).then(r => r.json()).then(data => {
+                                        inWishlist = data.added;
+                                        $dispatch('toast', { message: data.message });
+                                        $dispatch('wishlist-updated', { count: data.count });
+                                    });
+                                "
+                                :style="inWishlist ? 'color: var(--gk-red);' : ''"
+                                x-text="inWishlist ? '♥' : '♡'"
+                            >
+                                {{ auth()->user()->wishlists()->where('product_id', $product->id)->exists() ? '♥' : '♡' }}
+                            </button>
                         @else
                             <a href="{{ route('login') }}" class="gk-product-btn gk-product-btn-icon">♡</a>
                         @endauth
