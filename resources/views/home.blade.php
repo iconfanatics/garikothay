@@ -74,7 +74,7 @@
         font-size: clamp(1.55rem, 3vw, 2rem);
         line-height: 1.1;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-section-subtitle {
@@ -143,7 +143,7 @@
         padding: 0 1rem;
         font-size: 0.82rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-sidebar-link {
@@ -228,7 +228,7 @@
         padding: 0.35rem 0.8rem;
         font-size: 0.72rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-hero-title {
@@ -237,7 +237,7 @@
         font-size: clamp(2rem, 4.2vw, 3.6rem);
         line-height: 1.02;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-hero-copy {
@@ -367,7 +367,7 @@
     .gk-mini-promo span {
         font-size: 0.72rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
         opacity: 0.8;
     }
 
@@ -539,7 +539,7 @@
         color: var(--gk-muted) !important;
         font-size: 0.68rem;
         letter-spacing: 0.08em;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-product-grid > div h3 {
@@ -606,7 +606,7 @@
         margin-top: 1rem;
         font-size: 1.15rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-service-card p {
@@ -711,7 +711,7 @@
         margin-top: 0.3rem;
         font-size: 0.72rem;
         font-weight: 700;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: rgba(255,255,255,0.7);
     }
 
@@ -767,14 +767,14 @@
         font-size: 0.72rem;
         font-weight: 900;
         letter-spacing: 0.12em;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-partners-title {
         margin-top: 0.25rem;
         font-size: clamp(1.35rem, 3vw, 1.7rem);
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-partner-track {
@@ -797,7 +797,7 @@
         font-family: 'Oswald', 'Inter', sans-serif;
         font-size: 1.15rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
         white-space: nowrap;
     }
 
@@ -871,7 +871,7 @@
         color: var(--gk-primary);
         font-size: 0.74rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-blog-title {
@@ -1177,7 +1177,7 @@
     <section class="gk-section" id="vehicle-services">
         <div class="gk-container">
             <div style="max-width: 720px; margin: 0 auto 2rem; text-align: center;">
-                <div style="color: var(--gk-primary); font-size: 0.75rem; font-weight: 900; text-transform: uppercase;">All-in-One</div>
+                <div style="color: var(--gk-primary); font-size: 0.75rem; font-weight: 900; text-transform: capitalize;">All-in-One</div>
                 <h2 class="gk-section-title" style="margin-top: 0.35rem;">Automotive Services</h2>
                 <p class="gk-section-subtitle">Everything your vehicle needs. Discover, book and manage services across Bangladesh.</p>
             </div>
@@ -1245,7 +1245,7 @@
         <div class="gk-container">
             <div class="gk-app-promo">
                 <div>
-                    <div style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.72);">Mobile App</div>
+                    <div style="font-size:0.75rem; font-weight:900; text-transform:capitalize; color:rgba(255,255,255,0.72);">Mobile App</div>
                     <h2 class="gk-section-title" style="margin-top:0.4rem; color:#ffffff;">Take Gari Kothay With You</h2>
                     <p style="max-width:520px; margin-top:0.75rem; color:rgba(255,255,255,0.78); line-height:1.7;">Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.</p>
                     <div class="gk-store-buttons">
