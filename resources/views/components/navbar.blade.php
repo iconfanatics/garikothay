@@ -382,8 +382,8 @@
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @endif
-                        <span>{{ auth()->user()->name }}</span>
-                        <svg class="w-3 h-3" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                        <span class="whitespace-nowrap truncate max-w-[120px]">{{ auth()->user()->name }}</span>
+                        <svg class="w-3 h-3 shrink-0" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M19 9l-7 7-7-7" />
