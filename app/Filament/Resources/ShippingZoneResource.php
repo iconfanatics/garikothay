@@ -22,7 +22,7 @@ class ShippingZoneResource extends Resource
 
     public static function form(Form $form): Form
     {
-                $locations = json_decode(file_get_contents(storage_path('app/bd_locations.json')), true);
+                $locations = config('locations', []);
 
         return $form
             ->schema([
