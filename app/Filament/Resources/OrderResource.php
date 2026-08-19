@@ -413,10 +413,14 @@ class OrderResource extends Resource
                             Forms\Components\Select::make('product_id')
                                 ->label('Product')
                                 ->searchable()
-                                ->getSearchResultsUsing(function (string $search, Forms\Get $get): array {
-                                    return \App\Models\Product::where('stock_quantity', '>', 0)
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    return \App\Models\Product::with('variants')
                                         ->where('is_active', true)
                                         ->where('publish_status', 'Published')
+                                        ->where(function($q) {
+                                            $q->where('stock_quantity', '>', 0)
+                                              ->orWhereHas('variants', fn($q2) => $q2->where('stock_quantity', '>', 0));
+                                        })
                                         ->where(function($q) use ($search) {
                                             $q->where('sku', 'like', "%{$search}%")
                                               ->orWhereHas('translations', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
@@ -424,7 +428,16 @@ class OrderResource extends Resource
                                         })
                                         ->limit(50)
                                         ->get()
-                                        ->mapWithKeys(fn ($p) => [$p->id => $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '')])
+                                        ->mapWithKeys(function ($p) use ($search) {
+                                            $label = $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '');
+                                            if ($search) {
+                                                $matchedVariant = $p->variants->first(fn($v) => $v->sku && stripos($v->sku, $search) !== false);
+                                                if ($matchedVariant) {
+                                                    $label .= ' [Matches Variant: ' . $matchedVariant->sku . ']';
+                                                }
+                                            }
+                                            return [$p->id => $label];
+                                        })
                                         ->toArray();
                                 })
                                 ->getOptionLabelUsing(fn ($value): ?string => ($p = \App\Models\Product::find($value)) ? $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '') : null)
