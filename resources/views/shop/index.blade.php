@@ -665,7 +665,7 @@
                     <h2 style="font-size:1.1rem; font-weight:900; margin:0;">Filters</h2>
                     <button type="button" @click="filtersOpen = false" style="font-size:1.5rem; line-height:1; color:var(--shop-muted); background:transparent; border:none; cursor:pointer;">&times;</button>
                 </div>
-                <section class="gk-filter-panel">
+                <section class="gk-filter-panel hidden lg:block">
                     <h2 class="gk-filter-heading">☷ {{ __('general.categories') }}</h2>
                     <div class="gk-filter-content">
                         <ul class="gk-category-list">
