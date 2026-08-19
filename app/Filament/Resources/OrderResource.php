@@ -483,6 +483,24 @@ class OrderResource extends Resource
                                         return [$v->id => (string) ($name . $skuText . $stockText)];
                                     });
                                 })
+                                ->disableOptionWhen(function (string $value, $state, Forms\Get $get) {
+                                    $items = $get('../../items');
+                                    if (!is_array($items)) return false;
+                                    
+                                    if ((string)$value === (string)$state) {
+                                        return false; // Don't disable the currently selected option in this row
+                                    }
+                                    
+                                    $currentProductId = $get('product_id');
+                                    
+                                    foreach ($items as $item) {
+                                        if (($item['product_id'] ?? null) == $currentProductId && ($item['variant_id'] ?? null) == $value) {
+                                            return true;
+                                        }
+                                    }
+                                    
+                                    return false;
+                                })
                                 ->live()
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
                                     if ($state) {
