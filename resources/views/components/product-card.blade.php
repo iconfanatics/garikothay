@@ -1,7 +1,7 @@
 @props(['product'])
 
 <div class="group relative flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-all duration-300 hover:border-rose-500/40 hover:shadow-lg"
-    x-data="{ inWishlist: false, adding: false }">
+    x-data="{ inWishlist: {{ auth()->check() && auth()->user()->wishlists()->where('product_id', $product->id)->exists() ? 'true' : 'false' }}, adding: false }">
 
     <!-- Image -->
     <a href="{{ route('shop.show', $product->slug) }}" class="relative block aspect-square overflow-hidden bg-gray-100">
@@ -23,7 +23,7 @@
 
         <!-- Wishlist Button -->
         @auth
-        <button @click="
+        <button @click.prevent="
             adding = true;
             fetch('/wishlist/toggle', {
                 method: 'POST',
@@ -32,6 +32,7 @@
             }).then(r => r.json()).then(data => {
                 inWishlist = data.added;
                 adding = false;
+                $dispatch('wishlist-updated', { count: data.count });
             });
         "
         class="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-gray-500 opacity-0 shadow transition hover:bg-rose-600 hover:text-white group-hover:opacity-100">
