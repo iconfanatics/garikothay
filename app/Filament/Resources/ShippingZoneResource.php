@@ -22,16 +22,7 @@ class ShippingZoneResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $locations = [
-            'Dhaka' => ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
-            'Chattogram' => ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
-            'Rajshahi' => ['Bogra', 'Chapainawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
-            'Khulna' => ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
-            'Barishal' => ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
-            'Sylhet' => ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
-            'Rangpur' => ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
-            'Mymensingh' => ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur']
-        ];
+                $locations = json_decode(file_get_contents(storage_path('app/bd_locations.json')), true);
 
         return $form
             ->schema([
@@ -60,60 +51,110 @@ class ShippingZoneResource extends Resource
                                 ->rows(2),
                         ]),
                     ]),
-                    Forms\Components\Section::make('Dynamic Coverage Area')->schema([
+                                        Forms\Components\Section::make('Dynamic Coverage Area')->schema([
+                        Forms\Components\Select::make('division_filter')
+                            ->label('Filter by Division')
+                            ->options(function () use ($locations) {
+                                return array_combine(array_keys($locations), array_keys($locations));
+                            })
+                            ->live()
+                            ->dehydrated(false)
+                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana'])),
+                            
+                        Forms\Components\Select::make('district_filter')
+                            ->label('Filter by District')
+                            ->options(function (Forms\Get $get) use ($locations) {
+                                $div = $get('division_filter');
+                                if ($div && isset($locations[$div])) {
+                                    $districts = array_keys($locations[$div]);
+                                    return array_combine($districts, $districts);
+                                }
+                                return [];
+                            })
+                            ->live()
+                            ->dehydrated(false)
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana'),
+
                         Forms\Components\Select::make('coverage_areas_select')
                             ->label(fn(Forms\Get $get) => 'Select ' . $get('zone_type') . 's')
                             ->multiple()
                             ->searchable()
-                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['Division', 'District']))
-                            ->options(function (Forms\Get $get) use ($locations) {
+                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['Division', 'District', 'Upazila-Thana']))
+                            ->options(function (Forms\Get $get, Forms\Components\Select $component) use ($locations) {
                                 $type = $get('zone_type');
+                                $div = $get('division_filter');
+                                $dist = $get('district_filter');
+                                
+                                $options = [];
+                                
                                 if ($type === 'Division') {
-                                    $divs = ['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'];
-                                    return array_combine($divs, $divs);
-                                }
-                                if ($type === 'District') {
-                                    $options = [];
-                                    foreach ($locations as $division => $districts) {
-                                        foreach ($districts as $district) {
-                                            $options[$district] = $district . ' (' . $division . ')';
+                                    $divs = array_keys($locations);
+                                    $options = array_combine($divs, $divs);
+                                } elseif ($type === 'District') {
+                                    if ($div && isset($locations[$div])) {
+                                        foreach (array_keys($locations[$div]) as $d) {
+                                            $options[$d] = $d . ' (' . $div . ')';
+                                        }
+                                    } else {
+                                        foreach ($locations as $dv => $districts) {
+                                            foreach (array_keys($districts) as $d) {
+                                                $options[$d] = $d . ' (' . $dv . ')';
+                                            }
                                         }
                                     }
-                                    return $options;
+                                } elseif ($type === 'Upazila-Thana') {
+                                    if ($div && $dist && isset($locations[$div][$dist])) {
+                                        foreach ($locations[$div][$dist] as $upa) {
+                                            $options[$upa] = $upa . ' (' . $dist . ')';
+                                        }
+                                    } elseif ($div && isset($locations[$div])) {
+                                        foreach ($locations[$div] as $d => $upas) {
+                                            foreach ($upas as $upa) {
+                                                $options[$upa] = $upa . ' (' . $d . ')';
+                                            }
+                                        }
+                                    } else {
+                                        foreach ($locations as $dv => $districts) {
+                                            foreach ($districts as $d => $upas) {
+                                                foreach ($upas as $upa) {
+                                                    $options[$upa] = $upa . ' (' . $d . ')';
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
-                                return [];
+                                
+                                // Ensure currently selected values are always in the options array
+                                $state = $component->getState();
+                                if (is_array($state)) {
+                                    foreach ($state as $val) {
+                                        if (!isset($options[$val])) {
+                                            $options[$val] = $val;
+                                        }
+                                    }
+                                }
+                                
+                                return $options;
                             })
-                            ->required(fn (Forms\Get $get) => in_array($get('zone_type'), ['Division', 'District']))
+                            ->required(fn (Forms\Get $get) => in_array($get('zone_type'), ['Division', 'District', 'Upazila-Thana']))
                             ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
-                                if ($record && in_array($record->zone_type, ['Division', 'District'])) {
+                                if ($record && in_array($record->zone_type, ['Division', 'District', 'Upazila-Thana'])) {
                                     $component->state($record->coverage_areas);
                                 }
                             })
                             ->dehydrated(false),
                             
                         Forms\Components\TagsInput::make('coverage_areas_tags')
-                            ->label(fn(Forms\Get $get) => 'Enter ' . $get('zone_type') . 's')
-                            ->placeholder(fn(Forms\Get $get) => 'Type and press Enter...')
-                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['Upazila-Thana', 'Custom Area']))
-                            ->required(fn (Forms\Get $get) => in_array($get('zone_type'), ['Upazila-Thana', 'Custom Area']))
+                            ->label('Enter Custom Areas')
+                            ->placeholder('Type and press Enter...')
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Custom Area')
+                            ->required(fn (Forms\Get $get) => $get('zone_type') === 'Custom Area')
                             ->afterStateHydrated(function (Forms\Components\TagsInput $component, ?\App\Models\ShippingZone $record) {
-                                if ($record && in_array($record->zone_type, ['Upazila-Thana', 'Custom Area'])) {
+                                if ($record && $record->zone_type === 'Custom Area') {
                                     $component->state($record->coverage_areas);
                                 }
                             })
                             ->dehydrated(false),
-                            
-                        Forms\Components\Hidden::make('coverage_areas')
-                            ->dehydrateStateUsing(function (Forms\Get $get) {
-                                $type = $get('zone_type');
-                                if (in_array($type, ['Division', 'District'])) {
-                                    return $get('coverage_areas_select');
-                                }
-                                if (in_array($type, ['Upazila-Thana', 'Custom Area'])) {
-                                    return $get('coverage_areas_tags');
-                                }
-                                return null;
-                            }),
                     ])->hidden(fn (Forms\Get $get) => $get('zone_type') === 'Nationwide'),
                 ])->columnSpan(['lg' => 1]),
                 
