@@ -43,7 +43,7 @@ class CheckoutService
             $shippingMethod = $shippingMethodId ? \App\Models\ShippingMethod::find($shippingMethodId) : null;
 
             if ($shippingMethod) {
-                if ($shippingMethod->free_shipping_threshold > 0 && ($subtotal - $discount) >= $shippingMethod->free_shipping_threshold) {
+                if ($shippingMethod->free_shipping_enabled && ($shippingMethod->free_shipping_threshold <= 0 || ($subtotal - $discount) >= $shippingMethod->free_shipping_threshold)) {
                     $shipping = 0;
                 } else {
                     $shipping = $shippingMethod->base_charge;

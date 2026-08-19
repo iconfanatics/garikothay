@@ -416,14 +416,37 @@
     get qualifiesForFreeShipping() {
         return this.freeShippingThreshold > 0 && this.orderValue >= this.freeShippingThreshold;
     },
-    get availableShippingMethods() {
-        if (!this.formData.city) return [];
-        let zone = this.shippingZones.find(z => z.districts && z.districts.includes(this.formData.city));
+    get selectedShippingZone() {
+        if (!this.formData.city) return null;
         
-        if (!zone) {
-            zone = this.shippingZones.find(z => z.districts && z.districts.includes('All'));
+        let matchedZone = null;
+        
+        if (this.formData.upazila) {
+            matchedZone = this.shippingZones.find(z => z.zone_type === 'Upazila-Thana' && z.coverage_areas && z.coverage_areas.includes(this.formData.upazila));
+        }
+        if (!matchedZone && this.formData.upazila) {
+            matchedZone = this.shippingZones.find(z => z.zone_type === 'Custom Area' && z.coverage_areas && z.coverage_areas.includes(this.formData.upazila));
+        }
+        if (!matchedZone && this.formData.city) {
+            matchedZone = this.shippingZones.find(z => z.zone_type === 'District' && z.coverage_areas && z.coverage_areas.includes(this.formData.city));
+        }
+        if (!matchedZone && this.formData.division) {
+            matchedZone = this.shippingZones.find(z => z.zone_type === 'Division' && z.coverage_areas && z.coverage_areas.includes(this.formData.division));
+        }
+        if (!matchedZone) {
+            matchedZone = this.shippingZones.find(z => z.zone_type === 'Nationwide');
         }
         
+        if (!matchedZone && this.formData.city) {
+            matchedZone = this.shippingZones.find(z => z.districts && z.districts.includes(this.formData.city));
+        }
+        if (!matchedZone) {
+            matchedZone = this.shippingZones.find(z => z.districts && z.districts.includes('All'));
+        }
+        return matchedZone;
+    },
+    get availableShippingMethods() {
+        const zone = this.selectedShippingZone;
         if (zone) {
             return zone.shipping_methods;
         }
@@ -439,8 +462,12 @@
 
         if (this.qualifiesForFreeShipping) return 0;
         
-        if (this.selectedShippingMethod.free_shipping_threshold > 0 && this.orderValue >= this.selectedShippingMethod.free_shipping_threshold) {
-            return 0;
+        if (this.selectedShippingMethod.free_shipping_enabled) {
+            if (this.selectedShippingMethod.free_shipping_threshold > 0) {
+                if (this.orderValue >= this.selectedShippingMethod.free_shipping_threshold) return 0;
+            } else {
+                return 0;
+            }
         }
         
         return parseFloat(this.selectedShippingMethod.base_charge);
@@ -620,7 +647,11 @@
                     @if(!in_array($method->value, $activeGateways))
                         @continue
                     @endif
-                    <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer">
+                    <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer"
+                        @if($method->value === 'cod')
+                           x-show="(selectedShippingMethod && selectedShippingMethod.is_cod_enabled !== false) && (selectedShippingZone && selectedShippingZone.is_cod_enabled !== false)"
+                        @endif
+                    >
                         <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#e11d48]">
                         <div>
                             <div class="font-semibold text-sm">{{ $method->label() }}</div>
