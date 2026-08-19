@@ -443,7 +443,7 @@ class OrderResource extends Resource
                                 ->getOptionLabelUsing(fn ($value): ?string => ($p = \App\Models\Product::find($value)) ? $p->name . ($p->sku ? ' (SKU: ' . $p->sku . ')' : '') : null)
                                 ->preload()
                                 ->required()
-                                ->live(onBlur: true)
+                                ->live()
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
                                     if ($state) {
                                         $product = \App\Models\Product::find($state);
@@ -452,6 +452,7 @@ class OrderResource extends Resource
                                             $set('product_sku', $product->sku);
                                             $set('unit_price', $product->selling_price);
                                             $set('total_price', $product->selling_price * (float) $get('quantity'));
+                                            $set('variant_id', null);
                                             $updateParentTotals($get, $set);
                                         }
                                     }
@@ -463,7 +464,8 @@ class OrderResource extends Resource
                                 ->options(function (Forms\Get $get) {
                                     $productId = $get('product_id');
                                     if (! $productId) return [];
-                                    return \App\Models\ProductVariant::where('product_id', $productId)
+                                    return \App\Models\ProductVariant::with(['variantType', 'variantValue'])
+                                        ->where('product_id', $productId)
                                         ->where('stock_quantity', '>', 0)
                                         ->get()
                                         ->mapWithKeys(function ($v) {
@@ -472,7 +474,7 @@ class OrderResource extends Resource
                                             return [$v->id => (string) ($name . $skuText)];
                                         });
                                 })
-                                ->live(onBlur: true)
+                                ->live()
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
                                     if ($state) {
                                         $variant = \App\Models\ProductVariant::find($state);
