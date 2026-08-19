@@ -308,7 +308,7 @@
         </a>
         <!-- Search (desktop) -->
         <form action="{{ route('search.index') }}" method="GET"
-            class="relative hidden md:flex w-full max-w-2xl mx-auto"
+            class="relative hidden md:flex w-full max-w-2xl mr-auto ml-2"
             x-data="{
                 categoryOpen: false,
                 selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
