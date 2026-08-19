@@ -61,27 +61,59 @@ class ShippingZoneResource extends Resource
                         ]),
                     ]),
                     Forms\Components\Section::make('Dynamic Coverage Area')->schema([
-                        Forms\Components\TagsInput::make('coverage_areas')
+                        Forms\Components\Select::make('coverage_areas_select')
                             ->label(fn(Forms\Get $get) => 'Select ' . $get('zone_type') . 's')
-                            ->placeholder(fn(Forms\Get $get) => 'Add ' . $get('zone_type') . '...')
-                            ->hidden(fn (Forms\Get $get) => $get('zone_type') === 'Nationwide')
-                            ->suggestions(function (Forms\Get $get) use ($locations) {
+                            ->multiple()
+                            ->searchable()
+                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['Division', 'District']))
+                            ->options(function (Forms\Get $get) use ($locations) {
                                 $type = $get('zone_type');
                                 if ($type === 'Division') {
-                                    return ['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'];
+                                    $divs = ['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'];
+                                    return array_combine($divs, $divs);
                                 }
                                 if ($type === 'District') {
                                     $options = [];
                                     foreach ($locations as $division => $districts) {
                                         foreach ($districts as $district) {
-                                            $options[] = $district;
+                                            $options[$district] = $district . ' (' . $division . ')';
                                         }
                                     }
                                     return $options;
                                 }
                                 return [];
                             })
-                            ->required(fn (Forms\Get $get) => $get('zone_type') !== 'Nationwide'),
+                            ->required(fn (Forms\Get $get) => in_array($get('zone_type'), ['Division', 'District']))
+                            ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
+                                if ($record && in_array($record->zone_type, ['Division', 'District'])) {
+                                    $component->state($record->coverage_areas);
+                                }
+                            })
+                            ->dehydrated(false),
+                            
+                        Forms\Components\TagsInput::make('coverage_areas_tags')
+                            ->label(fn(Forms\Get $get) => 'Enter ' . $get('zone_type') . 's')
+                            ->placeholder(fn(Forms\Get $get) => 'Type and press Enter...')
+                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['Upazila-Thana', 'Custom Area']))
+                            ->required(fn (Forms\Get $get) => in_array($get('zone_type'), ['Upazila-Thana', 'Custom Area']))
+                            ->afterStateHydrated(function (Forms\Components\TagsInput $component, ?\App\Models\ShippingZone $record) {
+                                if ($record && in_array($record->zone_type, ['Upazila-Thana', 'Custom Area'])) {
+                                    $component->state($record->coverage_areas);
+                                }
+                            })
+                            ->dehydrated(false),
+                            
+                        Forms\Components\Hidden::make('coverage_areas')
+                            ->dehydrateStateUsing(function (Forms\Get $get) {
+                                $type = $get('zone_type');
+                                if (in_array($type, ['Division', 'District'])) {
+                                    return $get('coverage_areas_select');
+                                }
+                                if (in_array($type, ['Upazila-Thana', 'Custom Area'])) {
+                                    return $get('coverage_areas_tags');
+                                }
+                                return null;
+                            }),
                     ])->hidden(fn (Forms\Get $get) => $get('zone_type') === 'Nationwide'),
                 ])->columnSpan(['lg' => 1]),
                 
