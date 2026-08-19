@@ -747,6 +747,7 @@
                             'original_price' => (float) $v->original_price,
                             'has_own_price'  => $v->price > 0,
                             'price_modifier' => (float) $v->price_modifier,
+                            'stock_quantity' => (int) $v->stock_quantity,
                             'images'         => $v->image_gallery ?? [],
                         ];
                     })) !!},
@@ -779,6 +780,15 @@
                             return Math.round(((orig - sell) / orig) * 100);
                         }
                         return 0;
+                    },
+                    activeStock() {
+                        if (this.selectedVariant) {
+                            const variant = this.variants.find(v => v.id === this.selectedVariant);
+                            if (variant) {
+                                return variant.stock_quantity;
+                            }
+                        }
+                        return {{ $product->stock_quantity }};
                     },
                     setZoom(event) {
                         const rect = event.currentTarget.getBoundingClientRect();
@@ -840,11 +850,12 @@
                         <strong>{{ number_format($product->average_rating, 1) }}</strong>
                         <span>({{ $approvedReviews->count() }} reviews)</span>
                         <span>·</span>
-                        @if($product->isInStock())
-                            <span style="color:#16a34a; font-weight:800;">In Stock ({{ $product->stock_quantity }} Available)</span>
-                        @else
-                            <span style="color:#e11d48; font-weight:800;">Out of Stock (0 Available)</span>
-                        @endif
+                        <template x-if="activeStock() > 0">
+                            <span style="color:#16a34a; font-weight:800;">In Stock (<span x-text="activeStock()"></span> Available)</span>
+                        </template>
+                        <template x-if="activeStock() <= 0">
+                            <span style="color:#e11d48; font-weight:800;">Out of Stock (<span x-text="activeStock()"></span> Available)</span>
+                        </template>
                         <span>·</span>
                         @if($product->brand)
                             <span>Brand: {{ $product->brand }}</span>
@@ -893,20 +904,22 @@
                         <div class="gk-qty">
                             <button type="button" @click="quantity = Math.max(1, quantity - 1)">−</button>
                             <span x-text="quantity"></span>
-                            <button type="button" @click="quantity++">+</button>
+                            <button type="button" @click="quantity++" :disabled="quantity >= activeStock()">+</button>
                         </div>
 
-                        @if($product->isInStock())
+                        <template x-if="activeStock() > 0">
                             <button type="button" @click="addToCart(false)" :disabled="adding" class="gk-product-btn gk-product-btn-primary">
                                 🛒 <span x-text="adding ? '{{ __('general.adding') }}' : '{{ __('general.add_to_cart') ?? 'Add to cart' }}'"></span>
                             </button>
-                        @elseif($product->is_preorder)
+                        </template>
+                        <template x-if="activeStock() <= 0 && {{ $product->is_preorder ? 'true' : 'false' }}">
                             <button type="button" @click="addToCart(false)" :disabled="adding" class="gk-product-btn gk-product-btn-primary">
                                 🛒 <span x-text="adding ? '{{ __('general.adding') }}' : 'Pre-order'"></span>
                             </button>
-                        @else
+                        </template>
+                        <template x-if="activeStock() <= 0 && {{ !$product->is_preorder ? 'true' : 'false' }}">
                             <span class="gk-product-btn gk-product-btn-primary" style="background:#9ca3af; cursor:not-allowed;">{{ __('general.out_of_stock') ?? 'Out of stock' }}</span>
-                        @endif
+                        </template>
 
                         @auth
                             <button type="button" class="gk-product-btn gk-product-btn-icon" 
@@ -932,11 +945,12 @@
                         @endauth
                     </div>
 
-                        @if($product->isInStock())
-                            <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ __('general.buy_now') ?? 'Buy Now' }}</button>
-                        @elseif($product->is_preorder)
-                            <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">Pre-order Now</button>
-                        @endif
+                    <template x-if="activeStock() > 0">
+                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">{{ __('general.buy_now') ?? 'Buy Now' }}</button>
+                    </template>
+                    <template x-if="activeStock() <= 0 && {{ $product->is_preorder ? 'true' : 'false' }}">
+                        <button type="button" @click="addToCart(true)" class="gk-product-btn gk-buy-now">Pre-order Now</button>
+                    </template>
 
                     <div class="gk-share-actions">
                         <span class="gk-share-label">Share:</span>
