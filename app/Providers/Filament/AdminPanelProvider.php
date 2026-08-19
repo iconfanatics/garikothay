@@ -160,6 +160,12 @@ class AdminPanelProvider extends PanelProvider
                     html:not(.dark) .fi-sidebar-item-button:hover .fi-sidebar-item-icon { color: #ffffff !important; }
                     .dark .fi-sidebar-item-button:hover { background-color: rgba(74, 222, 128, 0.8) !important; color: #111827 !important; }
                     .dark .fi-sidebar-item-button:hover .fi-sidebar-item-icon { color: #111827 !important; }
+                    /* Prevent mobile background scroll bleed */
+                    aside.fi-sidebar { overscroll-behavior: contain !important; }
+                    div[x-show="isSidebarOpen"] { touch-action: none !important; overscroll-behavior: none !important; }
+                    @media (max-width: 1024px) {
+                        body:has(aside.fi-sidebar[style*="translate(0"]) { overflow: hidden !important; touch-action: pan-y !important; }
+                    }
                 </style>
                 <script>
                     function saveTableScroll() {
@@ -177,9 +183,29 @@ class AdminPanelProvider extends PanelProvider
                             }, 50);
                         }
                     }
+                    
+                    // Prevent background scrolling when mobile sidebar is open
+                    function preventMobileScroll() {
+                        document.addEventListener("touchmove", function(e) {
+                            const sidebar = document.querySelector("aside.fi-sidebar");
+                            // If sidebar is open (checking if it has translate-x-0 or similar open class)
+                            // Filament v3 usually puts x-show overlay
+                            const overlay = document.querySelector(".fi-sidebar-overlay");
+                            if (overlay && window.getComputedStyle(overlay).display !== "none") {
+                                // If the touch is on the overlay itself, prevent it
+                                if (e.target.closest(".fi-sidebar-overlay")) {
+                                    e.preventDefault();
+                                }
+                            }
+                        }, { passive: false });
+                    }
+                    
                     window.addEventListener("beforeunload", saveTableScroll);
                     document.addEventListener("livewire:navigating", saveTableScroll);
-                    document.addEventListener("DOMContentLoaded", restoreTableScroll);
+                    document.addEventListener("DOMContentLoaded", () => {
+                        restoreTableScroll();
+                        preventMobileScroll();
+                    });
                     document.addEventListener("livewire:navigated", restoreTableScroll);
                 </script>'
             );
