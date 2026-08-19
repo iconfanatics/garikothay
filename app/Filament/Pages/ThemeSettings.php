@@ -388,6 +388,13 @@ class ThemeSettings extends Page
             Cache::forget("setting:{$key}");
         }
 
+        Cache::forget('all_settings');
+        // also reset static property if possible, though since this is HTTP request it doesn't matter as much, 
+        // but better safe:
+        if (property_exists(Setting::class, 'loadedSettings')) {
+            // we can't reset protected property easily from outside, but Cache::forget is enough for next request.
+        }
+
         Notification::make()
             ->title('Theme settings saved successfully')
             ->success()

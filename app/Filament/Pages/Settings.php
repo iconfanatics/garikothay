@@ -256,6 +256,8 @@ class Settings extends Page
             Cache::forget("setting:{$key}");
         }
 
+        Cache::forget('all_settings');
+
         Notification::make()
             ->title('Settings saved successfully')
             ->success()
