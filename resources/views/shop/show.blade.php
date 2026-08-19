@@ -873,7 +873,7 @@
                             <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
                                 @foreach($product->variants->where('is_active', true) as $variant)
                                     <button type="button"
-                                        @click="selectedVariant = {{ $variant->id }}"
+                                        @click="selectedVariant = (selectedVariant === {{ $variant->id }} ? null : {{ $variant->id }})"
                                         :class="{ 'is-active': selectedVariant === {{ $variant->id }} }"
                                         class="gk-variant-button">
                                         {{ $variant->name }}
