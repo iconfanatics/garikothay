@@ -20,6 +20,12 @@
         .fi-simple-main-ctn {
             padding: 0 !important;
         }
+        .fi-simple-header {
+            display: none !important;
+        }
+        .fi-logo {
+            display: none !important;
+        }
         .fi-simple-layout {
             background-color: #f8fafc;
         }
