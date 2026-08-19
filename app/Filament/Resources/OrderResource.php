@@ -454,6 +454,13 @@ class OrderResource extends Resource
                                             $set('variant_id', null);
                                             $updateParentTotals($get, $set);
                                         }
+                                    } else {
+                                        $set('product_name', null);
+                                        $set('product_sku', null);
+                                        $set('unit_price', 0);
+                                        $set('total_price', 0);
+                                        $set('variant_id', null);
+                                        $updateParentTotals($get, $set);
                                     }
                                 }),
                             Forms\Components\Hidden::make('product_name'),
