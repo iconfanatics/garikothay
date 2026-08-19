@@ -150,7 +150,7 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\View\PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
                     html .trix-content b, html .trix-content strong { font-weight: 700; }
-                    .fi-ta-content { max-height: 75vh !important; overflow-y: auto !important; }
+                    .fi-ta-content { max-height: 75vh !important; overflow-y: auto !important; overscroll-behavior: contain !important; scroll-behavior: auto !important; }
                     .fi-ta-header-cell, .fi-ta-table thead tr { position: sticky !important; top: 0 !important; z-index: 5 !important; }
                     html:not(.dark) .fi-ta-header-cell, html:not(.dark) .fi-ta-table thead tr { background-color: rgb(255 255 255) !important; }
                     .dark .fi-ta-header-cell, .dark .fi-ta-table thead tr { background-color: rgb(24 24 27) !important; }
@@ -174,10 +174,12 @@ class AdminPanelProvider extends PanelProvider
                     function restoreTableScroll() {
                         const scrollPos = sessionStorage.getItem("fi_scroll_" + window.location.pathname);
                         if (scrollPos) {
-                            setTimeout(() => {
+                            requestAnimationFrame(() => {
                                 const table = document.querySelector(".fi-ta-content");
-                                if (table) table.scrollTop = parseInt(scrollPos);
-                            }, 50);
+                                if (table) {
+                                    table.scrollTo({ top: parseInt(scrollPos), behavior: "instant" });
+                                }
+                            });
                         }
                     }
                     
