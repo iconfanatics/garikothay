@@ -417,14 +417,10 @@ class OrderResource extends Resource
                                     return \App\Models\Product::with('variants')
                                         ->where('is_active', true)
                                         ->where('publish_status', 'Published')
-                                        ->where(function($q) {
-                                            $q->where('stock_quantity', '>', 0)
-                                              ->orWhereHas('variants', fn($q2) => $q2->where('stock_quantity', '>', 0));
-                                        })
                                         ->where(function($q) use ($search) {
                                             $q->where('sku', 'like', "%{$search}%")
                                               ->orWhereHas('translations', fn ($q2) => $q2->where('name', 'like', "%{$search}%"))
-                                              ->orWhereHas('variants', fn ($q3) => $q3->where('sku', 'like', "%{$search}%")->where('stock_quantity', '>', 0));
+                                              ->orWhereHas('variants', fn ($q3) => $q3->where('sku', 'like', "%{$search}%"));
                                         })
                                         ->limit(50)
                                         ->get()
@@ -435,6 +431,9 @@ class OrderResource extends Resource
                                                 if ($matchedVariant) {
                                                     $label .= ' [Matches Variant: ' . $matchedVariant->sku . ']';
                                                 }
+                                            }
+                                            if (!$p->isInStock() && $p->variants->isEmpty()) {
+                                                $label .= ' (Out of Stock)';
                                             }
                                             return [$p->id => $label];
                                         })
@@ -463,29 +462,19 @@ class OrderResource extends Resource
                                 ->label('Variant (Optional)')
                                 ->options(function (Forms\Get $get) {
                                     $productId = $get('product_id');
-                                    if (! $productId) {
-                                        return ['' => 'Debug: No Product ID. Select product first.'];
-                                    }
+                                    if (! $productId) return [];
                                     
-                                    $allVariants = \App\Models\ProductVariant::with(['variantType', 'variantValue'])
+                                    $variants = \App\Models\ProductVariant::with(['variantType', 'variantValue'])
                                         ->where('product_id', $productId)
+                                        ->where('is_active', true)
                                         ->get();
                                     
-                                    if ($allVariants->isEmpty()) {
-                                        return ['' => 'Debug: Product ' . $productId . ' has 0 variants in DB'];
-                                    }
-
-                                    $inStockVariants = $allVariants->filter(fn($v) => $v->stock_quantity > 0);
-                                    
-                                    if ($inStockVariants->isEmpty()) {
-                                        return ['' => 'Debug: Found ' . $allVariants->count() . ' variants, but all have 0 stock!'];
-                                    }
-
-                                    return $inStockVariants->mapWithKeys(function ($v) {
+                                    return $variants->mapWithKeys(function ($v) {
                                         $name = $v->name;
                                         $skuText = $v->sku ? ' (SKU: ' . $v->sku . ')' : '';
-                                        return [$v->id => (string) ($name . $skuText)];
-                                    })->toArray();
+                                        $stockText = $v->stock_quantity <= 0 ? ' [Out of Stock]' : '';
+                                        return [$v->id => (string) ($name . $skuText . $stockText)];
+                                    });
                                 })
                                 ->live()
                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) use ($updateParentTotals) {
