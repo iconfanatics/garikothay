@@ -53,7 +53,7 @@ class ShippingZoneResource extends Resource
                     ]),
                                         Forms\Components\Section::make('Dynamic Coverage Area')->schema([
                         Forms\Components\Select::make('division_filter')
-                            ->label('Filter by Division')
+                            ->label('Select Division (Optional)')
                             ->options(function () use ($locations) {
                                 return array_combine(array_keys($locations), array_keys($locations));
                             })
@@ -62,7 +62,7 @@ class ShippingZoneResource extends Resource
                             ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana'])),
                             
                         Forms\Components\Select::make('district_filter')
-                            ->label('Filter by District')
+                            ->label('Select District (Optional)')
                             ->options(function (Forms\Get $get) use ($locations) {
                                 $div = $get('division_filter');
                                 if ($div && isset($locations[$div])) {
@@ -188,6 +188,19 @@ class ShippingZoneResource extends Resource
                                         'Same Day' => 'Same Day',
                                     ])
                                     ->default('Standard')
+                                    ->live()
+                                    ->afterStateUpdated(function (Forms\Set $set, $state) {
+                                        $defaults = [
+                                            'Standard' => ['charge' => 60, 'time' => '3-5 Business Days'],
+                                            'Express' => ['charge' => 120, 'time' => '1-2 Business Days'],
+                                            'Pickup' => ['charge' => 0, 'time' => 'Same Day'],
+                                            'Same Day' => ['charge' => 150, 'time' => 'Same Day'],
+                                        ];
+                                        if (isset($defaults[$state])) {
+                                            $set('base_charge', $defaults[$state]['charge']);
+                                            $set('estimated_delivery_time', $defaults[$state]['time']);
+                                        }
+                                    })
                                     ->required(),
                             ]),
                             Forms\Components\Grid::make(3)->schema([
@@ -198,14 +211,23 @@ class ShippingZoneResource extends Resource
                                     ->required(),
                                 Forms\Components\Select::make('estimated_delivery_time')
                                     ->label('Est. Delivery Time')
-                                    ->options([
-                                        'Same Day' => 'Same Day',
-                                        'Next Day' => 'Next Day',
-                                        '1-2 Business Days' => '1-2 Business Days',
-                                        '2-3 Business Days' => '2-3 Business Days',
-                                        '3-5 Business Days' => '3-5 Business Days',
-                                        '5-7 Business Days' => '5-7 Business Days',
-                                    ])
+                                    ->options(function(Forms\Get $get) {
+                                        $type = $get('shipping_type');
+                                        if ($type === 'Same Day') {
+                                            return ['Same Day' => 'Same Day'];
+                                        }
+                                        if ($type === 'Pickup') {
+                                            return ['Same Day' => 'Same Day', 'Next Day' => 'Next Day'];
+                                        }
+                                        return [
+                                            'Same Day' => 'Same Day',
+                                            'Next Day' => 'Next Day',
+                                            '1-2 Business Days' => '1-2 Business Days',
+                                            '2-3 Business Days' => '2-3 Business Days',
+                                            '3-5 Business Days' => '3-5 Business Days',
+                                            '5-7 Business Days' => '5-7 Business Days',
+                                        ];
+                                    })
                                     ->required(),
                                 Forms\Components\Toggle::make('is_active')
                                     ->label('Active')
