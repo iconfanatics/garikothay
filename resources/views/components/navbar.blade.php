@@ -294,46 +294,8 @@
     <!-- Desktop Header Row -->
     <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:flex bg-gray-100 rounded-lg mt-2 mb-2">
 
-        <!-- Logo -->
-        <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
-            @if($headerLogo)
-                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-14 w-auto max-w-[220px] object-contain" style="height: 56px; max-width: 220px;">
-            @else
-                <span class="gk-brand-mark">G</span>
-                <span class="hidden sm:block leading-tight">
-                    <span class="gk-brand-title">{{ $siteName }}</span>
-                    <span class="gk-brand-subtitle">Auto Marketplace</span>
-                </span>
-            @endif
-        </a>
-        <!-- Search (desktop) -->
-        <form action="{{ route('search.index') }}" method="GET"
-            class="relative hidden md:flex w-full max-w-2xl mx-4"
-            x-data="{
-                categoryOpen: false,
-                selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
-                selectedCategoryLabel: {{ \Illuminate\Support\Js::from($selectedSearchCategoryLabel) }}
-            }">
-            <div class="gk-search-box flex w-full transition">
-                <!-- Category dropdown removed as requested -->
-                <input type="hidden" name="category" x-model="selectedCategory">
-                <input type="text" name="q" value="{{ request('q') }}"
-                    placeholder="Search for car parts, brands, services..."
-                    required minlength="2"
-                    oninvalid="this.setCustomValidity('Please type something to search.')"
-                    oninput="this.setCustomValidity('')"
-                    class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
-                <button type="submit" class="gk-search-button rounded-r-[4px] text-white px-4 py-2 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
-            </div>
-        </form>
-
-        <!-- Desktop right section -->
-        <div class="hidden md:flex items-center justify-end gap-4 shrink-0">
+        <!-- Left section (Nav links & Icons) -->
+        <div class="hidden md:flex items-center justify-start gap-4 shrink-0">
             <!-- Nav links -->
             <a href="{{ route('home') }}"
                 class="hidden gk-link text-sm font-medium text-gray-700 transition">
@@ -399,7 +361,7 @@
                         </svg>
                     </button>
                     <div x-show="open" x-cloak @click.away="open = false" x-transition
-                        class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                        class="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
                         <a href="{{ route('customer.dashboard') }}"
                             class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -445,6 +407,44 @@
                 </a>
             @endauth
         </div>
+
+        <!-- Search (desktop) -->
+        <form action="{{ route('search.index') }}" method="GET"
+            class="relative hidden md:flex w-full max-w-2xl mx-4"
+            x-data="{
+                categoryOpen: false,
+                selectedCategory: {{ \Illuminate\Support\Js::from($selectedSearchCategorySlug) }},
+                selectedCategoryLabel: {{ \Illuminate\Support\Js::from($selectedSearchCategoryLabel) }}
+            }">
+            <div class="gk-search-box flex w-full transition">
+                <input type="hidden" name="category" x-model="selectedCategory">
+                <input type="text" name="q" value="{{ request('q') }}"
+                    placeholder="Search for car parts, brands, services..."
+                    required minlength="2"
+                    oninvalid="this.setCustomValidity('Please type something to search.')"
+                    oninput="this.setCustomValidity('')"
+                    class="flex-1 px-4 py-2 text-sm outline-none bg-transparent">
+                <button type="submit" class="gk-search-button rounded-r-[4px] text-white px-4 py-2 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <!-- Logo -->
+        <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
+            @if($headerLogo)
+                <img src="{{ asset('storage/' . $headerLogo) }}" alt="{{ config('app.name') }}" class="h-14 w-auto max-w-[220px] object-contain" style="height: 56px; max-width: 220px;">
+            @else
+                <span class="gk-brand-mark">G</span>
+                <span class="hidden sm:block leading-tight text-right">
+                    <span class="gk-brand-title block">{{ $siteName }}</span>
+                    <span class="gk-brand-subtitle block">Auto Marketplace</span>
+                </span>
+            @endif
+        </a>
     </div>
 
     <!-- Mobile Header Container -->
