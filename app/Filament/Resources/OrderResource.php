@@ -615,6 +615,7 @@ class OrderResource extends Resource
             ->recordClasses(fn (Order $record) => $record->status === OrderStatus::Pending ? 'bg-primary-50/50 dark:bg-primary-900/10 border-l-4 border-primary-500 font-semibold' : null)
             ->defaultPaginationPageOption(50)
             ->paginationPageOptions([50, 100, 250, 'all'])
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('items.product'))
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Order Date & Time')
@@ -683,6 +684,17 @@ class OrderResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable(),
+                Tables\Columns\IconColumn::make('is_preorder')
+                    ->label('Pre-Order')
+                    ->boolean()
+                    ->state(function (Order $record): bool {
+                        // Using state to compute if any item's product is a pre-order
+                        return $record->items->contains(fn($item) => $item->product?->is_preorder);
+                    })
+                    ->trueIcon('heroicon-o-clock')
+                    ->trueColor('warning')
+                    ->falseIcon('') // Hide icon if not pre-order
+                    ->tooltip('Contains Pre-order Items'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
@@ -717,6 +729,18 @@ class OrderResource extends Resource
                     ->label('Order Status')
                     ->options(OrderStatus::options()),
                     
+                Tables\Filters\TernaryFilter::make('is_preorder')
+                    ->label('Pre-Order Status')
+                    ->placeholder('All Orders')
+                    ->trueLabel('Pre-Orders Only')
+                    ->falseLabel('Exclude Pre-Orders')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereHas('items.product', fn($q) => $q->where('is_preorder', true)),
+                        false: fn (Builder $query) => $query->whereDoesntHave('items.product', fn($q) => $q->where('is_preorder', true)),
+                        blank: fn (Builder $query) => $query,
+                    ),
+
+
                 Tables\Filters\Filter::make('payment')
                     ->label('Payment Details')
                     ->form([
