@@ -56,18 +56,56 @@ class CouponResource extends Resource
                             CouponType::Percentage->value
                                 ? "%"
                                 : "৳",
-                        ),
+                        )
+                        ->rule(function (Forms\Get $get) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $type = $get('type');
+                                $minOrder = $get('min_order_amount');
+                                if ($type === CouponType::Fixed->value && $minOrder !== null && $value !== null) {
+                                    if ((float)$value > (float)$minOrder) {
+                                        $fail('Discount Amount cannot be greater than Minimum Order Amount.');
+                                    }
+                                }
+                            };
+                        }),
                     Forms\Components\TextInput::make("min_order_amount")
                         ->label("Min. Order Amount (৳)")
                         ->numeric()
                         ->prefix("৳")
-                        ->nullable(),
+                        ->nullable()
+                        ->rule(function (Forms\Get $get) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $maxDiscount = $get('max_discount_amount');
+                                if ($maxDiscount !== null && $value !== null) {
+                                    if ((float)$maxDiscount > (float)$value) {
+                                        $fail('Minimum Order Amount must be greater than or equal to Max Discount Amount.');
+                                    }
+                                }
+                                $type = $get('type');
+                                $discountValue = $get('value');
+                                if ($type === CouponType::Fixed->value && $discountValue !== null && $value !== null) {
+                                    if ((float)$discountValue > (float)$value) {
+                                        $fail('Minimum Order Amount must be greater than or equal to Discount Amount.');
+                                    }
+                                }
+                            };
+                        }),
                     Forms\Components\TextInput::make("max_discount_amount")
                         ->label("Max. Discount Amount (৳)")
                         ->numeric()
                         ->prefix("৳")
                         ->nullable()
-                        ->helperText("Cap for percentage-based coupons."),
+                        ->helperText("Cap for percentage-based coupons.")
+                        ->rule(function (Forms\Get $get) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                $minOrder = $get('min_order_amount');
+                                if ($minOrder !== null && $value !== null) {
+                                    if ((float)$value > (float)$minOrder) {
+                                        $fail('Max Discount Amount cannot be greater than Minimum Order Amount.');
+                                    }
+                                }
+                            };
+                        }),
                 ]),
             ]),
 
