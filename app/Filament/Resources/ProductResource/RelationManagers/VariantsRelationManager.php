@@ -93,9 +93,16 @@ class VariantsRelationManager extends RelationManager
                             ->content(function (Forms\Get $get): string {
                                 $supplierPrice = (float) ($get('cost_price') ?? 0);
                                 $sellingPrice = (float) ($get('price') ?? 0);
+                                $discountType = $get('discount_type');
+                                $discountAmount = (float) ($get('discount_amount') ?? 0);
 
                                 if ($sellingPrice <= 0 || $get('cost_price') === null || $get('cost_price') === '') {
                                     return 'Enter prices';
+                                }
+
+                                if ($discountAmount > 0 && $discountType) {
+                                    $discount = $discountType === 'Percentage' ? ($sellingPrice * ($discountAmount / 100)) : $discountAmount;
+                                    $sellingPrice = max(0, $sellingPrice - $discount);
                                 }
 
                                 $profit = $sellingPrice - $supplierPrice;
@@ -151,7 +158,34 @@ class VariantsRelationManager extends RelationManager
                             ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
                             ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
                             ->live(onBlur: true)
-                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    if ($get('discount_type') === 'Percentage' && $value >= 100) {
+                                        $fail('Percentage discount must be less than 100.');
+                                    }
+                                    if ($get('discount_type') === 'Fixed' && (float) $value >= (float) $get('price')) {
+                                        $fail('Fixed discount must be less than the selling price.');
+                                    }
+                                    $cost = (float) $get('cost_price');
+                                    $price = (float) $get('price');
+                                    $discount = $get('discount_type') === 'Percentage' ? ($price * ($value / 100)) : (float) $value;
+                                    $finalPrice = $price - $discount;
+                                    if ($cost > 0 && $finalPrice < $cost) {
+                                        $fail('Final price after discount cannot be less than Supplier Price.');
+                                    }
+                                };
+                            }),
+                        Forms\Components\Placeholder::make('final_price_preview')
+                            ->label('Final Price Preview')
+                            ->content(function (Forms\Get $get) {
+                                $price = (float) $get('price');
+                                $discountType = $get('discount_type');
+                                $discountAmount = (float) $get('discount_amount');
+                                if (! $price || ! $discountAmount || ! $discountType) return '-';
+                                $final = $discountType === 'Percentage' ? $price - ($price * ($discountAmount / 100)) : $price - $discountAmount;
+                                return '৳' . number_format(max(0, $final), 2);
+                            }),
                         Forms\Components\DateTimePicker::make('discount_start_date')
                             ->label('Discount Start Date')
                             ->nullable()
