@@ -212,6 +212,8 @@
         min-height: 340px;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
+        text-align: center;
         padding: 2rem;
     }
 
@@ -241,9 +243,10 @@
     }
 
     .gk-hero-copy {
-        max-width: 500px;
+        max-width: 600px;
         margin-top: 0.9rem;
-        color: rgba(255,255,255,0.82);
+        color: rgba(255,255,255,0.9);
+        font-size: clamp(1rem, 1.3vw, 1.15rem);
         line-height: 1.7;
     }
 
@@ -1049,10 +1052,15 @@
                         <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}">
                         <div class="gk-hero-shade"></div>
                         <div class="gk-hero-content">
-                            <span class="gk-eyebrow">{{ $slide['tag'] }}</span>
                             <h1 class="gk-hero-title">{{ $slide['title'] }}</h1>
                             <p class="gk-hero-copy">{{ $slide['subtitle'] }}</p>
-
+                            @if(!empty($slide['link']) && $slide['link'] !== '#')
+                            <div style="margin-top: 1.5rem;">
+                                <a href="{{ $slide['link'] }}" class="gk-hero-btn" style="display:inline-flex; align-items:center; gap:0.5rem; background:var(--gk-red); color:white; padding:0.8rem 1.75rem; border-radius:6px; font-weight:800; font-size:1.05rem; text-decoration:none; transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    {{ $slide['button'] }} <span aria-hidden="true">→</span>
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </article>
                 @endforeach
