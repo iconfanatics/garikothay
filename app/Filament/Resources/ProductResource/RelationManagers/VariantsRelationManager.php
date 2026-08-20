@@ -159,6 +159,38 @@ class VariantsRelationManager extends RelationManager
                             ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
                             ->live(onBlur: true)
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $minSelling = (float) $get('minimum_selling_price');
+                                $price = (float) $get('price');
+                                $minAllowedPrice = max($cost, $minSelling);
+                                $val = (float) $state;
+                                
+                                if ($get('discount_type') === 'Percentage') {
+                                    if ($val > 100) {
+                                        $set('discount_amount', 100);
+                                        $val = 100;
+                                        \Filament\Notifications\Notification::make()->warning()->title('Percentage cannot exceed 100.')->send();
+                                    }
+                                    $discountValue = $price * ($val / 100);
+                                    if ($minAllowedPrice > 0 && ($price - $discountValue) < $minAllowedPrice) {
+                                        $maxPercentage = $price > 0 ? (($price - $minAllowedPrice) / $price) * 100 : 0;
+                                        $set('discount_amount', round(max(0, $maxPercentage), 2));
+                                        \Filament\Notifications\Notification::make()->warning()->title('Discount automatically adjusted to maintain minimum profit margin.')->send();
+                                    }
+                                } else {
+                                    if ($val >= $price && $price > 0) {
+                                        $set('discount_amount', $price - 1);
+                                        $val = $price - 1;
+                                        \Filament\Notifications\Notification::make()->warning()->title('Fixed discount adjusted to be less than selling price.')->send();
+                                    }
+                                    if ($minAllowedPrice > 0 && ($price - $val) < $minAllowedPrice) {
+                                        $set('discount_amount', max(0, $price - $minAllowedPrice));
+                                        \Filament\Notifications\Notification::make()->warning()->title('Discount automatically adjusted to maintain minimum profit margin.')->send();
+                                    }
+                                }
+                            })
                             ->rule(function (Forms\Get $get) {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     if ($get('discount_type') === 'Percentage' && $value >= 100) {
@@ -168,11 +200,15 @@ class VariantsRelationManager extends RelationManager
                                         $fail('Fixed discount must be less than the selling price.');
                                     }
                                     $cost = (float) $get('cost_price');
+                                    $minSelling = (float) $get('minimum_selling_price');
                                     $price = (float) $get('price');
                                     $discount = $get('discount_type') === 'Percentage' ? ($price * ($value / 100)) : (float) $value;
                                     $finalPrice = $price - $discount;
                                     if ($cost > 0 && $finalPrice < $cost) {
                                         $fail('Final price after discount cannot be less than Supplier Price.');
+                                    }
+                                    if ($minSelling > 0 && $finalPrice < $minSelling) {
+                                        $fail('Final price after discount cannot be less than Minimum Selling Price.');
                                     }
                                 };
                             }),
@@ -220,6 +256,62 @@ class VariantsRelationManager extends RelationManager
                                         if ($valueDate->isPast()) {
                                             $fail('Discount End Date cannot be in the past.');
                                         }
+                                    }
+                                };
+                            }),
+                        Forms\Components\TextInput::make('scheduled_price')
+                            ->label('Scheduled Price')
+                            ->numeric()
+                            ->prefix('৳')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $minSelling = (float) $get('minimum_selling_price');
+                                $val = (float) $state;
+                                $minAllowed = max($cost, $minSelling);
+                                if ($minAllowed > 0 && $val < $minAllowed) {
+                                    $set('scheduled_price', $minAllowed);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Scheduled price automatically adjusted to the minimum allowed value ('.number_format($minAllowed, 2).').')->send();
+                                }
+                            })
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    $minSelling = (float) $get('minimum_selling_price');
+                                    if ($cost > 0 && $value < $cost) {
+                                        $fail('Scheduled price cannot be less than Supplier Price.');
+                                    }
+                                    if ($minSelling > 0 && $value < $minSelling) {
+                                        $fail('Scheduled price cannot be less than Minimum Selling Price.');
+                                    }
+                                };
+                            }),
+                        Forms\Components\DateTimePicker::make('price_effective_date')
+                            ->label('Price Effective Date')
+                            ->nullable()
+                            ->minDate(now()),
+                        Forms\Components\TextInput::make('minimum_selling_price')
+                            ->label('Minimum Selling Price (৳)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->prefix('৳')
+                            ->live(onBlur: true)
+                            ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $val = (float) $state;
+                                if ($cost > 0 && $val < $cost) {
+                                    $set('minimum_selling_price', $cost);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Minimum selling price automatically adjusted to match Supplier Price.')->send();
+                                }
+                            })
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    if ($cost > 0 && $value < $cost) {
+                                        $fail('Minimum selling price cannot be less than Supplier Price.');
                                     }
                                 };
                             }),
