@@ -69,6 +69,23 @@ class VariantsRelationManager extends RelationManager
                             ->minValue(0)
                             ->prefix('৳')
                             ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $val = (float) $state;
+                                if ($cost > 0 && $val < $cost) {
+                                    $set('price', $cost);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Selling price automatically adjusted to match Supplier Price.')->send();
+                                }
+                            })
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    if ($cost > 0 && (float) $value < $cost) {
+                                        $fail('Selling price cannot be less than Supplier Price.');
+                                    }
+                                };
+                            })
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
                             ->helperText('Overrides base price if set.'),
                         Forms\Components\Placeholder::make('profit_margin_preview')
@@ -93,6 +110,24 @@ class VariantsRelationManager extends RelationManager
                             ->numeric()
                             ->minValue(0)
                             ->prefix('৳')
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                if ($state === null || $state === '') return;
+                                $cost = (float) $get('cost_price');
+                                $val = (float) $state;
+                                if ($cost > 0 && $val < $cost) {
+                                    $set('compare_price', $cost);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Compare at Price automatically adjusted to match Supplier Price.')->send();
+                                }
+                            })
+                            ->rule(function (Forms\Get $get) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $cost = (float) $get('cost_price');
+                                    if ($cost > 0 && (float) $value < $cost) {
+                                        $fail('Compare at Price cannot be less than Supplier Price.');
+                                    }
+                                };
+                            })
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\TextInput::make('price_modifier')
                             ->label('Price Modifier (৳)')
@@ -119,11 +154,41 @@ class VariantsRelationManager extends RelationManager
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\DateTimePicker::make('discount_start_date')
                             ->label('Discount Start Date')
-                            ->nullable(),
+                            ->nullable()
+                            ->minDate(now())
+                            ->rule(function (Forms\Get $get, ?ProductVariant $record) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                    $valueDate = \Carbon\Carbon::parse($value);
+                                    if (!$record || $record->discount_start_date?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                        if ($valueDate->isPast()) {
+                                            $fail('Discount Start Date cannot be in the past.');
+                                        }
+                                    }
+                                };
+                            }),
                         Forms\Components\DateTimePicker::make('discount_end_date')
                             ->label('Discount End Date')
                             ->nullable()
-                            ->afterOrEqual('discount_start_date'),
+                            ->minDate(now())
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set, $state) {
+                                $start = $get('discount_start_date');
+                                if ($start && $state && \Carbon\Carbon::parse($state)->isBefore(\Carbon\Carbon::parse($start))) {
+                                    $set('discount_end_date', null);
+                                    \Filament\Notifications\Notification::make()->warning()->title('Discount End Date cannot be before Start Date.')->send();
+                                }
+                            })
+                            ->afterOrEqual('discount_start_date')
+                            ->rule(function (Forms\Get $get, ?ProductVariant $record) {
+                                return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                    $valueDate = \Carbon\Carbon::parse($value);
+                                    if (!$record || $record->discount_end_date?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                        if ($valueDate->isPast()) {
+                                            $fail('Discount End Date cannot be in the past.');
+                                        }
+                                    }
+                                };
+                            }),
                     ]),
                 ]),
 
