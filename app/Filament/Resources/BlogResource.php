@@ -177,22 +177,58 @@ class BlogResource extends Resource
                     Forms\Components\DateTimePicker::make("published_at")
                         ->label("Publish At")
                         ->nullable()
+                        ->live(onBlur: true)
                         ->minDate(fn (?Blog $record) => $record && $record->published_at && $record->published_at->isPast() ? $record->published_at : now())
                         ->visible(
                             fn(Forms\Get $get): bool => (bool) $get(
                                 "is_published",
                             ),
-                        ),
+                        )
+                        ->rule(function (Forms\Get $get, ?Blog $record) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                $valueDate = \Carbon\Carbon::parse($value);
+                                if (!$record || $record->published_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                    if ($valueDate->isPast()) {
+                                        $fail('Publish date & time cannot be in the past.');
+                                    }
+                                }
+                            };
+                        }),
                     Forms\Components\DateTimePicker::make("unpublished_at")
                         ->label("Unpublish At")
                         ->nullable()
-                        ->minDate(fn (?Blog $record) => $record && $record->unpublished_at && $record->unpublished_at->isPast() ? $record->unpublished_at : now())
+                        ->minDate(function (Forms\Get $get, ?Blog $record) {
+                            $publishedAt = $get('published_at');
+                            if ($publishedAt) {
+                                return \Carbon\Carbon::parse($publishedAt)->addMinute();
+                            }
+                            return $record && $record->unpublished_at && $record->unpublished_at->isPast() ? $record->unpublished_at : now();
+                        })
                         ->after("published_at")
                         ->visible(
                             fn(Forms\Get $get): bool => (bool) $get(
                                 "is_published",
                             ),
-                        ),
+                        )
+                        ->rule(function (Forms\Get $get, ?Blog $record) {
+                            return function (string $attribute, $value, \Closure $fail) use ($get, $record) {
+                                $valueDate = \Carbon\Carbon::parse($value);
+                                
+                                $publishedAt = $get('published_at');
+                                if ($publishedAt) {
+                                    $publishedAtDate = \Carbon\Carbon::parse($publishedAt);
+                                    if ($valueDate->lessThanOrEqualTo($publishedAtDate)) {
+                                        $fail('Unpublish date & time must be strictly after Publish At date.');
+                                    }
+                                }
+                                
+                                if (!$record || $record->unpublished_at?->format('Y-m-d H:i') !== $valueDate->format('Y-m-d H:i')) {
+                                    if ($valueDate->isPast()) {
+                                        $fail('Unpublish date & time cannot be in the past.');
+                                    }
+                                }
+                            };
+                        }),
                     Forms\Components\Select::make("author_id")
                         ->label("Author")
                         ->relationship("author", "name")
