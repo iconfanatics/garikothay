@@ -14,8 +14,18 @@ class ProductVariant extends Model
         'price', 'compare_price', 'price_modifier', 
         'stock_quantity', 'low_stock_threshold', 'image_gallery', 'is_active',
         'discount_type', 'discount_amount', 'discount_start_date', 'discount_end_date',
+        'cost_price', 'scheduled_price', 'price_effective_date', 'minimum_selling_price',
         'weight_value', 'weight_unit', 'length', 'width', 'height', 'dimension_unit',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (ProductVariant $variant): void {
+            if (empty($variant->sku)) {
+                $variant->sku = 'VAR-' . strtoupper(\Illuminate\Support\Str::random(8));
+            }
+        });
+    }
 
     protected function casts(): array
     {
