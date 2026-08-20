@@ -104,10 +104,13 @@ class NavigationItemResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextInputColumn::make('sort_order')
                     ->sortable(),
-                Tables\Columns\ToggleColumn::make('is_active')
-                    ->updateStateUsing(function ($record, $state) {
-                        $record->update(['is_active' => $state]);
-                        // Manually clear cache to be safe
+                Tables\Columns\IconColumn::make('is_active')
+                    ->boolean()
+                    ->action(function ($record, $column) {
+                        $name = $column->getName();
+                        $record->update([$name => ! $record->$name]);
+                        
+                        // Manually clear cache
                         foreach (['en', 'bn'] as $locale) {
                             \Illuminate\Support\Facades\Cache::forget("homepage_data_{$locale}");
                             \Illuminate\Support\Facades\Cache::forget("navbar_categories_{$locale}");
