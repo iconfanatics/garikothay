@@ -36,7 +36,7 @@
             @endphp
             <div x-data="{ 
                     show: false,
-                    announcementId: 'announcement_{{ $announcement->id }}',
+                    announcementId: 'announcement_{{ $announcement->id }}_{{ $announcement->updated_at->timestamp ?? 0 }}',
                     init() {
                         if (!localStorage.getItem(this.announcementId)) {
                             this.show = true;
