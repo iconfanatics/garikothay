@@ -22,14 +22,21 @@ class HomeController extends Controller
     public function index(): View
     {
         $locale = app()->getLocale();
+        // Hero banners and promo banners are language-independent.
+        // They always show regardless of the selected language (en/bn).
+        // Banner text (title/subtitle) will still display in the current locale via translate() with fallback.
         $data = \Illuminate\Support\Facades\Cache::remember("homepage_data_{$locale}", 3600, function () use ($locale) {
             return [
-                'heroBanners' => Banner::with('translations')->active()->where('type', 'hero_slider')->orderBy('sort_order')->get()->filter(function ($banner) use ($locale) {
-                    return $banner->translations->contains('locale', $locale);
-                })->values(),
-                'promoBanners' => Banner::with('translations')->active()->where('type', 'promotional')->orderBy('sort_order')->get()->filter(function ($banner) use ($locale) {
-                    return $banner->translations->contains('locale', $locale);
-                })->values(),
+                'heroBanners' => Banner::active()
+                    ->where('type', \App\Enums\BannerType::HeroSlider)
+                    ->with('translations')
+                    ->orderBy('sort_order')
+                    ->get(),
+                'promoBanners' => Banner::active()
+                    ->where('type', \App\Enums\BannerType::Promotional)
+                    ->with('translations')
+                    ->orderBy('sort_order')
+                    ->get(),
                 'categories' => $this->categoryRepository->getWithProductCount(),
                 'featured' => $this->productRepository->getFeatured(8),
                 'newArrivals' => $this->productRepository->getNewArrivals(8),
