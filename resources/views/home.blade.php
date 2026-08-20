@@ -1352,9 +1352,23 @@
                     <button type="button" @click="
                         fetch('/newsletter/subscribe', {
                             method: 'POST',
-                            headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                            headers: {
+                                'Content-Type': 'application/json', 
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
                             body: JSON.stringify({email})
-                        }).then(r => r.json()).then(d => { msg = d.message; email = ''; });
+                        })
+                        .then(r => r.json().then(d => ({status: r.status, body: d})))
+                        .then(res => { 
+                            msg = res.body.message || (res.body.errors ? Object.values(res.body.errors)[0][0] : 'An error occurred.');
+                            if (res.status === 200) { 
+                                email = ''; 
+                            } 
+                        })
+                        .catch(err => {
+                            msg = 'Failed to subscribe. Please try again.';
+                        });
                     ">Subscribe</button>
                 </div>
                 <p x-show="msg" x-text="msg" style="margin-top:0.65rem; color:var(--gk-green); font-size:0.9rem;"></p>
