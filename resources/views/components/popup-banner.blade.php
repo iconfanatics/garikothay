@@ -12,7 +12,7 @@
                     setTimeout(() => {
                         this.show = true;
                         document.body.style.overflow = 'hidden';
-                    }, 500); // 0.5 second delay before showing
+                    }, 50); // Show popup almost immediately
                 }
             },
             dismiss() {
@@ -81,10 +81,20 @@
                     <p class="text-gray-600 mb-6 leading-relaxed">{{ $popup->getTranslation('subtitle', app()->getLocale(), false) }}</p>
                 @endif
 
-                @if($popup->link)
+                @php
+                    $btnText = $popup->getTranslation('button_text');
+                    $hasText = !empty(trim($btnText));
+                @endphp
+                @if($popup->link || $hasText)
+                    @if($popup->link)
                     <a href="{{ $popup->link }}" @click="dismiss()" class="inline-block w-full sm:w-auto px-8 py-3 bg-[var(--gk-red)] hover:bg-[var(--gk-red-dark)] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
-                        {{ $popup->getTranslation('button_text') ?: 'Explore Now' }}
+                        {{ $btnText ?: 'Explore Now' }}
                     </a>
+                    @else
+                    <button @click="dismiss()" type="button" class="inline-block w-full sm:w-auto px-8 py-3 bg-[var(--gk-red)] hover:bg-[var(--gk-red-dark)] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                        {{ $btnText }}
+                    </button>
+                    @endif
                 @endif
             </div>
         </div>

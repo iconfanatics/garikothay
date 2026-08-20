@@ -73,6 +73,7 @@
             <p class="text-sm leading-relaxed text-gray-400 mb-6">
                 {{ \App\Models\Setting::get('site_tagline', 'Bangladesh\'s premier online IT & Computer Accessories store.') }}
             </p>
+            <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Contact Us</h4>
             <ul class="space-y-2 text-sm text-gray-400 mb-6">
                 @php
                     $phone1 = \App\Models\Setting::get('phone', '+880 1700-000000');

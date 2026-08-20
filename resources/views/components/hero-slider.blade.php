@@ -73,9 +73,9 @@
 
     .hero-title {
         font-family: 'Outfit', sans-serif;
-        font-size: clamp(2.5rem, 6vw, 5rem);
+        font-size: clamp(2rem, 5vw, 4rem);
         font-weight: 800;
-        line-height: 1.1;
+        line-height: 1.35;
         color: #fff;
         margin-bottom: 1.5rem;
         animation: fadeSlideUp 0.8s ease 0.4s both;
@@ -89,7 +89,7 @@
     }
 
     .hero-subtitle {
-        font-size: 1.15rem;
+        font-size: clamp(1.15rem, 2vw, 1.4rem);
         color: rgba(255, 255, 255, 0.7);
         max-width: 36rem;
         line-height: 1.7;
@@ -248,6 +248,9 @@
         right: 30%;
         animation-delay: 2s;
     }
+    
+    .desktop-bg { display: block; }
+    .mobile-bg { display: none; }
 
     @keyframes fadeSlideDown {
         from { opacity: 0; transform: translateY(-20px); }
@@ -275,6 +278,8 @@
         .hero-stats { gap: 1.5rem; }
         .hero-stat-number { font-size: 1.4rem; }
         .scroll-indicator { display: none; }
+        .desktop-bg { display: none; }
+        .mobile-bg { display: block; }
     }
 </style>
 @endpush
@@ -294,9 +299,12 @@
 
     @forelse($banners as $index => $banner)
     <div class="hero-slide" :class="current === {{ $index }} ? 'active' : ''">
-        <div class="hero-bg-image"
-             style="background-image: url('{{ Storage::url($banner->image) }}');">
-        </div>
+        @if($banner->mobile_image)
+            <div class="hero-bg-image desktop-bg" style="background-image: url('{{ Storage::url($banner->image) }}');"></div>
+            <div class="hero-bg-image mobile-bg" style="background-image: url('{{ Storage::url($banner->mobile_image) }}');"></div>
+        @else
+            <div class="hero-bg-image" style="background-image: url('{{ Storage::url($banner->image) }}');"></div>
+        @endif
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <div style="max-width: 42rem;">
