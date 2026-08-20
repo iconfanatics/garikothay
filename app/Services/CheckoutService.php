@@ -117,7 +117,13 @@ class CheckoutService
     private function validateStock(Cart $cart): void
     {
         foreach ($cart->items as $item) {
-            if ($item->product->stock_quantity < $item->quantity) {
+            if (!$item->product->isInStock() && !$item->product->is_preorder) {
+                throw new \RuntimeException(
+                    "Product is unavailable: {$item->product->name}"
+                );
+            }
+
+            if (!$item->product->is_preorder && $item->product->stock_quantity < $item->quantity) {
                 throw new \RuntimeException(
                     "Insufficient stock for: {$item->product->name}"
                 );

@@ -52,6 +52,14 @@ class CartController extends Controller
             'variant_id' => ['nullable', 'exists:product_variants,id'],
         ]);
 
+        $product = \App\Models\Product::findOrFail($request->integer('product_id'));
+        if (!$product->isInStock() && !$product->is_preorder) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product is currently unavailable',
+            ], 422);
+        }
+
         $item = $this->cartService->addItem(
             $request->integer('product_id'),
             $request->integer('quantity', 1),

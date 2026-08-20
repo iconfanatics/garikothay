@@ -187,12 +187,6 @@ public function brand()
                       $q2->where('publish_status', 'Scheduled')
                          ->where('published_at', '<=', now());
                   });
-            })
-            ->where(function ($q) {
-                $q->whereNull('supplier_id')
-                  ->orWhereHas('supplier', function ($q2) {
-                      $q2->where('is_active', true);
-                  });
             });
     }
 
@@ -340,7 +334,28 @@ public function brand()
                 return false;
             }
         }
+        
+        if ($this->supplier_id) {
+            if ($this->relationLoaded('supplier') && !$this->supplier?->is_active) {
+                return false;
+            } elseif (!$this->relationLoaded('supplier') && !\App\Models\Supplier::where('id', $this->supplier_id)->value('is_active')) {
+                return false;
+            }
+        }
+        
         return $this->stock_quantity > 0;
+    }
+
+    public function getIsPreorderAttribute($value): bool
+    {
+        if ($value && $this->supplier_id) {
+            if ($this->relationLoaded('supplier') && !$this->supplier?->is_active) {
+                return false;
+            } elseif (!$this->relationLoaded('supplier') && !\App\Models\Supplier::where('id', $this->supplier_id)->value('is_active')) {
+                return false;
+            }
+        }
+        return (bool) $value;
     }
 
     /** @param array<int, string> $paths */
