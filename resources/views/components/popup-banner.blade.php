@@ -87,11 +87,11 @@
                 @endphp
                 @if($popup->link || $hasText)
                     @if($popup->link)
-                    <a href="{{ $popup->link }}" @click="sessionStorage.setItem(popupId, 'dismissed')" class="inline-block w-full sm:w-auto px-8 py-3 bg-[var(--gk-red)] hover:bg-[var(--gk-red-dark)] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                    <a href="{{ $popup->link }}" @click="sessionStorage.setItem(popupId, 'dismissed')" class="inline-block w-full sm:w-auto px-8 py-3 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" style="background-color: var(--gk-red);" onmouseover="this.style.backgroundColor='var(--gk-red-dark)'" onmouseout="this.style.backgroundColor='var(--gk-red)'">
                         {{ $hasText ? $btnText : 'Explore Now' }}
                     </a>
                     @else
-                    <button @click="dismiss()" type="button" class="inline-block w-full sm:w-auto px-8 py-3 bg-[var(--gk-red)] hover:bg-[var(--gk-red-dark)] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                    <button @click="dismiss()" type="button" class="inline-block w-full sm:w-auto px-8 py-3 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5" style="background-color: var(--gk-red);" onmouseover="this.style.backgroundColor='var(--gk-red-dark)'" onmouseout="this.style.backgroundColor='var(--gk-red)'">
                         {{ $btnText }}
                     </button>
                     @endif
