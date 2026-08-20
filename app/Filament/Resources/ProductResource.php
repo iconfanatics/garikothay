@@ -252,6 +252,14 @@ class ProductResource extends Resource
                     ]),
                 ]),
 
+                Forms\Components\Tabs\Tab::make('Variants')
+                    ->schema([
+                        Forms\Components\Placeholder::make('variants_notice')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('<div class="p-4 bg-yellow-50 text-yellow-800 rounded-lg flex items-center gap-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <div><strong>Variants are managed on the Edit page.</strong><br>Please fill in the required fields and click "Create" to save this product first. After saving, you will be able to add and manage product variants (size, color, etc.) with custom pricing, stock, and images.</div></div>'))
+                    ])
+                    ->visible(fn (string $operation): bool => $operation === 'create'),
+
                 Forms\Components\Tabs\Tab::make('Features & Attributes')->schema([
                     Forms\Components\Repeater::make('features')
                         ->label('Product Features')
