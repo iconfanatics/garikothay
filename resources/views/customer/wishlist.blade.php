@@ -10,8 +10,23 @@
     @if($wishlists->count())
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
         @foreach($wishlists as $item)
-        <div x-data="{ inWishlist: true }" class="relative">
-            <x-product-card :product="$item->product" />
+        <div x-data="{ removing: false }" class="relative flex flex-col h-full">
+            <div class="flex-1">
+                <x-product-card :product="$item->product" />
+            </div>
+            <button @click="
+                removing = true;
+                fetch('/wishlist/toggle', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                    body: JSON.stringify({product_id: {{ $item->product_id }}})
+                }).then(() => window.location.reload());
+            " 
+            :disabled="removing"
+            class="mt-3 flex items-center justify-center gap-1.5 w-full py-2 text-sm font-bold text-rose-600 bg-rose-50 border border-rose-100 rounded-lg hover:bg-rose-600 hover:text-white transition-colors disabled:opacity-50">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                Remove from Wishlist
+            </button>
         </div>
         @endforeach
     </div>
