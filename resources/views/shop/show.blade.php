@@ -818,6 +818,16 @@
                             this.$dispatch('toast', { message: '{{ __('general.added_to_cart') }}' });
                             if (redirect) window.location.href = '{{ route('cart.index') }}';
                         }).catch(() => { this.adding = false; });
+                    },
+                    updateImage() {
+                        if (this.selectedVariant) {
+                            const variant = this.variants.find(v => v.id === this.selectedVariant);
+                            if (variant && variant.images && variant.images.length > 0) {
+                                this.activeImage = '/storage/' + variant.images[0];
+                                return;
+                            }
+                        }
+                        this.activeImage = '{!! addslashes($imageUrl) !!}';
                     }
                 }));
             });
@@ -894,7 +904,7 @@
                             <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
                                 @foreach($product->variants->where('is_active', true) as $variant)
                                     <button type="button"
-                                        @click="selectedVariant = (selectedVariant === {{ $variant->id }} ? null : {{ $variant->id }})"
+                                        @click="selectedVariant = (selectedVariant === {{ $variant->id }} ? null : {{ $variant->id }}); updateImage();"
                                         :class="{ 'is-active': selectedVariant === {{ $variant->id }} }"
                                         class="gk-variant-button">
                                         @php

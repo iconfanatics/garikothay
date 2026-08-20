@@ -756,185 +756,6 @@ class ProductResource extends Resource
                     ]),
                 ]),
 
-                Forms\Components\Tabs\Tab::make('Variants')->schema([
-                    Forms\Components\Repeater::make('variants')
-                        ->relationship()
-                        ->schema([
-                            Forms\Components\Grid::make(2)->schema([
-                                Forms\Components\Grid::make(1)->schema([
-                                    Forms\Components\Select::make("variant_type_id")
-                                        ->relationship("variantType", "name")
-                                        ->searchable()
-                                        ->preload()
-                                        ->label("Variant Type")
-                                        ->createOptionForm([
-                                            Forms\Components\TextInput::make("name")->required()
-                                        ]),
-                                    Forms\Components\Select::make("variant_value_id")
-                                        ->relationship("variantValue", "name")
-                                        ->searchable()
-                                        ->preload()
-                                        ->label("Variant Value")
-                                        ->createOptionForm([
-                                            Forms\Components\Select::make("variant_type_id")
-                                                ->relationship("type", "name")
-                                                ->required(),
-                                            Forms\Components\TextInput::make("name")->required()
-                                        ]),
-                                    Forms\Components\TextInput::make('sku')
-                                        ->label('SKU (Optional)')
-                                        ->readOnly(fn (string $operation): bool => $operation === 'edit')
-                                        ->unique(ignoreRecord: true)
-                                        ->nullable()
-                                        ->default(fn () => 'VAR-' . strtoupper(str()->random(6))),
-                                ])->columnSpan(1),
-                                
-                                Forms\Components\FileUpload::make('image_gallery')
-                                    ->label('Variant Gallery')
-                                    ->multiple()
-                                    ->image()
-                                    ->directory('products/variants')
-                                    ->reorderable()
-                                    ->columnSpan(1),
-                            ]),
-                            
-                            Forms\Components\Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('cost_price')
-                                    ->label('Supplier Price (৳)')
-                                    ->helperText('Internal purchase price for variant.')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->prefix('৳')
-                                    ->live(onBlur: true)
-                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
-                                Forms\Components\TextInput::make('price')
-                                    ->label('Selling Price (৳)')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->prefix('৳')
-                                    ->live(onBlur: true)
-                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
-                                    ->helperText('Overrides base price if set.')
-                                    ->rule(function (Forms\Get $get) {
-                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
-                                            $cost = (float) $get('cost_price');
-                                            $minSelling = (float) $get('minimum_selling_price');
-                                            if ($cost > 0 && (float) $value < $cost) {
-                                                $fail('Selling price cannot be less than Supplier Price.');
-                                            }
-                                            if ($minSelling > 0 && (float) $value < $minSelling) {
-                                                $fail('Selling price cannot be less than Minimum Selling Price.');
-                                            }
-                                        };
-                                    }),
-                                Forms\Components\Select::make('discount_type')
-                                    ->label('Discount Type')
-                                    ->options([
-                                        'Fixed' => 'Fixed Amount',
-                                        'Percentage' => 'Percentage (%)',
-                                    ])
-                                    ->live()
-                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
-                                Forms\Components\TextInput::make('discount_amount')
-                                    ->label('Discount Amount')
-                                    ->numeric()
-                                    ->prefix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? null : '৳')
-                                    ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'Percentage' ? '%' : null)
-                                    ->live(onBlur: true)
-                                    ->disabled(fn () => auth()->user()?->hasRole('Shop Manager'))
-                                    ->rule(function (Forms\Get $get) {
-                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
-                                            if ($get('discount_type') === 'Percentage' && $value > 100) {
-                                                $fail('Percentage cannot exceed 100.');
-                                            }
-                                            $price = (float) $get('price');
-                                            if ($get('discount_type') === 'Fixed' && $price > 0 && $value >= $price) {
-                                                $fail('Fixed discount must be less than the selling price.');
-                                            }
-                                            $cost = (float) $get('cost_price');
-                                            $minSelling = (float) $get('minimum_selling_price');
-                                            if ($price > 0) {
-                                                $discount = $get('discount_type') === 'Percentage' ? ($price * ($value / 100)) : (float) $value;
-                                                $finalPrice = $price - $discount;
-                                                if ($cost > 0 && $finalPrice < $cost) {
-                                                    $fail('Final price after discount cannot be less than Supplier Price.');
-                                                }
-                                                if ($minSelling > 0 && $finalPrice < $minSelling) {
-                                                    $fail('Final price after discount cannot be less than Minimum Selling Price.');
-                                                }
-                                            }
-                                        };
-                                    }),
-                                Forms\Components\Placeholder::make('discount_preview')
-                                    ->label('Final Price Preview')
-                                    ->content(function (Forms\Get $get) {
-                                        $price = (float) $get('price');
-                                        $discountType = $get('discount_type');
-                                        $discountAmount = (float) $get('discount_amount');
-                                        if (! $price || ! $discountAmount || ! $discountType) return '-';
-                                        $final = $discountType === 'Percentage' ? $price - ($price * ($discountAmount / 100)) : $price - $discountAmount;
-                                        return '৳' . number_format(max(0, $final), 2);
-                                    }),
-                                Forms\Components\DateTimePicker::make('discount_start_date')
-                                    ->label('Discount Start Date')
-                                    ->minDate(now()),
-                                Forms\Components\DateTimePicker::make('discount_end_date')
-                                    ->label('Discount End Date')
-                                    ->minDate(now())
-                                    ->afterOrEqual('discount_start_date'),
-                                Forms\Components\TextInput::make('scheduled_price')
-                                    ->label('Scheduled Price')
-                                    ->numeric()
-                                    ->prefix('৳')
-                                    ->rule(function (Forms\Get $get) {
-                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
-                                            $cost = (float) $get('cost_price');
-                                            $minSelling = (float) $get('minimum_selling_price');
-                                            if ($cost > 0 && $value < $cost) {
-                                                $fail('Scheduled price cannot be less than Supplier Price.');
-                                            }
-                                            if ($minSelling > 0 && $value < $minSelling) {
-                                                $fail('Scheduled price cannot be less than Minimum Selling Price.');
-                                            }
-                                        };
-                                    }),
-                                Forms\Components\DateTimePicker::make('price_effective_date')
-                                    ->label('Price Effective Date')
-                                    ->minDate(now()),
-                                Forms\Components\TextInput::make('minimum_selling_price')
-                                    ->label('Minimum Selling Price (৳)')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->prefix('৳')
-                                    ->live(onBlur: true)
-                                    ->rule(function (Forms\Get $get) {
-                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
-                                            $cost = (float) $get('cost_price');
-                                            if ($cost > 0 && $value < $cost) {
-                                                $fail('Minimum selling price cannot be less than Supplier Price.');
-                                            }
-                                        };
-                                    }),
-                            ]),
-
-                            Forms\Components\Grid::make(3)->schema([
-                                Forms\Components\TextInput::make('stock_quantity')->numeric()->default(0)->required()->label('Stock Quantity'),
-                                Forms\Components\Select::make('is_active')
-                                    ->options([
-                                        1 => 'In Stock',
-                                        0 => 'Out of Stock'
-                                    ])
-                                    ->default(1)
-                                    ->required()
-                                    ->label('Stock Status'),
-                                Forms\Components\TextInput::make('low_stock_threshold')->numeric()->default(5)->label('Low Stock Level'),
-                            ]),
-                        ])
-                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                        ->collapsible()
-                        ->defaultItems(0)
-                        ->addActionLabel('Add Variant')
-                ]),
 
                 Forms\Components\Tabs\Tab::make('SEO')->schema([
                     Forms\Components\Grid::make(2)->schema([
@@ -1175,6 +996,13 @@ class ProductResource extends Resource
                         }),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\VariantsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

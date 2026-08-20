@@ -1,0 +1,22 @@
+{
+    "site_name": "Garikothay",
+    "site_tagline": "Find trusted cars, bikes, and auto deals across Bangladesh.",
+    "site_logo": null,
+    "site_favicon": null,
+    "free_shipping_threshold": "1500",
+    "phone": "+8801911223344",
+    "email": "support@garikothay.com",
+    "address": "House 24, Road 7, Banani, Dhaka 1213, Bangladesh",
+    "whatsapp": "8801911223344",
+    "facebook": "https:\/\/facebook.com\/garikothay",
+    "instagram": "https:\/\/instagram.com\/garikothay",
+    "youtube": "https:\/\/youtube.com\/@garikothay",
+    "meta_title": "Garikothay - Trusted Cars, Bikes & Auto Deals in Bangladesh",
+    "meta_description": "Browse verified cars, bikes, spare parts, and auto deals from trusted sellers across Bangladesh with Garikothay.",
+    "google_analytics_id": "",
+    "facebook_pixel_id": "",
+    "cod_enabled": "1",
+    "sslcommerz_enabled": "1",
+    "stripe_enabled": "0",
+    "guest_checkout_enabled": "1"
+}

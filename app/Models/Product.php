@@ -52,7 +52,7 @@ class Product extends Model
     protected $fillable = [
         'translations',
         'brand_id', 'unit_id', 'brand', 'category_id', 'slug', 'sku', 'barcode', 'price', 'compare_price',
-        'cost_price', 'stock_quantity', 'reserved_stock', 'is_preorder', 'low_stock_threshold', 'weight_grams',
+        'cost_price', 'stock_quantity', 'reserved_stock', 'is_preorder', 'low_stock_threshold', 'weight_grams', 'weight_value', 'weight_unit', 'length', 'width', 'height', 'dimension_unit',
         'is_active', 'is_featured', 'is_new_arrival', 'requires_shipping',
         'shipping_restriction', 'has_special_handling', 'handling_type', 'is_free_shipping_eligible',
         'tax_rate', 'plant_type', 'sunlight', 'watering', 'difficulty', 'mature_size',
