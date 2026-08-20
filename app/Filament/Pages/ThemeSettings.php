@@ -107,6 +107,13 @@ class ThemeSettings extends Page
             'theme1_show_partners' => $settings->get('theme1_show_partners')?->getCastedValue() ?? true,
             'theme1_newsletter_title' => $settings->get('theme1_newsletter_title')?->value ?? 'GET DEALS IN YOUR INBOX',
             'theme1_newsletter_subtitle' => $settings->get('theme1_newsletter_subtitle')?->value ?? 'Subscribe for exclusive offers, new arrivals and service discounts.',
+            'theme1_app_kicker' => $settings->get('theme1_app_kicker')?->value ?? 'Mobile App',
+            'theme1_app_title' => $settings->get('theme1_app_title')?->value ?? 'Take Gari Kothay With You',
+            'theme1_app_desc' => $settings->get('theme1_app_desc')?->value ?? 'Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.',
+            'theme1_app_google_play' => $settings->get('theme1_app_google_play')?->value ?? '#',
+            'theme1_app_app_store' => $settings->get('theme1_app_app_store')?->value ?? '#',
+            'theme1_app_qr_image' => $settings->get('theme1_app_qr_image')?->value ?? '',
+            'theme1_app_qr_text' => $settings->get('theme1_app_qr_text')?->value ?? 'Scan to Download',
         ]);
     }
 
@@ -305,6 +312,17 @@ class ThemeSettings extends Page
                                     ->default('Subscribe for exclusive offers, new arrivals and service discounts.')
                                     ->required(),
                             ]),
+                        Forms\Components\Section::make('Mobile App Promo Settings')
+                            ->description('Customize the content of the mobile app promotional section.')
+                            ->schema([
+                                Forms\Components\TextInput::make('theme1_app_kicker')->label('Subtitle/Kicker')->default('Mobile App'),
+                                Forms\Components\TextInput::make('theme1_app_title')->label('Title')->default('Take Gari Kothay With You'),
+                                Forms\Components\Textarea::make('theme1_app_desc')->label('Description')->default('Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.'),
+                                Forms\Components\TextInput::make('theme1_app_google_play')->label('Google Play Link')->default('#')->url(),
+                                Forms\Components\TextInput::make('theme1_app_app_store')->label('App Store Link')->default('#')->url(),
+                                Forms\Components\FileUpload::make('theme1_app_qr_image')->label('QR Code Image')->directory('theme')->image(),
+                                Forms\Components\TextInput::make('theme1_app_qr_text')->label('QR Text')->default('Scan to Download'),
+                            ])->columns(2),
                         Forms\Components\Section::make('Social Media Links')
                             ->description('Add social media icons and links to the footer.')
                             ->schema([
@@ -372,6 +390,13 @@ class ThemeSettings extends Page
             'theme1_show_partners' => ['group' => 'theme', 'type' => SettingType::Boolean],
             'theme1_newsletter_title' => ['group' => 'theme', 'type' => SettingType::Text],
             'theme1_newsletter_subtitle' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_app_kicker' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_app_title' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_app_desc' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_app_google_play' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_app_app_store' => ['group' => 'theme', 'type' => SettingType::Text],
+            'theme1_app_qr_image' => ['group' => 'theme', 'type' => SettingType::Image],
+            'theme1_app_qr_text' => ['group' => 'theme', 'type' => SettingType::Text],
         ];
 
         foreach ($data as $key => $value) {

@@ -1269,15 +1269,21 @@
         <div class="gk-container">
             <div class="gk-app-promo">
                 <div>
-                    <div style="font-size:0.75rem; font-weight:900; text-transform:capitalize; color:rgba(255,255,255,0.72);">Mobile App</div>
-                    <h2 class="gk-section-title" style="margin-top:0.4rem; color:#ffffff;">Take Gari Kothay With You</h2>
-                    <p style="max-width:520px; margin-top:0.75rem; color:rgba(255,255,255,0.78); line-height:1.7;">Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.</p>
+                    <div style="font-size:0.75rem; font-weight:900; text-transform:capitalize; color:rgba(255,255,255,0.72);">
+                        {{ \App\Models\Setting::get('theme1_app_kicker') ?? 'Mobile App' }}
+                    </div>
+                    <h2 class="gk-section-title" style="margin-top:0.4rem; color:#ffffff;">
+                        {{ \App\Models\Setting::get('theme1_app_title') ?? 'Take Gari Kothay With You' }}
+                    </h2>
+                    <p style="max-width:520px; margin-top:0.75rem; color:rgba(255,255,255,0.78); line-height:1.7;">
+                        {{ \App\Models\Setting::get('theme1_app_desc') ?? 'Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.' }}
+                    </p>
                     <div class="gk-store-buttons">
-                        <a href="#" class="gk-store-button">
+                        <a href="{{ \App\Models\Setting::get('theme1_app_google_play') ?? '#' }}" class="gk-store-button">
                             <span style="font-size:1.4rem;">▣</span>
                             <span><span style="display:block; font-size:0.65rem; opacity:0.72;">GET IT ON</span><strong>Google Play</strong></span>
                         </a>
-                        <a href="#" class="gk-store-button">
+                        <a href="{{ \App\Models\Setting::get('theme1_app_app_store') ?? '#' }}" class="gk-store-button">
                             <span style="font-size:1.4rem;">◉</span>
                             <span><span style="display:block; font-size:0.65rem; opacity:0.72;">DOWNLOAD ON</span><strong>App Store</strong></span>
                         </a>
@@ -1285,10 +1291,17 @@
                 </div>
                 <div style="display:flex; align-items:center; justify-content:center;">
                     <div style="border-radius:8px; background:#ffffff; color:#000000; padding:1rem; text-align:center;">
-                        <div style="display:grid; place-items:center; width:10rem; height:10rem; border-radius:6px; background:repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 / 14px 14px;">
-                            <span style="background:#ffffff; padding:0.25rem 0.5rem; font-size:0.78rem; font-weight:900;">QR</span>
+                        @php $qrImage = \App\Models\Setting::get('theme1_app_qr_image'); @endphp
+                        @if($qrImage)
+                            <img src="{{ asset('storage/' . $qrImage) }}" alt="QR Code" style="width:10rem; height:10rem; object-fit:contain; border-radius:6px; margin:0 auto;">
+                        @else
+                            <div style="display:grid; place-items:center; width:10rem; height:10rem; border-radius:6px; background:repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 / 14px 14px;">
+                                <span style="background:#ffffff; padding:0.25rem 0.5rem; font-size:0.78rem; font-weight:900;">QR</span>
+                            </div>
+                        @endif
+                        <div style="margin-top:0.55rem; font-size:0.8rem; font-weight:800;">
+                            {{ \App\Models\Setting::get('theme1_app_qr_text') ?? 'Scan to Download' }}
                         </div>
-                        <div style="margin-top:0.55rem; font-size:0.8rem; font-weight:800;">Scan to Download</div>
                     </div>
                 </div>
             </div>
