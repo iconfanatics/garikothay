@@ -12,7 +12,7 @@
                     setTimeout(() => {
                         this.show = true;
                         document.body.style.overflow = 'hidden';
-                    }, 2000); // 2 second delay before showing
+                    }, 500); // 0.5 second delay before showing
                 }
             },
             dismiss() {
@@ -62,8 +62,13 @@
             </button>
 
             @if($popup->image)
-                <div class="w-full relative aspect-video bg-gray-100">
-                    <img src="{{ asset('storage/' . $popup->image) }}" alt="{{ $popup->title }}" class="w-full h-full object-cover">
+                <div class="w-full relative aspect-video sm:aspect-[2/1] bg-gray-100">
+                    <picture>
+                        @if($popup->mobile_image)
+                            <source media="(max-width: 640px)" srcset="{{ asset('storage/' . $popup->mobile_image) }}">
+                        @endif
+                        <img src="{{ asset('storage/' . $popup->image) }}" alt="{{ $popup->title }}" class="w-full h-full object-cover">
+                    </picture>
                 </div>
             @endif
 
@@ -78,7 +83,7 @@
 
                 @if($popup->link)
                     <a href="{{ $popup->link }}" @click="dismiss()" class="inline-block w-full sm:w-auto px-8 py-3 bg-[var(--gk-red)] hover:bg-[var(--gk-red-dark)] text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
-                        {{ $popup->getTranslation('button_text', app()->getLocale(), false) ?: __('general.explore') }}
+                        {{ $popup->getTranslation('button_text') ?: 'Explore Now' }}
                     </a>
                 @endif
             </div>

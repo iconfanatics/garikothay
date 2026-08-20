@@ -365,6 +365,8 @@
         padding: 1rem;
         color: #ffffff;
         text-decoration: none;
+        position: relative;
+        overflow: hidden;
     }
 
     .gk-mini-promo span {
@@ -929,6 +931,7 @@
             'button' => $banner->getTranslation('button_text', app()->getLocale(), false) ?: __('general.explore'),
             'link' => $banner->link ?? '#',
             'image' => $banner->image ? asset('storage/' . $banner->image) : '',
+            'mobile_image' => $banner->mobile_image ? asset('storage/' . $banner->mobile_image) : null,
             'btn2' => null,
             'link2' => '#',
         ];
@@ -955,6 +958,7 @@
             'link' => $banner->link ?? '#',
             'bg_start' => $color[0],
             'bg_end' => $color[1],
+            'image' => $banner->image ? asset('storage/' . $banner->image) : null,
         ];
     });
 
@@ -1049,7 +1053,12 @@
             }">
                 @foreach($slides as $index => $slide)
                     <article class="gk-hero-slide" :class="{ 'is-active': current === {{ $index }} }">
-                        <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}">
+                        <picture>
+                            @if(!empty($slide['mobile_image']))
+                                <source media="(max-width: 640px)" srcset="{{ $slide['mobile_image'] }}">
+                            @endif
+                            <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}">
+                        </picture>
                         <div class="gk-hero-shade"></div>
                         <div class="gk-hero-content">
                             <h1 class="gk-hero-title">{{ $slide['title'] }}</h1>
@@ -1078,9 +1087,17 @@
 
             <div class="gk-promo-stack">
                 @foreach($promos as $promo)
-                <a href="{{ $promo['link'] ?? '#' }}" class="gk-mini-promo" style="background: linear-gradient(135deg, {{ $promo['bg_start'] ?? '#e11d48' }}, {{ $promo['bg_end'] ?? '#be123c' }});">
-                    <span>{{ $promo['kicker'] ?? '' }}</span>
-                    <strong>{{ $promo['title'] ?? '' }}</strong>
+                <a href="{{ $promo['link'] ?? '#' }}" class="gk-mini-promo">
+                    @if(!empty($promo['image']))
+                        <div style="position:absolute; inset:0; background-image:url('{{ $promo['image'] }}'); background-size:cover; background-position:center; z-index:0; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+                        <div style="position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2)); z-index:1;"></div>
+                    @else
+                        <div style="position:absolute; inset:0; background:linear-gradient(135deg, {{ $promo['bg_start'] ?? '#e11d48' }}, {{ $promo['bg_end'] ?? '#be123c' }}); z-index:0;"></div>
+                    @endif
+                    <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+                        <span>{{ $promo['kicker'] ?? '' }}</span>
+                        <strong>{{ $promo['title'] ?? '' }}</strong>
+                    </div>
                 </a>
                 @endforeach
             </div>
