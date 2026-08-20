@@ -145,5 +145,10 @@ Route::get('/admin/orders/{order}/vendor-slip/pdf', function (\App\Models\Order 
 
 require __DIR__.'/auth.php';
 
+// Handle legacy or seeded /page/ URLs by redirecting them to the root URL
+Route::get('/page/{slug}', function ($slug) {
+    return redirect('/' . $slug, 301);
+});
+
 // Dynamic Page fallback route (Must be at the very bottom)
 Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');
