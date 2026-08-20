@@ -52,17 +52,55 @@ class ShippingZoneResource extends Resource
                         ]),
                     ]),
                                         Forms\Components\Section::make('Dynamic Coverage Area')->schema([
+                        // For Division Zone
+                        Forms\Components\Select::make('coverage_areas_division')
+                            ->label('Select Division(s)')
+                            ->multiple()
+                            ->searchable()
+                            ->options(function () use ($locations) {
+                                $divs = array_keys($locations);
+                                return array_combine($divs, $divs);
+                            })
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Division')
+                            ->required(fn (Forms\Get $get) => $get('zone_type') === 'Division')
+                            ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
+                                if ($record && $record->zone_type === 'Division') $component->state($record->coverage_areas);
+                            })
+                            ->dehydrated(false),
+                            
+                        // Helper for District and Upazila
                         Forms\Components\Select::make('division_filter')
-                            ->label('Select Division (Optional)')
+                            ->label('1. Select Division')
                             ->options(function () use ($locations) {
                                 return array_combine(array_keys($locations), array_keys($locations));
                             })
                             ->live()
-                            ->dehydrated(false)
-                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana'])),
+                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana']))
+                            ->dehydrated(false),
                             
+                        // For District Zone
+                        Forms\Components\Select::make('coverage_areas_district')
+                            ->label('2. Select District(s)')
+                            ->multiple()
+                            ->searchable()
+                            ->options(function (Forms\Get $get) use ($locations) {
+                                $div = $get('division_filter');
+                                if ($div && isset($locations[$div])) {
+                                    $districts = array_keys($locations[$div]);
+                                    return array_combine($districts, $districts);
+                                }
+                                return [];
+                            })
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'District')
+                            ->required(fn (Forms\Get $get) => $get('zone_type') === 'District')
+                            ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
+                                if ($record && $record->zone_type === 'District') $component->state($record->coverage_areas);
+                            })
+                            ->dehydrated(false),
+
+                        // Helper for Upazila
                         Forms\Components\Select::make('district_filter')
-                            ->label('Select District (Optional)')
+                            ->label('2. Select District')
                             ->options(function (Forms\Get $get) use ($locations) {
                                 $div = $get('division_filter');
                                 if ($div && isset($locations[$div])) {
@@ -72,89 +110,44 @@ class ShippingZoneResource extends Resource
                                 return [];
                             })
                             ->live()
-                            ->dehydrated(false)
-                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana'),
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana')
+                            ->dehydrated(false),
 
-                        Forms\Components\Select::make('coverage_areas_select')
-                            ->label(fn(Forms\Get $get) => 'Select ' . $get('zone_type') . 's')
+                        // For Upazila Zone
+                        Forms\Components\Select::make('coverage_areas_upazila')
+                            ->label('3. Select Upazila(s)')
                             ->multiple()
                             ->searchable()
-                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['Division', 'District', 'Upazila-Thana']))
-                            ->options(function (Forms\Get $get, Forms\Components\Select $component) use ($locations) {
-                                $type = $get('zone_type');
+                            ->options(function (Forms\Get $get) use ($locations) {
                                 $div = $get('division_filter');
                                 $dist = $get('district_filter');
-                                
-                                $options = [];
-                                
-                                if ($type === 'Division') {
-                                    $divs = array_keys($locations);
-                                    $options = array_combine($divs, $divs);
-                                } elseif ($type === 'District') {
-                                    if ($div && isset($locations[$div])) {
-                                        foreach (array_keys($locations[$div]) as $d) {
-                                            $options[$d] = $d . ' (' . $div . ')';
-                                        }
-                                    } else {
-                                        foreach ($locations as $dv => $districts) {
-                                            foreach (array_keys($districts) as $d) {
-                                                $options[$d] = $d . ' (' . $dv . ')';
-                                            }
-                                        }
-                                    }
-                                } elseif ($type === 'Upazila-Thana') {
-                                    if ($div && $dist && isset($locations[$div][$dist])) {
-                                        foreach ($locations[$div][$dist] as $upa) {
-                                            $options[$upa] = $upa . ' (' . $dist . ')';
-                                        }
-                                    } elseif ($div && isset($locations[$div])) {
-                                        foreach ($locations[$div] as $d => $upas) {
-                                            foreach ($upas as $upa) {
-                                                $options[$upa] = $upa . ' (' . $d . ')';
-                                            }
-                                        }
-                                    } else {
-                                        foreach ($locations as $dv => $districts) {
-                                            foreach ($districts as $d => $upas) {
-                                                foreach ($upas as $upa) {
-                                                    $options[$upa] = $upa . ' (' . $d . ')';
-                                                }
-                                            }
-                                        }
-                                    }
+                                if ($div && $dist && isset($locations[$div][$dist])) {
+                                    $upas = $locations[$div][$dist];
+                                    return array_combine($upas, $upas);
                                 }
-                                
-                                // Ensure currently selected values are always in the options array
-                                $state = $component->getState();
-                                if (is_array($state)) {
-                                    foreach ($state as $val) {
-                                        if (!isset($options[$val])) {
-                                            $options[$val] = $val;
-                                        }
-                                    }
-                                }
-                                
-                                return $options;
+                                return [];
                             })
-                            ->required(fn (Forms\Get $get) => in_array($get('zone_type'), ['Division', 'District', 'Upazila-Thana']))
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana')
+                            ->required(fn (Forms\Get $get) => $get('zone_type') === 'Upazila-Thana')
                             ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
-                                if ($record && in_array($record->zone_type, ['Division', 'District', 'Upazila-Thana'])) {
-                                    $component->state($record->coverage_areas);
-                                }
+                                if ($record && $record->zone_type === 'Upazila-Thana') $component->state($record->coverage_areas);
                             })
                             ->dehydrated(false),
                             
+                        // For Custom Area
                         Forms\Components\TagsInput::make('coverage_areas_tags')
                             ->label('Enter Custom Areas')
                             ->placeholder('Type and press Enter...')
                             ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Custom Area')
                             ->required(fn (Forms\Get $get) => $get('zone_type') === 'Custom Area')
                             ->afterStateHydrated(function (Forms\Components\TagsInput $component, ?\App\Models\ShippingZone $record) {
-                                if ($record && $record->zone_type === 'Custom Area') {
-                                    $component->state($record->coverage_areas);
-                                }
+                                if ($record && $record->zone_type === 'Custom Area') $component->state($record->coverage_areas);
                             })
                             ->dehydrated(false),
+                            
+                        // Hidden field to store actual value via state management
+                        Forms\Components\Hidden::make('coverage_areas')
+                            ->dehydrated(true)
                     ])->hidden(fn (Forms\Get $get) => $get('zone_type') === 'Nationwide'),
                 ])->columnSpan(['lg' => 1]),
                 
