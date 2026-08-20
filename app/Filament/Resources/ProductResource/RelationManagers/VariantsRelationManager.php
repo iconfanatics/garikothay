@@ -118,9 +118,11 @@ class VariantsRelationManager extends RelationManager
                             ->live(onBlur: true)
                             ->disabled(fn () => auth()->user()?->hasRole('Shop Manager')),
                         Forms\Components\DateTimePicker::make('discount_start_date')
-                            ->label('Discount Start Date'),
+                            ->label('Discount Start Date')
+                            ->nullable(),
                         Forms\Components\DateTimePicker::make('discount_end_date')
                             ->label('Discount End Date')
+                            ->nullable()
                             ->afterOrEqual('discount_start_date'),
                     ]),
                 ]),

@@ -459,6 +459,7 @@ class ProductResource extends Resource
                             }),
                         Forms\Components\DateTimePicker::make('price_effective_date')
                             ->label('Price Effective Date')
+                            ->nullable()
                             ->minDate(now()),
                         Forms\Components\TextInput::make('minimum_selling_price')
                             ->label('Minimum Selling Price (৳)')
