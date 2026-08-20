@@ -49,6 +49,16 @@ class BrandResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('products_count')
+                    ->counts('products')
+                    ->label('Products')
+                    ->sortable()
+                    ->url(fn (\App\Models\Brand $record): string => \App\Filament\Resources\ProductResource::getUrl('index', ['tableFilters' => ['brand_id' => ['value' => $record->id]]])),
+                Tables\Columns\TextColumn::make('order_items_count')
+                    ->counts('orderItems')
+                    ->label('Times Ordered')
+                    ->sortable()
+                    ->url(fn (\App\Models\Brand $record): string => \App\Filament\Resources\OrderResource::getUrl('index', ['tableFilters' => ['brand_id' => ['value' => $record->id]]])),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')

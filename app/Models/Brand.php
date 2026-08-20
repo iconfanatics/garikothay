@@ -15,4 +15,14 @@ class Brand extends Model
             if (empty($brand->slug)) $brand->slug = Str::slug($brand->name);
         });
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasManyThrough(OrderItem::class, Product::class);
+    }
 }
