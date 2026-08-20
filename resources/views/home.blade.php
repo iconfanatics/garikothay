@@ -1126,10 +1126,10 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">Mega Sale</h2>
-                    <p class="gk-section-subtitle">Best prices on selected automotive products.</p>
+                    <h2 class="gk-section-title">{{ __('general.mega_sale') }}</h2>
+                    <p class="gk-section-subtitle">{{ __('general.mega_sale_subtitle') }}</p>
                 </div>
-                <a href="{{ route('shop.index') }}" class="gk-view-link">View All <span aria-hidden="true">→</span></a>
+                <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.view_all_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
             <div class="gk-product-grid">
                 @foreach($saleProducts as $product)
@@ -1146,10 +1146,10 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">New Arrivals</h2>
-                    <p class="gk-section-subtitle">Freshly added parts and accessories.</p>
+                    <h2 class="gk-section-title">{{ __('general.new_arrivals') }}</h2>
+                    <p class="gk-section-subtitle">{{ __('general.new_arrivals_subtitle_home') }}</p>
                 </div>
-                <a href="{{ route('shop.index') }}" class="gk-view-link">Shop Now <span aria-hidden="true">→</span></a>
+                <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.shop_now_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
             <div class="gk-product-grid">
                 @foreach($newArrivals->take(5) as $product)
@@ -1165,10 +1165,10 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">Featured Products</h2>
-                    <p class="gk-section-subtitle">Hand-picked products for your vehicle.</p>
+                    <h2 class="gk-section-title">{{ __('general.featured_products') }}</h2>
+                    <p class="gk-section-subtitle">{{ __('general.featured_products_subtitle') }}</p>
                 </div>
-                <a href="{{ route('shop.index') }}" class="gk-view-link">View All <span aria-hidden="true">→</span></a>
+                <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.view_all_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
             <div class="gk-product-grid">
                 @foreach($featured->take(5) as $product)
@@ -1184,10 +1184,10 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">Best Sellers</h2>
-                    <p class="gk-section-subtitle">Popular picks from Gari Kothay customers.</p>
+                    <h2 class="gk-section-title">{{ __('general.best_sellers') }}</h2>
+                    <p class="gk-section-subtitle">{{ __('general.best_sellers_subtitle') }}</p>
                 </div>
-                <a href="{{ route('shop.index') }}" class="gk-view-link">View All <span aria-hidden="true">→</span></a>
+                <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.view_all_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
             <div class="gk-product-grid">
                 @foreach($bestSellers as $product)
@@ -1202,9 +1202,9 @@
     <section class="gk-section" id="vehicle-services">
         <div class="gk-container">
             <div style="max-width: 720px; margin: 0 auto 2rem; text-align: center;">
-                <div style="color: var(--gk-primary); font-size: 0.75rem; font-weight: 900; text-transform: capitalize;">All-in-One</div>
-                <h2 class="gk-section-title" style="margin-top: 0.35rem;">Automotive Services</h2>
-                <p class="gk-section-subtitle">Everything your vehicle needs. Discover, book and manage services across Bangladesh.</p>
+                <div style="color: var(--gk-primary); font-size: 0.75rem; font-weight: 900; text-transform: capitalize;">{{ __('general.automotive_services_kicker') }}</div>
+                <h2 class="gk-section-title" style="margin-top: 0.35rem;">{{ __('general.automotive_services') }}</h2>
+                <p class="gk-section-subtitle">{{ __('general.automotive_services_subtitle') }}</p>
             </div>
             <div class="gk-service-grid">
                 @foreach($serviceCards as $service)
@@ -1212,7 +1212,7 @@
                         <div class="gk-service-icon" style="background: {{ $service['bg'] }};">{{ $service['icon'] }}</div>
                         <h3>{{ $service['name'] }}</h3>
                         <p>{{ $service['desc'] }}</p>
-                        <span class="gk-service-more">Explore <span aria-hidden="true">→</span></span>
+                        <span class="gk-service-more">{{ __('general.explore') }} <span aria-hidden="true">→</span></span>
                     </a>
                 @endforeach
             </div>
@@ -1225,8 +1225,8 @@
             <div class="gk-container">
                 <div class="gk-section-head">
                     <div>
-                        <h2 class="gk-section-title">What Customers Say</h2>
-                        <p class="gk-section-subtitle">Real experiences from Gari Kothay customers.</p>
+                        <h2 class="gk-section-title">{{ __('general.what_customers_say') }}</h2>
+                        <p class="gk-section-subtitle">{{ __('general.what_customers_say_subtitle') }}</p>
                     </div>
                 </div>
                 <div class="gk-review-grid">
@@ -1270,22 +1270,22 @@
             <div class="gk-app-promo">
                 <div>
                     <div style="font-size:0.75rem; font-weight:900; text-transform:capitalize; color:rgba(255,255,255,0.72);">
-                        {{ \App\Models\Setting::get('theme1_app_kicker') ?? 'Mobile App' }}
+                        {{ \App\Models\Setting::get('theme1_app_kicker') ?? __('general.mobile_app') }}
                     </div>
                     <h2 class="gk-section-title" style="margin-top:0.4rem; color:#ffffff;">
-                        {{ \App\Models\Setting::get('theme1_app_title') ?? 'Take Gari Kothay With You' }}
+                        {{ \App\Models\Setting::get('theme1_app_title') ?? __('general.take_app_with_you') }}
                     </h2>
                     <p style="max-width:520px; margin-top:0.75rem; color:rgba(255,255,255,0.78); line-height:1.7;">
-                        {{ \App\Models\Setting::get('theme1_app_desc') ?? 'Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.' }}
+                        {{ \App\Models\Setting::get('theme1_app_desc') ?? __('general.take_app_with_you_desc') }}
                     </p>
                     <div class="gk-store-buttons">
                         <a href="{{ \App\Models\Setting::get('theme1_app_google_play') ?? '#' }}" class="gk-store-button">
                             <span style="font-size:1.4rem;">▣</span>
-                            <span><span style="display:block; font-size:0.65rem; opacity:0.72;">GET IT ON</span><strong>Google Play</strong></span>
+                            <span><span style="display:block; font-size:0.65rem; opacity:0.72;">{{ __('general.get_it_on') }}</span><strong>Google Play</strong></span>
                         </a>
                         <a href="{{ \App\Models\Setting::get('theme1_app_app_store') ?? '#' }}" class="gk-store-button">
                             <span style="font-size:1.4rem;">◉</span>
-                            <span><span style="display:block; font-size:0.65rem; opacity:0.72;">DOWNLOAD ON</span><strong>App Store</strong></span>
+                            <span><span style="display:block; font-size:0.65rem; opacity:0.72;">{{ __('general.download_on') }}</span><strong>App Store</strong></span>
                         </a>
                     </div>
                 </div>
@@ -1300,7 +1300,7 @@
                             </div>
                         @endif
                         <div style="margin-top:0.55rem; font-size:0.8rem; font-weight:800;">
-                            {{ \App\Models\Setting::get('theme1_app_qr_text') ?? 'Scan to Download' }}
+                            {{ \App\Models\Setting::get('theme1_app_qr_text') ?? __('general.scan_to_download') }}
                         </div>
                     </div>
                 </div>
@@ -1314,10 +1314,10 @@
             <div class="gk-container">
                 <div class="gk-section-head">
                     <div>
-                        <h2 class="gk-section-title">Automotive Tips</h2>
-                        <p class="gk-section-subtitle">Guides, updates and practical advice for vehicle owners.</p>
+                        <h2 class="gk-section-title">{{ __('general.automotive_tips') }}</h2>
+                        <p class="gk-section-subtitle">{{ __('general.automotive_tips_subtitle') }}</p>
                     </div>
-                    <a href="{{ route('blog.index') }}" class="gk-view-link">Read All <span aria-hidden="true">→</span></a>
+                    <a href="{{ route('blog.index') }}" class="gk-view-link">{{ __('general.read_all') }} <span aria-hidden="true">→</span></a>
                 </div>
                 <div class="gk-blog-grid">
                     @foreach($blogs as $blog)
@@ -1343,8 +1343,8 @@
     <section class="gk-newsletter" x-data="{ email: '', msg: '' }">
         <div class="gk-container gk-newsletter-grid">
             <div>
-                <h2 class="gk-section-title" style="text-transform: none;">{{ \App\Models\Setting::get('theme1_newsletter_title', 'GET DEALS IN YOUR INBOX') }}</h2>
-                <p class="gk-section-subtitle">{{ \App\Models\Setting::get('theme1_newsletter_subtitle', 'Subscribe for exclusive offers, new arrivals and service discounts.') }}</p>
+                <h2 class="gk-section-title" style="text-transform: none;">{{ \App\Models\Setting::get('theme1_newsletter_title') ?? __('general.get_deals_inbox') }}</h2>
+                <p class="gk-section-subtitle">{{ \App\Models\Setting::get('theme1_newsletter_subtitle') ?? __('general.get_deals_inbox_subtitle') }}</p>
             </div>
             <div>
                 <div class="gk-newsletter-form">
@@ -1380,8 +1380,8 @@
     @if(\App\Models\Setting::get('theme1_show_partners', true))
     <section class="gk-partners">
         <div class="gk-partners-head">
-            <span class="gk-partners-kicker">Trusted by</span>
-            <h2 class="gk-partners-title">Our Delivery Partners</h2>
+            <span class="gk-partners-kicker">{{ __('general.trusted_by') }}</span>
+            <h2 class="gk-partners-title">{{ __('general.our_delivery_partners') }}</h2>
         </div>
         <div style="position:relative;">
             <div class="gk-partner-track">
