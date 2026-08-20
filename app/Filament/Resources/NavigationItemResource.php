@@ -104,7 +104,17 @@ class NavigationItemResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextInputColumn::make('sort_order')
                     ->sortable(),
-                Tables\Columns\ToggleColumn::make('is_active'),
+                Tables\Columns\ToggleColumn::make('is_active')
+                    ->updateStateUsing(function ($record, $state) {
+                        $record->update(['is_active' => $state]);
+                        // Manually clear cache to be safe
+                        foreach (['en', 'bn'] as $locale) {
+                            \Illuminate\Support\Facades\Cache::forget("homepage_data_{$locale}");
+                            \Illuminate\Support\Facades\Cache::forget("navbar_categories_{$locale}");
+                            \Illuminate\Support\Facades\Cache::forget("navbar_top_menu_{$locale}");
+                            \Illuminate\Support\Facades\Cache::forget("footer_links_{$locale}");
+                        }
+                    }),
             ])
             ->defaultSort('sort_order')
             ->filters([
@@ -182,6 +192,11 @@ class NavigationItemResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('translations');
     }
 
     public static function getPages(): array
