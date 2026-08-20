@@ -127,7 +127,7 @@
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Company</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
                 @foreach($footerLinks->get('footer_company', []) as $link)
-                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
             </ul>
         </div>
@@ -136,7 +136,7 @@
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Business</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
                 @foreach($footerLinks->get('footer_business', []) as $link)
-                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
             </ul>
         </div>
@@ -145,7 +145,7 @@
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Help & Information</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
                 @foreach($footerLinks->get('footer_help', []) as $link)
-                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
                 <li>🚚 Delivery Time: Inside Dhaka 5 Days, Outside Dhaka 10 Days</li>
             </ul>
@@ -155,7 +155,7 @@
             <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Legal & Policies</h4>
             <ul class="space-y-2 text-sm text-gray-400 capitalize">
                 @foreach($footerLinks->get('footer_legal', []) as $link)
-                    <li><a href="{{ $link->url }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
+                    <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
             </ul>
 
