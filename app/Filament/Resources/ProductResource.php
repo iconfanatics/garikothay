@@ -795,7 +795,8 @@ class ProductResource extends Resource
                     ->state(function (Product $record) {
                         return $record->images->first()?->path;
                     })
-                    ->square(),
+                    ->square()
+                    ->grow(false),
                 Tables\Columns\TextColumn::make('brand.name')
                     ->label('Brand')
                     ->searchable()
@@ -805,6 +806,7 @@ class ProductResource extends Resource
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => $record->translations->firstWhere('locale', 'en')?->name ?? 'N/A')
                     ->searchable()
+                    ->wrap()
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query->orderBy(
                             \App\Models\ProductTranslation::select('name')
@@ -818,16 +820,19 @@ class ProductResource extends Resource
                     ->label('SKU')
                     ->searchable()
                     ->sortable()
+                    ->width('150px')
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
                     ->money('BDT')
                     ->sortable()
+                    ->width('120px')
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('stock_quantity')
                     ->label('Stock')
                     ->numeric()
                     ->sortable()
+                    ->width('100px')
                     ->toggleable(),
                 Tables\Columns\BadgeColumn::make('publish_status')
                     ->label('Status')
