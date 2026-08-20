@@ -284,7 +284,7 @@
 
 <nav class="gk-site-nav bg-white shadow-sm" x-data="{ mobileOpen: false }" x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''; document.documentElement.style.overflow = mobileOpen ? 'hidden' : '';">
     <!-- Desktop Header Row -->
-    <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:flex bg-gray-100 rounded-lg mt-2 mb-2">
+    <div class="gk-desktop-header gk-nav-container py-3 md:py-4 hidden md:flex bg-white rounded-lg mt-2 mb-2">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
