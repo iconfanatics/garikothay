@@ -1242,7 +1242,6 @@
                                 <div class="gk-avatar">{{ strtoupper(substr($review->user->name, 0, 1)) }}</div>
                                 <div style="min-width:0;">
                                     <div style="font-weight:800; font-size:0.9rem;">{{ $review->user->name }}</div>
-                                    <div style="color:var(--gk-muted); font-size:0.78rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ $review->product?->name }}</div>
                                 </div>
                             </div>
                         </article>
