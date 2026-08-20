@@ -683,6 +683,11 @@
                     <h2>{{ __('general.your_order') }}</h2>
                     <p>{{ $cart->item_count }} item{{ $cart->item_count === 1 ? '' : 's' }} ready to order.</p>
                 </div>
+                @if($cart->items->contains(fn($item) => $item->product->is_preorder))
+                    <div style="background:#fff1f2; border:1px solid #fecdd3; color:#e11d48; padding:0.7rem; border-radius:6px; font-size:0.75rem; font-weight:700; margin-bottom:0.75rem;">
+                        ⚠️ {{ __('general.preorder_cart_notice') ?? 'Your order contains pre-order items. Delivery will follow the pre-order timeline.' }}
+                    </div>
+                @endif
                 <div>
                     @foreach($cart->items as $item)
                     <div class="gk-checkout-item">
@@ -738,7 +743,11 @@
                         <span x-text="shippingCharge === null ? '-' : (shippingCharge > 0 ? '৳' + formatMoney(shippingCharge) : @js(__('general.free')))"></span>
                     </div>
                     <div class="gk-checkout-logistics">
-                        <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-gray-800">{{ $deliveryTime }}</strong></div>
+                        @if($cart->items->contains(fn($item) => $item->product->is_preorder))
+                            <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-[#e11d48]">Pre-order Timeline</strong></div>
+                        @else
+                            <div class="flex justify-between gap-3"><span>Delivery Time</span><strong class="text-gray-800">{{ $deliveryTime }}</strong></div>
+                        @endif
                         <div class="mt-1 flex justify-between gap-3"><span>Delivery Partner</span><strong class="text-gray-800">{{ $deliveryPartner }}</strong></div>
                     </div>
                     <div class="gk-checkout-total-row is-final">
