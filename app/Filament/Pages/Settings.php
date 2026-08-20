@@ -30,6 +30,7 @@ class Settings extends Page
 
         $this->form->fill([
             'site_logo' => $settings->get('site_logo')?->value ?? '',
+            'site_favicon' => $settings->get('site_favicon')?->value ?? '',
             'site_name' => $settings->get('site_name')?->value ?? '',
             'site_tagline' => $settings->get('site_tagline')?->value ?? '',
             'trade_license_number' => $settings->get('trade_license_number')?->value ?? '',
@@ -76,7 +77,13 @@ class Settings extends Page
                         ->label('Site Logo')
                         ->image()
                         ->directory('settings')
-                        ->columnSpanFull(),
+                        ->columnSpan(1),
+                    Forms\Components\FileUpload::make('site_favicon')
+                        ->label('Favicon')
+                        ->helperText('Recommended size: 32x32 pixels or 64x64 pixels (PNG/ICO).')
+                        ->image()
+                        ->directory('settings')
+                        ->columnSpan(1),
                     Forms\Components\TextInput::make('site_name')->label('Site Name'),
                     Forms\Components\TextInput::make('site_tagline')->label('Site Tagline'),
                     Forms\Components\TextInput::make('trade_license_number')
@@ -206,6 +213,7 @@ class Settings extends Page
 
         $settingsMeta = [
             'site_logo' => ['group' => 'general', 'type' => SettingType::Image],
+            'site_favicon' => ['group' => 'general', 'type' => SettingType::Image],
             'site_name' => ['group' => 'general', 'type' => SettingType::Text],
             'site_tagline' => ['group' => 'general', 'type' => SettingType::Text],
             'trade_license_number' => ['group' => 'general', 'type' => SettingType::Text],
