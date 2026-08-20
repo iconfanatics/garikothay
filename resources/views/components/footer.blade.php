@@ -104,6 +104,9 @@
                 @if(\App\Models\Setting::get('trade_license_number'))
                 <li>📝 Trade License: {{ \App\Models\Setting::get('trade_license_number') }}</li>
                 @endif
+                @if(\App\Models\Setting::get('support_hours'))
+                <li>⏰ {{ \App\Models\Setting::get('support_hours') }}</li>
+                @endif
             </ul>
 
         </div>

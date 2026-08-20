@@ -383,7 +383,7 @@
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @endif
-                        <span class="whitespace-nowrap truncate max-w-[120px]">{{ auth()->user()->name }}</span>
+                        <span class="whitespace-nowrap">{{ auth()->user()->name }}</span>
                         <svg class="w-3 h-3" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
