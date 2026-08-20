@@ -1126,8 +1126,12 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">{{ __('general.mega_sale') }}</h2>
-                    <p class="gk-section-subtitle">{{ __('general.mega_sale_subtitle') }}</p>
+                    <h2 class="gk-section-title">
+                        {{ \App\Models\Setting::get('theme1_mega_sale_title_' . app()->getLocale()) ?: __('general.mega_sale') }}
+                    </h2>
+                    <p class="gk-section-subtitle">
+                        {{ \App\Models\Setting::get('theme1_mega_sale_subtitle_' . app()->getLocale()) ?: __('general.mega_sale_subtitle') }}
+                    </p>
                 </div>
                 <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.view_all_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
@@ -1146,8 +1150,12 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">{{ __('general.new_arrivals') }}</h2>
-                    <p class="gk-section-subtitle">{{ __('general.new_arrivals_subtitle_home') }}</p>
+                    <h2 class="gk-section-title">
+                        {{ \App\Models\Setting::get('theme1_new_arrivals_title_' . app()->getLocale()) ?: __('general.new_arrivals') }}
+                    </h2>
+                    <p class="gk-section-subtitle">
+                        {{ \App\Models\Setting::get('theme1_new_arrivals_subtitle_' . app()->getLocale()) ?: __('general.new_arrivals_subtitle_home') }}
+                    </p>
                 </div>
                 <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.shop_now_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
@@ -1165,8 +1173,12 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">{{ __('general.featured_products') }}</h2>
-                    <p class="gk-section-subtitle">{{ __('general.featured_products_subtitle') }}</p>
+                    <h2 class="gk-section-title">
+                        {{ \App\Models\Setting::get('theme1_featured_title_' . app()->getLocale()) ?: __('general.featured_products') }}
+                    </h2>
+                    <p class="gk-section-subtitle">
+                        {{ \App\Models\Setting::get('theme1_featured_subtitle_' . app()->getLocale()) ?: __('general.featured_products_subtitle') }}
+                    </p>
                 </div>
                 <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.view_all_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
@@ -1184,8 +1196,12 @@
         <div class="gk-container">
             <div class="gk-section-head">
                 <div>
-                    <h2 class="gk-section-title">{{ __('general.best_sellers') }}</h2>
-                    <p class="gk-section-subtitle">{{ __('general.best_sellers_subtitle') }}</p>
+                    <h2 class="gk-section-title">
+                        {{ \App\Models\Setting::get('theme1_best_sellers_title_' . app()->getLocale()) ?: __('general.best_sellers') }}
+                    </h2>
+                    <p class="gk-section-subtitle">
+                        {{ \App\Models\Setting::get('theme1_best_sellers_subtitle_' . app()->getLocale()) ?: __('general.best_sellers_subtitle') }}
+                    </p>
                 </div>
                 <a href="{{ route('shop.index') }}" class="gk-view-link">{{ __('general.view_all_arrow') }} <span aria-hidden="true">→</span></a>
             </div>
@@ -1203,8 +1219,12 @@
         <div class="gk-container">
             <div style="max-width: 720px; margin: 0 auto 2rem; text-align: center;">
                 <div style="color: var(--gk-primary); font-size: 0.75rem; font-weight: 900; text-transform: capitalize;">{{ __('general.automotive_services_kicker') }}</div>
-                <h2 class="gk-section-title" style="margin-top: 0.35rem;">{{ __('general.automotive_services') }}</h2>
-                <p class="gk-section-subtitle">{{ __('general.automotive_services_subtitle') }}</p>
+                <h2 class="gk-section-title" style="margin-top: 0.35rem;">
+                    {{ \App\Models\Setting::get('theme1_services_title_' . app()->getLocale()) ?: __('general.automotive_services') }}
+                </h2>
+                <p class="gk-section-subtitle">
+                    {{ \App\Models\Setting::get('theme1_services_subtitle_' . app()->getLocale()) ?: __('general.automotive_services_subtitle') }}
+                </p>
             </div>
             <div class="gk-service-grid">
                 @foreach($serviceCards as $service)
@@ -1225,8 +1245,12 @@
             <div class="gk-container">
                 <div class="gk-section-head">
                     <div>
-                        <h2 class="gk-section-title">{{ __('general.what_customers_say') }}</h2>
-                        <p class="gk-section-subtitle">{{ __('general.what_customers_say_subtitle') }}</p>
+                        <h2 class="gk-section-title">
+                            {{ \App\Models\Setting::get('theme1_reviews_title_' . app()->getLocale()) ?: __('general.what_customers_say') }}
+                        </h2>
+                        <p class="gk-section-subtitle">
+                            {{ \App\Models\Setting::get('theme1_reviews_subtitle_' . app()->getLocale()) ?: __('general.what_customers_say_subtitle') }}
+                        </p>
                     </div>
                 </div>
                 <div class="gk-review-grid">
@@ -1314,8 +1338,12 @@
             <div class="gk-container">
                 <div class="gk-section-head">
                     <div>
-                        <h2 class="gk-section-title">{{ __('general.automotive_tips') }}</h2>
-                        <p class="gk-section-subtitle">{{ __('general.automotive_tips_subtitle') }}</p>
+                        <h2 class="gk-section-title">
+                            {{ \App\Models\Setting::get('theme1_blog_title_' . app()->getLocale()) ?: __('general.automotive_tips') }}
+                        </h2>
+                        <p class="gk-section-subtitle">
+                            {{ \App\Models\Setting::get('theme1_blog_subtitle_' . app()->getLocale()) ?: __('general.automotive_tips_subtitle') }}
+                        </p>
                     </div>
                     <a href="{{ route('blog.index') }}" class="gk-view-link">{{ __('general.read_all') }} <span aria-hidden="true">→</span></a>
                 </div>
@@ -1381,7 +1409,9 @@
     <section class="gk-partners">
         <div class="gk-partners-head">
             <span class="gk-partners-kicker">{{ __('general.trusted_by') }}</span>
-            <h2 class="gk-partners-title">{{ __('general.our_delivery_partners') }}</h2>
+            <h2 class="gk-partners-title">
+                {{ \App\Models\Setting::get('theme1_partners_title_' . app()->getLocale()) ?: __('general.our_delivery_partners') }}
+            </h2>
         </div>
         <div style="position:relative;">
             <div class="gk-partner-track">
