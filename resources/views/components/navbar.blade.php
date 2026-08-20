@@ -242,8 +242,8 @@
 
     .gk-main-menu a:hover,
     .gk-main-menu a.is-active {
-        color: #fb7185 !important;
-        background: transparent !important;
+        color: #ffffff !important;
+        background: var(--gk-red) !important;
     }
 
     .gk-main-menu .gk-menu-head {
