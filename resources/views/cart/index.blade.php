@@ -466,7 +466,7 @@
                 <section class="gk-cart-list" aria-label="Cart items">
                     @if($cart->items->contains(fn($item) => $item->product->is_preorder))
                         <div style="background:#fff1f2; border:1px solid #fecdd3; color:#e11d48; padding:0.75rem 1rem; border-radius:6px; font-size:0.85rem; font-weight:700;">
-                            ⚠️ {{ __('general.preorder_cart_notice') ?? 'Your cart contains pre-order items. Delivery will follow the pre-order timeline.' }}
+                            ⚠️ Your cart contains pre-order items. Delivery will follow the pre-order timeline.
                         </div>
                     @endif
                     @foreach($cart->items as $item)
@@ -582,8 +582,11 @@
 
                     <div class="gk-cart-trust">
                         <span><strong>{{ $deliveryPartner }}</strong>Partner</span>
-                        @if($cart->items->contains(fn($item) => $item->product->is_preorder))
-                            <span><strong style="color:var(--gk-red);">Pre-order timeline</strong>Delivery</span>
+                        @php
+                            $preorderItem = $cart->items->first(fn($item) => $item->product->is_preorder);
+                        @endphp
+                        @if($preorderItem)
+                            <span><strong style="color:var(--gk-red);">{{ $preorderItem->product->supplier_delivery_time ?: 'Pre-order timeline' }}</strong>Delivery</span>
                         @else
                             <span><strong>{{ $deliveryTime }}</strong>Delivery</span>
                         @endif
