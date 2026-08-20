@@ -567,6 +567,41 @@
                             {{ $item['label'] }}
                         </a>
                     @endforeach
+                    
+                    <!-- Categories (Mobile) -->
+                    <div x-data="{ catOpen: false }" class="mt-2 border-t border-gray-100 pt-2">
+                        <button @click="catOpen = !catOpen" class="w-full flex items-center justify-between px-3 py-3 text-gray-700 hover:bg-red-50 hover:text-[var(--gk-red)] rounded-lg text-sm font-medium transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg>
+                                {{ __('general.categories') }}
+                            </div>
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': catOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div x-show="catOpen" x-collapse class="pl-11 pr-3 py-2 space-y-2">
+                            <a href="{{ route('shop.index') }}" class="block text-sm text-[var(--gk-red)] font-bold py-1.5">All Products</a>
+                            @foreach($searchCategories as $cat)
+                                <div x-data="{ subOpen: false }">
+                                    <div class="flex items-center justify-between">
+                                        <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" class="block text-sm text-gray-600 hover:text-[var(--gk-red)] py-1.5 flex-1">{{ $cat->name }}</a>
+                                        @if($cat->children->isNotEmpty())
+                                            <button @click="subOpen = !subOpen" class="p-1.5 text-gray-400 hover:text-[var(--gk-red)]">
+                                                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': subOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                            </button>
+                                        @endif
+                                    </div>
+                                    @if($cat->children->isNotEmpty())
+                                        <div x-show="subOpen" x-collapse class="pl-3 mt-1 border-l-2 border-red-100 space-y-1">
+                                            @foreach($cat->children as $sub)
+                                                <a href="{{ route('shop.index', ['category' => $sub->slug]) }}" class="block text-xs text-gray-500 hover:text-[var(--gk-red)] py-1.5">{{ $sub->name }}</a>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
             </div>

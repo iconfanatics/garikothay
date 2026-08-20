@@ -194,6 +194,7 @@ class CategoryResource extends Resource
                     ->label('Thumbnail')
                     ->disk('public')
                     ->circular()
+                    ->state(fn ($record) => $record->image ?: $record->cover_image ?: $record->banner_image)
                     ->defaultImageUrl('/images/placeholder.png'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Name')
