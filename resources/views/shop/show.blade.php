@@ -745,12 +745,22 @@
                             'id'             => $v->id,
                             'selling_price'  => (float) $v->selling_price,
                             'original_price' => (float) $v->original_price,
+                            'sku'            => $v->sku,
                             'has_own_price'  => $v->price > 0,
                             'price_modifier' => (float) $v->price_modifier,
                             'stock_quantity' => (int) $v->stock_quantity,
                             'images'         => $v->image_gallery ?? [],
                         ];
                     })) !!},
+                    activeSku() {
+                        if (this.selectedVariant) {
+                            const variant = this.variants.find(v => v.id === this.selectedVariant);
+                            if (variant && variant.sku) {
+                                return variant.sku;
+                            }
+                        }
+                        return '{{ addslashes($product->sku) }}';
+                    },
                     activePrice() {
                         if (this.selectedVariant) {
                             const variant = this.variants.find(v => v.id === this.selectedVariant);
@@ -861,7 +871,7 @@
                             <span>Brand: {{ $product->brand }}</span>
                             <span>·</span>
                         @endif
-                        <span>SKU: {{ $product->sku }}</span>
+                        <span>SKU: <span x-text="activeSku()"></span></span>
                     </div>
 
                     <div class="gk-price-box">
@@ -1090,7 +1100,7 @@
                                 @if($brandName)
                                     <tr><td>Brand</td><td>{{ $brandName }}</td></tr>
                                 @endif
-                                <tr><td>SKU</td><td>{{ $product->sku }}</td></tr>
+                                <tr><td>SKU</td><td x-text="activeSku()"></td></tr>
                                 <tr><td>Category</td><td>{{ $categoryName }}</td></tr>
                                 @if($product->weight_grams)
                                     <tr><td>Weight</td><td>{{ $product->weight_grams >= 1000 ? ($product->weight_grams / 1000) . ' kg' : $product->weight_grams . ' g' }}</td></tr>
