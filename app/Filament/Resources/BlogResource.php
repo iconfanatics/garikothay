@@ -183,6 +183,16 @@ class BlogResource extends Resource
                                 "is_published",
                             ),
                         ),
+                    Forms\Components\DateTimePicker::make("unpublished_at")
+                        ->label("Unpublish At")
+                        ->nullable()
+                        ->minDate(fn (?Blog $record) => $record && $record->unpublished_at && $record->unpublished_at->isPast() ? $record->unpublished_at : now())
+                        ->after("published_at")
+                        ->visible(
+                            fn(Forms\Get $get): bool => (bool) $get(
+                                "is_published",
+                            ),
+                        ),
                     Forms\Components\Select::make("author_id")
                         ->label("Author")
                         ->relationship("author", "name")
@@ -258,6 +268,12 @@ class BlogResource extends Resource
                     ->dateTime("d M Y")
                     ->placeholder("—")
                     ->sortable(),
+                Tables\Columns\TextColumn::make("unpublished_at")
+                    ->label("Unpublished At")
+                    ->dateTime("d M Y")
+                    ->placeholder("—")
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make("created_at")
                     ->label("Created")
                     ->dateTime("d M Y")

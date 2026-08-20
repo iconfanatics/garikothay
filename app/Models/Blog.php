@@ -25,6 +25,7 @@ class Blog extends Model
         'author_id',
         'is_published',
         'published_at',
+        'unpublished_at',
         'seo_title',
         'meta_description',
         'tags',
@@ -38,6 +39,7 @@ class Blog extends Model
     protected $casts = [
         'is_published' => 'boolean',
         'published_at' => 'datetime',
+        'unpublished_at' => 'datetime',
         'tags' => 'array',
         'is_featured' => 'boolean',
         'reading_time_minutes' => 'integer',
@@ -111,7 +113,8 @@ class Blog extends Model
     public function scopePublished($query): void
     {
         $query->where('is_published', true)
-              ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()));
+              ->where(fn ($q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()))
+              ->where(fn ($q) => $q->whereNull('unpublished_at')->orWhere('unpublished_at', '>=', now()));
     }
 
     public function getTitleAttribute(): ?string
