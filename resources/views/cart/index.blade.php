@@ -60,7 +60,7 @@
         color: #e11d48;
         font-size: 0.7rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-cart-title {
@@ -68,7 +68,7 @@
         font-size: clamp(1.8rem, 4vw, 2.5rem);
         font-weight: 900;
         line-height: 1;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-cart-copy {
@@ -131,7 +131,7 @@
         color: #e11d48;
         font-size: 0.65rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-cart-product-name {
@@ -256,7 +256,7 @@
     .gk-cart-summary-title {
         font-size: 1.35rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-cart-summary-count {
@@ -380,7 +380,7 @@
         margin-top: 1.2rem;
         font-size: 1.7rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-cart-empty p {

@@ -103,7 +103,7 @@
         font-family: 'Oswald', sans-serif;
         font-size: 1.2rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-login-aside h2 {
@@ -111,7 +111,7 @@
         font-size: 1.8rem;
         font-weight: 900;
         line-height: 1.1;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-login-aside p {
@@ -162,7 +162,7 @@
         color: #e11d48;
         font-size: 0.7rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-login-title {
@@ -170,7 +170,7 @@
         font-size: 2rem;
         font-weight: 900;
         line-height: 1;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-login-copy {

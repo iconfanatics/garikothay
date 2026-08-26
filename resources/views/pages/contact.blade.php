@@ -61,7 +61,7 @@
         color: #e11d48;
         font-size: 0.72rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-contact-title {
@@ -69,7 +69,7 @@
         font-size: clamp(2rem, 4vw, 3rem);
         font-weight: 900;
         line-height: 1;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-contact-intro {
@@ -108,7 +108,7 @@
     .gk-contact-info-head h2 {
         font-size: 1.4rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-contact-info-head p {
@@ -149,7 +149,7 @@
         color: #9ca3af;
         font-size: 0.68rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-contact-method-value {
@@ -219,7 +219,7 @@
     .gk-contact-form-head h2 {
         font-size: 1.55rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-contact-form-head span {

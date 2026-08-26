@@ -52,7 +52,7 @@
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.12em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         opacity: 0.78;
     }
 
@@ -62,7 +62,7 @@
         font-size: clamp(1.45rem, 3vw, 2rem);
         font-weight: 900;
         line-height: 1.1;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-account-email {
@@ -173,7 +173,7 @@
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.06em;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-stat-value {
@@ -228,7 +228,7 @@
         font-family: 'Oswald', 'Inter', sans-serif;
         font-size: 1.12rem;
         font-weight: 800;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-section-card-body {
@@ -250,7 +250,7 @@
         letter-spacing: 0.05em;
         padding: 0.65rem 0.75rem;
         text-align: left;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-account-table td {
@@ -363,7 +363,7 @@
         font-size: 0.72rem;
         font-weight: 900;
         letter-spacing: 0.06em;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-profile-field strong {

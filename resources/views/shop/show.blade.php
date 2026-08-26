@@ -83,7 +83,7 @@
         margin-bottom: 0.8rem;
         font-size: 0.82rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-side-list {
@@ -129,7 +129,7 @@
         padding: 0 0.9rem;
         font-size: 0.8rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
         border-radius: 7px 7px 0 0;
     }
 
@@ -298,7 +298,7 @@
         font-size: 0.72rem;
         font-weight: 900;
         letter-spacing: 0.1em;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-product-title {
@@ -462,7 +462,7 @@
         border: 2px solid #111827;
         background: #ffffff;
         color: #111827;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-buy-now:hover {
@@ -569,7 +569,7 @@
         font-family: 'Oswald', 'Inter', sans-serif;
         font-size: 1.4rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-related-grid {
@@ -1005,7 +1005,7 @@
                                 <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
                                     @foreach($colls as $collection)
                                         @if(is_string($collection))
-                                        <span style="background:#e11d48; color:#fff; font-size:0.7rem; font-weight:800; padding:0.2rem 0.5rem; border-radius:4px; text-transform:uppercase;">{{ $collection }}</span>
+                                        <span style="background:#e11d48; color:#fff; font-size:0.7rem; font-weight:800; padding:0.2rem 0.5rem; border-radius:4px; text-transform: capitalize;">{{ $collection }}</span>
                                         @endif
                                     @endforeach
                                 </div>

@@ -81,7 +81,7 @@
         color: var(--shop-red);
         font-size: 0.7rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-shop-title {
@@ -89,7 +89,7 @@
         font-size: clamp(1.8rem, 4vw, 2.5rem);
         font-weight: 900;
         line-height: 1.05;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-shop-copy {
@@ -288,7 +288,7 @@
         padding: 0 0.9rem;
         font-size: 0.8rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
         border-radius: 7px 7px 0 0;
     }
 
@@ -477,7 +477,7 @@
         font-size: 1.35rem;
         font-weight: 900;
         line-height: 1.1;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-results-count {
@@ -544,7 +544,7 @@
         margin-top: 0.75rem;
         font-size: 1.2rem;
         font-weight: 900;
-        text-transform: uppercase;
+        text-transform: capitalize;
     }
 
     .gk-shop-empty p {

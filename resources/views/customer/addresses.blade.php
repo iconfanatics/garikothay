@@ -56,7 +56,7 @@
         @foreach($addresses as $address)
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative group">
             <div class="flex items-start justify-between mb-3">
-                <span class="text-xs font-semibold uppercase tracking-wide bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full">
+                <span class="text-xs font-semibold capitalize tracking-wide bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full">
                     {{ $address->label->label() ?? $address->label }}
                 </span>
                 @if($address->is_default)
