@@ -649,7 +649,7 @@
                     @endif
                     <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer"
                         @if($method->value === 'cod')
-                           x-show="(selectedShippingMethod && selectedShippingMethod.is_cod_enabled !== false) && (selectedShippingZone && selectedShippingZone.is_cod_enabled !== false)"
+                           x-show="(!selectedShippingZone || (selectedShippingZone.is_cod_enabled != 0 && selectedShippingZone.is_cod_enabled !== false)) && (!selectedShippingMethod || (selectedShippingMethod.is_cod_enabled != 0 && selectedShippingMethod.is_cod_enabled !== false))"
                         @endif
                     >
                         <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#e11d48]">
