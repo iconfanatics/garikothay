@@ -142,8 +142,8 @@ class ThemeSettings extends Page
             'theme1_app_kicker'               => $settings->get('theme1_app_kicker')?->value ?? '',
             'theme1_app_title'                => $settings->get('theme1_app_title')?->value ?? '',
             'theme1_app_desc'                 => $settings->get('theme1_app_desc')?->value ?? '',
-            'theme1_app_google_play'          => $settings->get('theme1_app_google_play')?->value ?? '#',
-            'theme1_app_app_store'            => $settings->get('theme1_app_app_store')?->value ?? '#',
+            'theme1_app_google_play'          => $settings->get('theme1_app_google_play')?->value ?? '',
+            'theme1_app_app_store'            => $settings->get('theme1_app_app_store')?->value ?? '',
             'theme1_app_qr_image'             => $settings->get('theme1_app_qr_image')?->value ?? '',
             'theme1_app_qr_text'              => $settings->get('theme1_app_qr_text')?->value ?? '',
         ]);
@@ -457,8 +457,8 @@ class ThemeSettings extends Page
                                 Forms\Components\TextInput::make('theme1_app_kicker')->label('Subtitle/Kicker')->default('Mobile App'),
                                 Forms\Components\TextInput::make('theme1_app_title')->label('Title')->default('Take Gari Kothay With You'),
                                 Forms\Components\Textarea::make('theme1_app_desc')->label('Description')->default('Order parts, book services, track your GPS device and discover trusted vehicle services from your phone.'),
-                                Forms\Components\TextInput::make('theme1_app_google_play')->label('Google Play Link')->default('#')->url(),
-                                Forms\Components\TextInput::make('theme1_app_app_store')->label('App Store Link')->default('#')->url(),
+                                Forms\Components\TextInput::make('theme1_app_google_play')->label('Google Play Link')->default('')->url(),
+                                Forms\Components\TextInput::make('theme1_app_app_store')->label('App Store Link')->default('')->url(),
                                 Forms\Components\FileUpload::make('theme1_app_qr_image')->label('QR Code Image')->directory('theme')->image(),
                                 Forms\Components\TextInput::make('theme1_app_qr_text')->label('QR Text')->default('Scan to Download'),
                             ])->columns(2),
@@ -497,7 +497,13 @@ class ThemeSettings extends Page
 
     public function save(): void
     {
-        $data = $this->form->getState();
+        \Illuminate\Support\Facades\Log::info("ThemeSettings save hit");
+        try {
+            $data = $this->form->getState();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error("ThemeSettings Validation Error", $e->errors());
+            throw $e;
+        }
 
         $settingsMeta = [
             'theme1_header_logo' => ['group' => 'theme', 'type' => SettingType::Image],
