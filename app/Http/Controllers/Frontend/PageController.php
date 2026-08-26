@@ -77,21 +77,21 @@ class PageController extends Controller
     public function terms(): View
     {
         return view('pages.terms', [
-            'page' => Page::where('slug', 'terms')->firstOrFail()
+            'page' => Page::where('slug', 'terms-and-conditions')->firstOrFail()
         ]);
     }
 
     public function privacy(): View
     {
         return view('pages.privacy', [
-            'page' => Page::where('slug', 'privacy')->firstOrFail()
+            'page' => Page::where('slug', 'privacy-policy')->firstOrFail()
         ]);
     }
 
     public function returnPolicy(): View
     {
         return view('pages.return-policy', [
-            'page' => Page::where('slug', 'return-policy')->firstOrFail()
+            'page' => Page::where('slug', 'refund-and-return-policy')->firstOrFail()
         ]);
     }
 
