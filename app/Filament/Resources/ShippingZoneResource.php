@@ -74,7 +74,7 @@ class ShippingZoneResource extends Resource
                                 return array_combine(array_keys($locations), array_keys($locations));
                             })
                             ->live()
-                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana']))
+                            ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana'])),
                             
                         // For District Zone
                         Forms\Components\Select::make('coverage_areas_district')
@@ -107,7 +107,7 @@ class ShippingZoneResource extends Resource
                                 return [];
                             })
                             ->live()
-                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana')
+                            ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana'),
 
                         // For Upazila Zone
                         Forms\Components\Select::make('coverage_areas_upazila')
