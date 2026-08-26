@@ -26,6 +26,15 @@ class CreateShippingZone extends CreateRecord
             $data['coverage_areas'] = [];
         }
 
+        unset(
+            $data['coverage_areas_division'],
+            $data['coverage_areas_district'],
+            $data['coverage_areas_upazila'],
+            $data['coverage_areas_tags'],
+            $data['division_filter'],
+            $data['district_filter']
+        );
+
         return $data;
     }
 }

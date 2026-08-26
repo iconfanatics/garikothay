@@ -65,8 +65,7 @@ class ShippingZoneResource extends Resource
                             ->required(fn (Forms\Get $get) => $get('zone_type') === 'Division')
                             ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
                                 if ($record && $record->zone_type === 'Division') $component->state($record->coverage_areas);
-                            })
-                            ->dehydrated(false),
+                            }),
                             
                         // Helper for District and Upazila
                         Forms\Components\Select::make('division_filter')
@@ -76,7 +75,6 @@ class ShippingZoneResource extends Resource
                             })
                             ->live()
                             ->hidden(fn (Forms\Get $get) => !in_array($get('zone_type'), ['District', 'Upazila-Thana']))
-                            ->dehydrated(false),
                             
                         // For District Zone
                         Forms\Components\Select::make('coverage_areas_district')
@@ -95,8 +93,7 @@ class ShippingZoneResource extends Resource
                             ->required(fn (Forms\Get $get) => $get('zone_type') === 'District')
                             ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
                                 if ($record && $record->zone_type === 'District') $component->state($record->coverage_areas);
-                            })
-                            ->dehydrated(false),
+                            }),
 
                         // Helper for Upazila
                         Forms\Components\Select::make('district_filter')
@@ -111,7 +108,6 @@ class ShippingZoneResource extends Resource
                             })
                             ->live()
                             ->hidden(fn (Forms\Get $get) => $get('zone_type') !== 'Upazila-Thana')
-                            ->dehydrated(false),
 
                         // For Upazila Zone
                         Forms\Components\Select::make('coverage_areas_upazila')
@@ -131,8 +127,7 @@ class ShippingZoneResource extends Resource
                             ->required(fn (Forms\Get $get) => $get('zone_type') === 'Upazila-Thana')
                             ->afterStateHydrated(function (Forms\Components\Select $component, ?\App\Models\ShippingZone $record) {
                                 if ($record && $record->zone_type === 'Upazila-Thana') $component->state($record->coverage_areas);
-                            })
-                            ->dehydrated(false),
+                            }),
                             
                         // For Custom Area
                         Forms\Components\TagsInput::make('coverage_areas_tags')
@@ -142,8 +137,7 @@ class ShippingZoneResource extends Resource
                             ->required(fn (Forms\Get $get) => $get('zone_type') === 'Custom Area')
                             ->afterStateHydrated(function (Forms\Components\TagsInput $component, ?\App\Models\ShippingZone $record) {
                                 if ($record && $record->zone_type === 'Custom Area') $component->state($record->coverage_areas);
-                            })
-                            ->dehydrated(false),
+                            }),
                             
                         // Hidden field to store actual value via state management
                         Forms\Components\Hidden::make('coverage_areas')
