@@ -107,6 +107,9 @@
                 @if(\App\Models\Setting::get('support_hours'))
                 <li>⏰ {{ \App\Models\Setting::get('support_hours') }}</li>
                 @endif
+                <li class="mt-4 border-t border-gray-800 pt-3">
+                    🚚 <span class="text-gray-300">Delivery Time: Inside Dhaka 5 Days, Outside Dhaka 10 Days</span>
+                </li>
             </ul>
 
         </div>
