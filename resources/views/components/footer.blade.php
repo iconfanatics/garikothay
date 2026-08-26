@@ -150,7 +150,6 @@
                 @foreach($footerLinks->get('footer_help', []) as $link)
                     <li><a href="{{ url($link->url ?? '#') }}" class="hover:text-rose-400 transition">{{ $link->label }}</a></li>
                 @endforeach
-                <li>🚚 Delivery Time: Inside Dhaka 5 Days, Outside Dhaka 10 Days</li>
             </ul>
         </div>
 
