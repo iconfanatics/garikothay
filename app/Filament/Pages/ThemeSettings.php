@@ -137,8 +137,8 @@ class ThemeSettings extends Page
             'theme1_blog_subtitle_bn'         => $settings->get('theme1_blog_subtitle_bn')?->value ?? '',
             'theme1_partners_title_bn'        => $settings->get('theme1_partners_title_bn')?->value ?? '',
             // Newsletter & App
-            'theme1_newsletter_title'         => $settings->get('theme1_newsletter_title')?->value ?? '',
-            'theme1_newsletter_subtitle'      => $settings->get('theme1_newsletter_subtitle')?->value ?? '',
+            'theme1_newsletter_title'         => $settings->get('theme1_newsletter_title')?->value ?: 'GET DEALS IN YOUR INBOX',
+            'theme1_newsletter_subtitle'      => $settings->get('theme1_newsletter_subtitle')?->value ?: 'Subscribe for exclusive offers, new arrivals and service discounts.',
             'theme1_app_kicker'               => $settings->get('theme1_app_kicker')?->value ?? '',
             'theme1_app_title'                => $settings->get('theme1_app_title')?->value ?? '',
             'theme1_app_desc'                 => $settings->get('theme1_app_desc')?->value ?? '',
