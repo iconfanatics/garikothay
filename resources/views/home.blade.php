@@ -199,63 +199,7 @@
         object-fit: cover;
     }
 
-    .gk-hero-shade {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(120deg, rgba(17,24,39,0.9), rgba(190,18,60,0.68), rgba(0,0,0,0.78));
-    }
 
-    .gk-hero-content {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        min-height: 340px;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 2rem;
-    }
-
-    @media (min-width: 768px) {
-        .gk-hero-content {
-            padding: 3rem;
-        }
-    }
-
-    .gk-eyebrow {
-        width: fit-content;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.15);
-        padding: 0.35rem 0.8rem;
-        font-size: 0.72rem;
-        font-weight: 800;
-        text-transform: capitalize;
-    }
-
-    .gk-hero-title {
-        max-width: 720px;
-        margin-top: 1rem;
-        font-size: clamp(2rem, 4.2vw, 3.6rem);
-        line-height: 1.02;
-        font-weight: 900;
-        text-transform: capitalize;
-    }
-
-    .gk-hero-copy {
-        max-width: 600px;
-        margin-top: 0.9rem;
-        color: rgba(255,255,255,0.9);
-        font-size: clamp(1rem, 1.3vw, 1.15rem);
-        line-height: 1.7;
-    }
-
-    .gk-hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        margin-top: 1.5rem;
-    }
 
     .gk-btn {
         display: inline-flex;
@@ -1053,24 +997,23 @@
             }">
                 @foreach($slides as $index => $slide)
                     <article class="gk-hero-slide" :class="{ 'is-active': current === {{ $index }} }">
-                        <picture>
-                            @if(!empty($slide['mobile_image']))
-                                <source media="(max-width: 640px)" srcset="{{ $slide['mobile_image'] }}">
-                            @endif
-                            <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}">
-                        </picture>
-                        <div class="gk-hero-shade"></div>
-                        <div class="gk-hero-content">
-                            <h1 class="gk-hero-title">{{ $slide['title'] }}</h1>
-                            <p class="gk-hero-copy">{{ $slide['subtitle'] }}</p>
-                            @if(!empty($slide['link']) && $slide['link'] !== '#')
-                            <div style="margin-top: 1.5rem;">
-                                <a href="{{ $slide['link'] }}" class="gk-hero-btn" style="display:inline-flex; align-items:center; gap:0.5rem; background:var(--gk-red); color:white; padding:0.8rem 1.75rem; border-radius:6px; font-weight:800; font-size:1.05rem; text-decoration:none; transition:transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                    {{ $slide['button'] }} <span aria-hidden="true">→</span>
-                                </a>
-                            </div>
-                            @endif
-                        </div>
+                        @if(!empty($slide['link']) && $slide['link'] !== '#')
+                            <a href="{{ $slide['link'] }}" style="display:block; width:100%; height:100%;">
+                                <picture>
+                                    @if(!empty($slide['mobile_image']))
+                                        <source media="(max-width: 640px)" srcset="{{ $slide['mobile_image'] }}">
+                                    @endif
+                                    <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] ?? 'Banner' }}">
+                                </picture>
+                            </a>
+                        @else
+                            <picture>
+                                @if(!empty($slide['mobile_image']))
+                                    <source media="(max-width: 640px)" srcset="{{ $slide['mobile_image'] }}">
+                                @endif
+                                <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] ?? 'Banner' }}">
+                            </picture>
+                        @endif
                     </article>
                 @endforeach
 

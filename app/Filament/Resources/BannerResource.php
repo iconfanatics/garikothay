@@ -29,13 +29,16 @@ class BannerResource extends Resource
                     Forms\Components\Select::make('type')
                         ->label('Banner Type')
                         ->options(BannerType::options())
+                        ->live()
                         ->required(),
                     Forms\Components\TextInput::make('sort_order')
                         ->label('Sort Order')
                         ->numeric()
                         ->default(0),
                 ]),
-                Forms\Components\Tabs::make('Translations')->tabs([
+                Forms\Components\Tabs::make('Translations')
+                    ->hidden(fn (Forms\Get $get) => $get('type') === BannerType::HeroSlider->value)
+                    ->tabs([
                     Forms\Components\Tabs\Tab::make('English')->schema([
                         Forms\Components\TextInput::make('translations.en.title')
                             ->label('Title (English)')
