@@ -302,14 +302,14 @@
 
     @media (min-width: 1024px) {
         .gk-promo-stack {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-rows: repeat(4, 1fr);
+            gap: 0.75rem;
         }
     }
 
     .gk-mini-promo {
         min-height: 78px;
-        flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
