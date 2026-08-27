@@ -1043,11 +1043,11 @@
                 @foreach($promos as $promo)
                 <a href="{{ $promo['link'] ?? '#' }}" class="gk-mini-promo">
                     @if(!empty($promo['image']) || !empty($promo['mobile_image']))
-                        <picture style="position:absolute; inset:0; width:100%; height:100%; z-index:0; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <picture style="position:absolute; inset:0; width:100%; height:100%; z-index:0; transition:transform 0.3s; display:block;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                             @if(!empty($promo['mobile_image']))
                                 <source media="(max-width: 1023px)" srcset="{{ $promo['mobile_image'] }}">
                             @endif
-                            <img src="{{ $promo['image'] ?? $promo['mobile_image'] }}" alt="{{ $promo['title'] ?? 'Promo Banner' }}" style="width:100%; height:100%; object-fit:cover;">
+                            <img src="{{ $promo['image'] ?? $promo['mobile_image'] }}" alt="{{ $promo['title'] ?? 'Promo Banner' }}" style="display:block; width:100%; height:100%; object-fit:cover;">
                         </picture>
                         <div style="position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2)); z-index:1;"></div>
                     @else
