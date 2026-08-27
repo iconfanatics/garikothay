@@ -646,13 +646,13 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     @php 
                         $codEnabled = (bool) \App\Models\Setting::get('cod_enabled', 1); 
-                        $activeGateways = \App\Models\PaymentGateway::where('is_active', true)->pluck('slug')->toArray();
+                        $activeGateways = \App\Models\PaymentGateway::where('is_active', true)->get()->keyBy('slug');
                     @endphp
                     @foreach(\App\Enums\PaymentMethod::cases() as $method)
                     @if($method->value === 'cod' && !$codEnabled)
                         @continue
                     @endif
-                    @if(!in_array($method->value, $activeGateways))
+                    @if(!$activeGateways->has($method->value))
                         @continue
                     @endif
                     <label class="gk-checkout-payment flex items-center gap-3 p-3 cursor-pointer"
@@ -662,7 +662,7 @@
                     >
                         <input type="radio" name="payment_method" value="{{ $method->value }}" {{ $loop->first ? 'checked' : '' }} required class="text-[#e11d48]">
                         <div>
-                            <div class="font-semibold text-sm">{{ $method->label() }}</div>
+                            <div class="font-semibold text-sm">{{ $activeGateways[$method->value]->name ?? $method->label() }}</div>
                             @if($method->value === 'cod')
                             <div class="text-xs text-gray-500">{{ __('general.cod_description') }}</div>
                             @endif
