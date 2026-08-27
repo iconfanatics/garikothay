@@ -173,7 +173,6 @@
 
     .gk-hero {
         position: relative;
-        min-height: 340px;
         overflow: hidden;
         border-radius: 8px;
         background: #000000;
@@ -302,14 +301,14 @@
 
     @media (min-width: 1024px) {
         .gk-promo-stack {
-            display: grid;
-            grid-template-rows: repeat(4, 1fr);
-            gap: 0.75rem;
+            display: flex;
+            flex-direction: column;
         }
     }
 
     .gk-mini-promo {
         min-height: 78px;
+        flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -896,7 +895,7 @@
         ['kicker' => 'Service Bundles', 'title' => '15% Off Packs', 'link' => '#vehicle-services', 'bg_start' => '#f59e0b', 'bg_end' => '#c2410c'],
     ]);
     
-    $uploadedPromos = $promoBanners->map(function($banner, $index) {
+    $promos = $promoBanners->isEmpty() ? $fallbackPromos : $promoBanners->map(function($banner, $index) {
         $colors = [
             ['#e11d48', '#be123c'],
             ['#374151', '#000000'],
@@ -914,10 +913,6 @@
             'mobile_image' => $banner->mobile_image ? asset('storage/' . $banner->mobile_image) : null,
         ];
     });
-
-    $promos = $uploadedPromos->count() >= 4 
-        ? $uploadedPromos->take(4) 
-        : $uploadedPromos->concat($fallbackPromos->take(4 - $uploadedPromos->count()));
 
     $fallbackTrustFeatures = collect([
         ['icon' => '🚚', 'title' => 'Free Delivery', 'subtitle' => 'Orders over ৳5,000'],
@@ -1009,6 +1004,7 @@
                     }
                 }
             }">
+                <img src="{{ $slides->first()['image'] }}" style="visibility: hidden; width: 100%; height: auto; display: block; opacity: 0; pointer-events: none;" aria-hidden="true" alt="">
                 @foreach($slides as $index => $slide)
                     <article class="gk-hero-slide" :class="{ 'is-active': current === {{ $index }} }">
                         @if(!empty($slide['link']) && $slide['link'] !== '#')
