@@ -911,6 +911,7 @@
             'bg_start' => $color[0],
             'bg_end' => $color[1],
             'image' => $banner->image ? asset('storage/' . $banner->image) : null,
+            'mobile_image' => $banner->mobile_image ? asset('storage/' . $banner->mobile_image) : null,
         ];
     });
 
@@ -989,11 +990,12 @@
 @endphp
 
 <div class="gk-page">
-    @if(\App\Models\Setting::get('theme1_show_hero', true) && $slides->isNotEmpty())
+    @if(\App\Models\Setting::get('theme1_show_hero', true) && ($slides->isNotEmpty() || $promos->isNotEmpty()))
     <section class="gk-hero-wrap">
-        <div class="gk-container gk-hero-grid">
+        <div class="gk-container gk-hero-grid" @if($slides->isEmpty()) style="grid-template-columns: 1fr;" @endif>
             <!-- Sidebar categories removed -->
 
+            @if($slides->isNotEmpty())
             <div class="gk-hero" x-data="{
                 current: 0,
                 total: {{ $slides->count() }},
@@ -1035,12 +1037,18 @@
                     </div>
                 @endif
             </div>
+            @endif
 
             <div class="gk-promo-stack">
                 @foreach($promos as $promo)
                 <a href="{{ $promo['link'] ?? '#' }}" class="gk-mini-promo">
-                    @if(!empty($promo['image']))
-                        <div style="position:absolute; inset:0; background-image:url('{{ $promo['image'] }}'); background-size:cover; background-position:center; z-index:0; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"></div>
+                    @if(!empty($promo['image']) || !empty($promo['mobile_image']))
+                        <picture style="position:absolute; inset:0; width:100%; height:100%; z-index:0; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            @if(!empty($promo['mobile_image']))
+                                <source media="(max-width: 1023px)" srcset="{{ $promo['mobile_image'] }}">
+                            @endif
+                            <img src="{{ $promo['image'] ?? $promo['mobile_image'] }}" alt="{{ $promo['title'] ?? 'Promo Banner' }}" style="width:100%; height:100%; object-fit:cover;">
+                        </picture>
                         <div style="position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2)); z-index:1;"></div>
                     @else
                         <div style="position:absolute; inset:0; background:linear-gradient(135deg, {{ $promo['bg_start'] ?? '#e11d48' }}, {{ $promo['bg_end'] ?? '#be123c' }}); z-index:0;"></div>
