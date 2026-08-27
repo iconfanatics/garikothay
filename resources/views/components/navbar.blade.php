@@ -219,6 +219,7 @@
     .gk-site-nav .gk-action-button,
     .gk-site-nav .cart-count {
         background: var(--gk-red) !important;
+        cursor: pointer;
     }
 
     .gk-site-nav .gk-search-button:hover,
