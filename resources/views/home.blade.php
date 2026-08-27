@@ -199,6 +199,13 @@
         object-fit: cover;
     }
 
+    .gk-hero-slide a,
+    .gk-hero-slide picture {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
 
 
     .gk-btn {
