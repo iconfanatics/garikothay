@@ -895,7 +895,7 @@
         ['kicker' => 'Service Bundles', 'title' => '15% Off Packs', 'link' => '#vehicle-services', 'bg_start' => '#f59e0b', 'bg_end' => '#c2410c'],
     ]);
     
-    $promos = $promoBanners->isEmpty() ? $fallbackPromos : $promoBanners->map(function($banner, $index) {
+    $uploadedPromos = $promoBanners->map(function($banner, $index) {
         $colors = [
             ['#e11d48', '#be123c'],
             ['#374151', '#000000'],
@@ -913,6 +913,10 @@
             'mobile_image' => $banner->mobile_image ? asset('storage/' . $banner->mobile_image) : null,
         ];
     });
+
+    $promos = $uploadedPromos->count() >= 2 
+        ? $uploadedPromos->take(2) 
+        : $uploadedPromos->concat($fallbackPromos->take(2 - $uploadedPromos->count()));
 
     $fallbackTrustFeatures = collect([
         ['icon' => '🚚', 'title' => 'Free Delivery', 'subtitle' => 'Orders over ৳5,000'],
