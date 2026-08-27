@@ -323,16 +323,7 @@
     freeShippingThreshold: @js((float) $freeShippingThreshold),
     shippingZones: @js($shippingZones),
     shippingMethodId: null,
-    locations: {
-        'Dhaka': ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
-        'Chattogram': ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chattogram', 'Comilla', 'Cox\'s Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
-        'Rajshahi': ['Bogra', 'Chapainawabganj', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj'],
-        'Khulna': ['Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
-        'Barishal': ['Barguna', 'Barishal', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
-        'Sylhet': ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
-        'Rangpur': ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
-        'Mymensingh': ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur']
-    },
+    locations: @js(config('locations', [])),
     formData: {
         full_name: @js(old('full_name', auth()->user()?->name ?? '')),
         email: @js(old('email', auth()->user()?->email ?? '')),
@@ -343,14 +334,26 @@
         city: @js(old('city')),
         postal_code: @js(old('postal_code'))
     },
+    get availableDivisions() {
+        return Object.keys(this.locations);
+    },
     get availableDistricts() {
-        return this.formData.division ? this.locations[this.formData.division] || [] : [];
+        return this.formData.division && this.locations[this.formData.division] ? Object.keys(this.locations[this.formData.division]) : [];
+    },
+    get availableUpazilas() {
+        if (!this.formData.division || !this.formData.city) return [];
+        return this.locations[this.formData.division][this.formData.city] || [];
     },
     onDivisionChange() {
         this.formData.city = '';
+        this.formData.upazila = '';
         this.shippingMethodId = null;
     },
     onDistrictChange() {
+        this.formData.upazila = '';
+        this.shippingMethodId = null;
+    },
+    onUpazilaChange() {
         this.shippingMethodId = null;
     },
     couponCode: '',
@@ -570,14 +573,19 @@
                     </div>
                     <div class="gk-checkout-field">
                         <label>Upazila / Thana *</label>
-                        <input type="text" name="upazila" x-model="formData.upazila" required class="@error('upazila') border-red-400 @enderror">
+                        <select name="upazila" x-model="formData.upazila" @change="onUpazilaChange()" required class="@error('upazila') border-red-400 @enderror" :disabled="!formData.city">
+                            <option value="">Select Upazila / Thana</option>
+                            <template x-for="upz in availableUpazilas" :key="upz">
+                                <option :value="upz" x-text="upz"></option>
+                            </template>
+                        </select>
                         @error('upazila') <p class="text-red-500 text-xs mt-1">{!! $message !!}</p> @enderror
                     </div>
                     <div class="gk-checkout-field">
                         <label>Division *</label>
                         <select name="division" x-model="formData.division" @change="onDivisionChange()" required class="@error('division') border-red-400 @enderror">
                             <option value="">Select Division</option>
-                            <template x-for="(_, div) in locations" :key="div">
+                            <template x-for="div in availableDivisions" :key="div">
                                 <option :value="div" x-text="div"></option>
                             </template>
                         </select>
