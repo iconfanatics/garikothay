@@ -792,6 +792,7 @@
                         return 0;
                     },
                     activeStock() {
+                        if (! {{ $product->isInStock() ? 'true' : 'false' }}) return 0;
                         if (this.selectedVariant) {
                             const variant = this.variants.find(v => v.id === this.selectedVariant);
                             if (variant) {
