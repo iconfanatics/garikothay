@@ -118,7 +118,9 @@ class ProductRepository implements ProductRepositoryInterface
         if (!empty($filters['availability']) && is_array($filters['availability'])) {
             $query->where(function ($q) use ($filters) {
                 if (in_array('in_stock', $filters['availability'])) {
-                    $q->orWhere('stock_quantity', '>', 0);
+                    $q->orWhere(function ($subQ) {
+                        $subQ->inStock();
+                    });
                 }
                 if (in_array('pre_order', $filters['availability'])) {
                     $q->orWhere('is_preorder', true);
