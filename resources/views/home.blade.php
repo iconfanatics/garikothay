@@ -1053,14 +1053,13 @@
                             @endif
                             <img src="{{ $promo['image'] ?? $promo['mobile_image'] }}" alt="{{ $promo['title'] ?? 'Promo Banner' }}" style="display:block; width:100%; height:100%; object-fit:cover;">
                         </picture>
-                        <div style="position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2)); z-index:1;"></div>
                     @else
                         <div style="position:absolute; inset:0; background:linear-gradient(135deg, {{ $promo['bg_start'] ?? '#e11d48' }}, {{ $promo['bg_end'] ?? '#be123c' }}); z-index:0;"></div>
+                        <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+                            <span>{{ $promo['kicker'] ?? '' }}</span>
+                            <strong>{{ $promo['title'] ?? '' }}</strong>
+                        </div>
                     @endif
-                    <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
-                        <span>{{ $promo['kicker'] ?? '' }}</span>
-                        <strong>{{ $promo['title'] ?? '' }}</strong>
-                    </div>
                 </a>
                 @endforeach
             </div>

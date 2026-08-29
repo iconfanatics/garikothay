@@ -37,7 +37,7 @@ class BannerResource extends Resource
                         ->default(0),
                 ]),
                 Forms\Components\Tabs::make('Translations')
-                    ->hidden(fn (Forms\Get $get) => $get('type') === BannerType::HeroSlider->value)
+                    ->hidden(fn (Forms\Get $get) => in_array($get('type'), [BannerType::HeroSlider->value, BannerType::Promotional->value]))
                     ->tabs([
                     Forms\Components\Tabs\Tab::make('English')->schema([
                         Forms\Components\TextInput::make('translations.en.title')
