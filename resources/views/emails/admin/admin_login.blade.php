@@ -1,13 +1,13 @@
 <x-admin-transactional-email>
     <x-slot:purpose>
-        🛒 New Order Received
+        🔑 Admin Login Detected
     </x-slot>
 
     <x-slot:greeting>
         Hello, {{ $notifiable->name ?? 'Admin' }}! 👋
     </x-slot>
 
-    <p style="margin-top: 0;">This is an automated notification regarding <strong>New Order Received</strong>.</p>
+    <p style="margin-top: 0;">This is an automated notification regarding <strong>Admin Login Detected</strong>.</p>
     
     <div style="background-color: #f1f5f9; padding: 20px; border-radius: 8px; margin: 24px 0;">
         <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Details</h3>

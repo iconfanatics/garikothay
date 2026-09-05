@@ -11,10 +11,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OrderConfirmationNotification extends Notification implements ShouldQueue
+class ReviewRequestNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-
     use PreventsDuplicateNotifications;
 
     public function __construct(
@@ -23,7 +22,7 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
 
     protected function getDuplicateIdentifier(): string
     {
-        return 'order_confirmed_' . $this->order->id;
+        return 'review_request_' . $this->order->id;
     }
 
     public function via(object $notifiable): array
@@ -34,8 +33,8 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Order Confirmed: {$this->order->order_number} | " . \App\Models\Setting::get('site_name', 'Garikothay'))
-            ->view('emails.orders.confirmed', [
+            ->subject('How did you like your recent order from Garikothay?')
+            ->view('emails.review-request', [
                 'order' => $this->order,
             ]);
     }

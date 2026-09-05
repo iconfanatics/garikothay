@@ -11,19 +11,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OrderConfirmationNotification extends Notification implements ShouldQueue
+class OrderCancelledNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-
     use PreventsDuplicateNotifications;
 
     public function __construct(
         public readonly Order $order,
+        public readonly ?string $cancellationReason = null
     ) {}
 
     protected function getDuplicateIdentifier(): string
     {
-        return 'order_confirmed_' . $this->order->id;
+        return 'order_cancelled_' . $this->order->id;
     }
 
     public function via(object $notifiable): array
@@ -34,9 +34,10 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Order Confirmed: {$this->order->order_number} | " . \App\Models\Setting::get('site_name', 'Garikothay'))
-            ->view('emails.orders.confirmed', [
+            ->subject("Order Cancelled: {$this->order->order_number} | " . \App\Models\Setting::get('site_name', 'Garikothay'))
+            ->view('emails.orders.cancelled', [
                 'order' => $this->order,
+                'cancellationReason' => $this->cancellationReason,
             ]);
     }
 }

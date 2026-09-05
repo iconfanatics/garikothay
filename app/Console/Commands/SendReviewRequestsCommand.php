@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Enums\OrderStatus;
-use App\Mail\ReviewRequestMail;
 use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -43,7 +42,7 @@ class SendReviewRequestsCommand extends Command
 
         foreach ($orders as $order) {
             try {
-                Mail::to($order->user->email)->send(new ReviewRequestMail($order));
+                $order->user->notify(new \App\Notifications\ReviewRequestNotification($order));
                 $count++;
             } catch (\Throwable $e) {
                 $this->error("Failed to send review request for order #{$order->order_number}: " . $e->getMessage());

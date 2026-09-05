@@ -2,28 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Notifications;
+namespace App\Notifications\Admin;
 
-use App\Models\Order;
 use App\Notifications\Traits\PreventsDuplicateNotifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OrderConfirmationNotification extends Notification implements ShouldQueue
+class PaymentFailedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
-
     use PreventsDuplicateNotifications;
 
     public function __construct(
-        public readonly Order $order,
+        public readonly array $data = []
     ) {}
 
     protected function getDuplicateIdentifier(): string
     {
-        return 'order_confirmed_' . $this->order->id;
+        return 'admin_payment_failed_' . md5(json_encode($this->data));
     }
 
     public function via(object $notifiable): array
@@ -34,9 +32,10 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Order Confirmed: {$this->order->order_number} | " . \App\Models\Setting::get('site_name', 'Garikothay'))
-            ->view('emails.orders.confirmed', [
-                'order' => $this->order,
+            ->subject('Payment Failed | Garikothay')
+            ->view('emails.admin.payment_failed', [
+                'notifiable' => $notifiable,
+                'data' => $this->data,
             ]);
     }
 }
